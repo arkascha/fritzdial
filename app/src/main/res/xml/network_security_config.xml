@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    TR-064 on the FRITZ!Box is served via plain HTTP on port 49000 inside the LAN
+    (authentication uses HTTP digest, so the password is not sent in clear text).
+    The router can be addressed by any host name or IP, so cleartext is allowed app-wide;
+    the app talks to nothing but the router.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

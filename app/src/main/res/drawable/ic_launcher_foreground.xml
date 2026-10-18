@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FritzDial launcher icon, foreground layer: Prussian "Pickelhaube" (spiked helmet) over a
+    telephone handset. 108dp adaptive-icon canvas; everything is scaled to 92 % around the
+    centre so the spike tip stays inside the 66dp safe zone of round masks.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.92"
+        android:scaleY="0.92">
+
+        <!-- spike -->
+        <path
+            android:fillColor="#E8B84A"
+            android:pathData="M54,20 L58,35 L50,35 Z" />
+        <!-- spike base -->
+        <path
+            android:fillColor="#E8B84A"
+            android:pathData="M50.5,33.5 h7 a2,2 0 0 1 2,2 v1 a2,2 0 0 1 -2,2 h-7 a2,2 0 0 1 -2,-2 v-1 a2,2 0 0 1 2,-2 z" />
+        <!-- helmet dome -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M30,54 C30,41 41,37 54,37 C67,37 78,41 78,54 Z" />
+        <!-- brim band -->
+        <path
+            android:fillColor="#E8B84A"
+            android:pathData="M28.75,52.5 h50.5 a2.75,2.75 0 0 1 0,5.5 h-50.5 a2.75,2.75 0 0 1 0,-5.5 z" />
+
+        <!-- handset (Material "call" glyph), centred at 54,75, rotated so both ends point down -->
+        <group
+            android:pivotX="12"
+            android:pivotY="12"
+            android:rotation="135"
+            android:scaleX="1.9"
+            android:scaleY="1.9"
+            android:translateX="42"
+            android:translateY="63">
+            <path
+                android:fillColor="#E8B84A"
+                android:pathData="M6.62,10.79c1.44,2.83 3.76,5.14 6.59,6.59l2.2,-2.2c0.27,-0.27 0.67,-0.36 1.02,-0.24 1.12,0.37 2.33,0.57 3.57,0.57 0.55,0 1,0.45 1,1V20c0,0.55 -0.45,1 -1,1 -9.39,0 -17,-7.61 -17,-17 0,-0.55 0.45,-1 1,-1h3.5c0.55,0 1,0.45 1,1 0,1.25 0.2,2.45 0.57,3.57 0.11,0.35 0.03,0.74 -0.25,1.02l-2.2,2.2z" />
+        </group>
+    </group>
+</vector>
