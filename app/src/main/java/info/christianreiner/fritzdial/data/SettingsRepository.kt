@@ -31,6 +31,16 @@ class SettingsRepository(context: Context) {
         }
     }
 
+    /** Optional feature: also show the phone's own contacts (needs READ_CONTACTS). Off by default. */
+    var deviceContactsEnabled: Boolean
+        get() = prefs.getBoolean(KEY_DEVICE_CONTACTS, false)
+        set(value) = prefs.edit { putBoolean(KEY_DEVICE_CONTACTS, value) }
+
+    /** The user chose "Don't ask again" (or switched the feature off in the settings). */
+    var deviceContactsNeverAsk: Boolean
+        get() = prefs.getBoolean(KEY_DEVICE_CONTACTS_NEVER_ASK, false)
+        set(value) = prefs.edit { putBoolean(KEY_DEVICE_CONTACTS_NEVER_ASK, value) }
+
     fun isConfigured(): Boolean =
         prefs.contains(KEY_HOST) && prefs.contains(KEY_PASSWORD)
 
@@ -41,5 +51,7 @@ class SettingsRepository(context: Context) {
         const val KEY_PASSWORD = "password_enc"
         const val KEY_HTTPS = "use_https"
         const val KEY_TRUSTED_CERT = "trusted_cert_der"
+        const val KEY_DEVICE_CONTACTS = "device_contacts_enabled"
+        const val KEY_DEVICE_CONTACTS_NEVER_ASK = "device_contacts_never_ask"
     }
 }

@@ -1,9 +1,6 @@
 package info.christianreiner.fritzdial.ui
 
 import android.Manifest
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -29,6 +26,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -73,38 +71,58 @@ import java.text.Collator
 fun PhonebookScreen(
     routerBooks: List<Phonebook>,
     deviceContacts: Phonebook?,
+    /** The optional "this phone's contacts" feature is switched on in the settings. */
+    deviceContactsEnabled: Boolean,
     loaded: Boolean,
     busy: Boolean,
     onPick: (String) -> Unit,
     onReload: () -> Unit,
     onBack: () -> Unit,
-    /** Called once access to the phone's contacts is (or already was) granted. */
+    /** Called when the feature is on and access is (or became) granted: (re)load the contacts. */
     onDeviceContactsAllowed: () -> Unit,
+    /** Switches the feature off (used when the permission was revoked in Android). */
+    onDisableDeviceContacts: () -> Unit,
+    /** Ask now whether to include the phone's contacts (feature off, not declined for good). */
+    askForDeviceContacts: Boolean,
+    onDeviceContactsAnswer: (DeviceContactsAnswer) -> Unit,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     // Names of the phone books that are filtered *out*; empty = show all.
     var hidden by rememberSaveable { mutableStateOf(listOf<String>()) }
 
-    // --- access to the phone's own contacts (runtime permission) ---
+    // --- the phone's own contacts: optional, switched on in the settings ---
     val context = LocalContext.current
     var contactsAllowed by remember { mutableStateOf(DeviceContacts.hasPermission(context)) }
-    var askDismissed by rememberSaveable { mutableStateOf(false) }
-    var askedAndDenied by rememberSaveable { mutableStateOf(false) }
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        contactsAllowed = granted
-        askedAndDenied = !granted
-    }
     // Re-check when coming back, e.g. from the system app settings.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         contactsAllowed = DeviceContacts.hasPermission(context)
     }
-    LaunchedEffect(contactsAllowed) {
-        if (contactsAllowed) onDeviceContactsAllowed()
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        contactsAllowed = granted
+        onDeviceContactsAnswer(if (granted) DeviceContactsAnswer.ALLOWED else DeviceContactsAnswer.NOT_NOW)
+    }
+    if (askForDeviceContacts) {
+        DeviceContactsQuestion(
+            onAllow = {
+                if (DeviceContacts.hasPermission(context)) {
+                    contactsAllowed = true
+                    onDeviceContactsAnswer(DeviceContactsAnswer.ALLOWED)
+                } else {
+                    permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+                }
+            },
+            onNotNow = { onDeviceContactsAnswer(DeviceContactsAnswer.NOT_NOW) },
+            onNever = { onDeviceContactsAnswer(DeviceContactsAnswer.NEVER) },
+        )
+    }
+    val useDeviceContacts = deviceContactsEnabled && contactsAllowed
+    LaunchedEffect(useDeviceContacts) {
+        if (useDeviceContacts) onDeviceContactsAllowed()
     }
 
-    val phonebooks = routerBooks + listOfNotNull(deviceContacts?.takeIf { contactsAllowed })
+    val phonebooks = routerBooks + listOfNotNull(deviceContacts?.takeIf { useDeviceContacts })
 
     val countryIso = remember { deviceCountryIso(context) }
     val filtered = remember(phonebooks, query, hidden) {
@@ -168,19 +186,11 @@ fun PhonebookScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             )
 
-            if (!contactsAllowed && !askDismissed) {
-                ContactsPermissionCard(
-                    denied = askedAndDenied,
-                    onAllow = { permissionLauncher.launch(Manifest.permission.READ_CONTACTS) },
-                    onOpenSettings = {
-                        context.startActivity(
-                            Intent(
-                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                Uri.fromParts("package", context.packageName, null),
-                            )
-                        )
-                    },
-                    onDismiss = { askDismissed = true },
+            // Feature is on, but the permission was revoked in Android meanwhile.
+            if (deviceContactsEnabled && !contactsAllowed) {
+                ContactsRevokedCard(
+                    onOpenSettings = { context.startActivity(DeviceContacts.appSettingsIntent(context)) },
+                    onTurnOff = onDisableDeviceContacts,
                 )
             }
 
@@ -234,13 +244,35 @@ fun PhonebookScreen(
     }
 }
 
-/** Offers access to the phone's own contacts (Android asks for permission). */
+/** Asks whether to include the phone's own contacts, with a way to stop asking for good. */
 @Composable
-private fun ContactsPermissionCard(
-    denied: Boolean,
-    onAllow: () -> Unit,
+private fun DeviceContactsQuestion(onAllow: () -> Unit, onNotNow: () -> Unit, onNever: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onNotNow,
+        icon = { Icon(ContactsIcon, contentDescription = null) },
+        title = { Text("Include this phone\u2019s contacts?") },
+        text = {
+            Text(
+                "FritzDial can also show the contacts stored on this phone next to the FRITZ!Box " +
+                    "phone books. For that, Android asks for access to your contacts \u2013 they never " +
+                    "leave the phone. You can change this later in the settings."
+            )
+        },
+        confirmButton = { TextButton(onClick = onAllow) { Text("Allow") } },
+        dismissButton = {
+            Row {
+                TextButton(onClick = onNever) { Text("Don\u2019t ask again") }
+                TextButton(onClick = onNotNow) { Text("Not now") }
+            }
+        },
+    )
+}
+
+/** Shown when "this phone's contacts" is switched on but Android no longer allows access. */
+@Composable
+private fun ContactsRevokedCard(
     onOpenSettings: () -> Unit,
-    onDismiss: () -> Unit,
+    onTurnOff: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -249,17 +281,12 @@ private fun ContactsPermissionCard(
     ) {
         Column(Modifier.padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 4.dp)) {
             Text(
-                if (denied) "Access to this phone's contacts was denied. You can allow it in the Android app settings."
-                else "Also show the contacts stored on this phone?",
+                "This phone's contacts are switched on, but Android no longer allows FritzDial to read them.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = onDismiss) { Text("Not now") }
-                if (denied) {
-                    TextButton(onClick = onOpenSettings) { Text("App settings") }
-                } else {
-                    TextButton(onClick = onAllow) { Text("Allow") }
-                }
+                TextButton(onClick = onTurnOff) { Text("Turn off") }
+                TextButton(onClick = onOpenSettings) { Text("App settings") }
             }
         }
     }

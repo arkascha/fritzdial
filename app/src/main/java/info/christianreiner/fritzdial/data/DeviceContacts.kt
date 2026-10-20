@@ -2,8 +2,11 @@ package info.christianreiner.fritzdial.data
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.provider.Settings
 import androidx.core.content.ContextCompat
 import info.christianreiner.fritzdial.tr064.Phonebook
 import info.christianreiner.fritzdial.tr064.PhonebookContact
@@ -18,6 +21,13 @@ object DeviceContacts {
     /** Id used for the device "phone book", distinct from the box' ids (0, 1, …). */
     const val BOOK_ID = -1
     const val BOOK_NAME = "This phone"
+
+    /** Android's settings page of this app, where the contacts permission can be granted or revoked. */
+    fun appSettingsIntent(context: Context): Intent =
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", context.packageName, null),
+        )
 
     fun hasPermission(context: Context): Boolean =
         ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) ==

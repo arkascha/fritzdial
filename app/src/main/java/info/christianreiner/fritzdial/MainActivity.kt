@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.christianreiner.fritzdial.tr064.CertificateInfo
+import info.christianreiner.fritzdial.ui.ConnectionSettingsScreen
 import info.christianreiner.fritzdial.ui.DialerScreen
 import info.christianreiner.fritzdial.ui.TrustCertificateDialog
 import info.christianreiner.fritzdial.ui.ViewCertificateDialog
@@ -42,26 +43,39 @@ class MainActivity : ComponentActivity() {
                     PhonebookScreen(
                         routerBooks = state.phonebooks,
                         deviceContacts = state.deviceContacts,
+                        deviceContactsEnabled = state.deviceContactsEnabled,
                         loaded = state.phonebooksLoaded,
                         busy = state.busy,
                         onPick = viewModel::pickNumber,
                         onReload = viewModel::reloadPhonebooks,
                         onBack = viewModel::closePhonebook,
                         onDeviceContactsAllowed = viewModel::loadDeviceContacts,
+                        onDisableDeviceContacts = { viewModel.setDeviceContactsEnabled(false) },
+                        askForDeviceContacts = state.askForDeviceContacts,
+                        onDeviceContactsAnswer = viewModel::answerDeviceContactsQuestion,
                     )
-                } else if (state.showSettings) {
+                } else if (state.showSettings && state.showConnectionSettings) {
                     val canGoBack = state.settingsSaved
-                    BackHandler(enabled = canGoBack) { viewModel.closeSettings() }
-                    SettingsScreen(
+                    BackHandler(enabled = canGoBack) { viewModel.closeConnectionSettings() }
+                    ConnectionSettingsScreen(
                         initial = state.config,
                         canGoBack = canGoBack,
                         trustedFingerprint = trustedFingerprint,
                         busy = state.busy,
                         status = state.status,
                         onSave = viewModel::saveSettings,
-                        onBack = viewModel::closeSettings,
+                        onBack = viewModel::closeConnectionSettings,
                         onShowCertificate = viewModel::showTrustedCertificate,
                         onForgetCertificate = viewModel::forgetCertificate,
+                    )
+                } else if (state.showSettings) {
+                    BackHandler { viewModel.closeSettings() }
+                    SettingsScreen(
+                        config = state.config,
+                        onOpenConnection = viewModel::openConnectionSettings,
+                        onBack = viewModel::closeSettings,
+                        deviceContactsEnabled = state.deviceContactsEnabled,
+                        onDeviceContactsChange = viewModel::setDeviceContactsEnabled,
                     )
                 } else {
                     DialerScreen(
@@ -83,7 +97,7 @@ class MainActivity : ComponentActivity() {
                     ErrorDialog(
                         error = error,
                         canRetry = state.canRetry,
-                        offerSettings = !state.showSettings,
+                        offerSettings = !(state.showSettings && state.showConnectionSettings),
                         onRetry = viewModel::retry,
                         onOpenSettings = viewModel::openSettingsFromError,
                         onDismiss = viewModel::dismissError,

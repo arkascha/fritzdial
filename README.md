@@ -44,9 +44,13 @@ Online phone books configured on the box (e.g. CardDAV) are synced into it and s
 Search by name or number, filter by phone book, and tap a number to put it into the dialer.
 The books are loaded once per app start; the reload button at the top fetches them again.
 
-The contacts stored on the phone itself appear as an additional book **This phone** (all Android
-accounts, e.g. Google or CardDAV via DAVx⁵). Android asks once for the contacts permission; it is
-optional – without it only the FRITZ!Box phone books are shown.
+Optionally, the contacts stored on the phone itself appear as an additional book **This phone**
+(all Android accounts, e.g. Google or CardDAV via DAVx⁵). This is off by default. When the phone
+books are opened, FritzDial asks whether to include them: **Allow** (Android then asks for the
+contacts permission, `READ_CONTACTS`, used for nothing else), **Not now** (asks again after the next
+app start) or **Don't ask again**. It can always be switched in
+**Settings › Phone books › Include this phone's contacts**; switching it off there also stops the
+question. The permission itself can be revoked in the Android app settings.
 
 ### Confirmation on the FRITZ!Box (two-factor)
 

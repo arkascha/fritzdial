@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
@@ -65,7 +66,13 @@ fun PasswordField(
         modifier = modifier,
         visualTransformation = if (visible) VisualTransformation.None
         else RevealOneTransformation(revealIndex, mask),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        // Stays a password field (keyboards then neither learn nor suggest it). Many keyboards
+        // fall back to a plain US layout in that mode; hinting the phone's languages asks them
+        // to keep the user's usual layout instead.
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            hintLocales = LocaleList.current,
+        ),
         trailingIcon = {
             IconButton(onClick = { visible = !visible }) {
                 Icon(

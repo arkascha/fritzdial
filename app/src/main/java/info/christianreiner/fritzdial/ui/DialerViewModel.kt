@@ -50,6 +50,8 @@ data class UiState(
     val dialActive: Boolean = false,
     val config: FritzConfig = FritzConfig(),
     val showSettings: Boolean = false,
+    /** The connection sub-page of the settings is open. */
+    val showConnectionSettings: Boolean = false,
     /** A working configuration has been saved before, so the settings screen may be left. */
     val settingsSaved: Boolean = false,
     /** Non-null while the "trust this certificate?" dialog is shown. */
@@ -61,7 +63,14 @@ data class UiState(
     /** Phone books of the box, loaded on first use of the phone book screen (cached). */
     val phonebooks: List<Phonebook> = emptyList(),
     val phonebooksLoaded: Boolean = false,
-    /** Contacts stored on this device, once the user allowed access (null = not loaded). */
+    /** Optional feature, switched in the settings: include the phone's own contacts. */
+    val deviceContactsEnabled: Boolean = false,
+    /**
+     * Ask (when opening the phone books) whether to include the phone's contacts: every time,
+     * as long as the feature is off and the user did not choose "Don't ask again".
+     */
+    val askForDeviceContacts: Boolean = false,
+    /** Contacts stored on this device, once enabled and allowed (null = not loaded). */
     val deviceContacts: Phonebook? = null,
     /** Non-null while the box waits for a second-factor confirmation (error 866). */
     val secondFactor: SecondFactorChallenge? = null,
@@ -76,6 +85,9 @@ class SecondFactorNotConfirmedException : IOException("The action was not confir
 /** How long a started dial-help call counts as "cancellable" (the handset rings about this long). */
 private const val DIAL_ACTIVE_MILLIS = 30_000L
 
+/** Answers to the "include this phone's contacts?" question. */
+enum class DeviceContactsAnswer { ALLOWED, NOT_NOW, NEVER }
+
 private typealias BoxAction = suspend (FritzDialer) -> String
 
 class DialerViewModel(application: Application) : AndroidViewModel(application) {
@@ -86,7 +98,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         UiState(
             config = settings.load(),
             showSettings = !settings.isConfigured(),
+            showConnectionSettings = !settings.isConfigured(),
             settingsSaved = settings.isConfigured(),
+            deviceContactsEnabled = settings.deviceContactsEnabled,
         )
     )
     val state: StateFlow<UiState> = _state.asStateFlow()
@@ -135,17 +149,30 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     /** From the error dialog: go to the settings to fix the connection. */
     fun openSettingsFromError() {
         dismissError()
-        openSettings()
+        _state.update { it.copy(showSettings = true, showConnectionSettings = true) }
     }
 
     // --- settings ---------------------------------------------------------------------
 
-    fun openSettings() = _state.update { it.copy(showSettings = true) }
+    /** Opens the settings; before the first successful connection directly on the connection page. */
+    fun openSettings() = _state.update {
+        it.copy(showSettings = true, showConnectionSettings = !it.settingsSaved)
+    }
+
+    fun openConnectionSettings() = _state.update { it.copy(showConnectionSettings = true) }
+
+    /** Leaves the connection page without saving: back to the last working configuration. */
+    fun closeConnectionSettings() {
+        verifyingSettings = false
+        _state.update { it.copy(showConnectionSettings = false, config = settings.load(), error = null) }
+    }
 
     /** Leaves the settings without saving: fall back to the last working configuration. */
     fun closeSettings() {
         verifyingSettings = false
-        _state.update { it.copy(showSettings = false, config = settings.load(), error = null) }
+        _state.update {
+            it.copy(showSettings = false, showConnectionSettings = false, config = settings.load(), error = null)
+        }
     }
 
     /**
@@ -160,7 +187,14 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             val message = loadPhones(dialer)
             settings.save(_state.value.config)
             verifyingSettings = false
-            _state.update { it.copy(showSettings = false, settingsSaved = true) }
+            // First setup: straight to the dialer. Later changes: back to the settings overview.
+            _state.update {
+                it.copy(
+                    showSettings = it.settingsSaved,
+                    showConnectionSettings = false,
+                    settingsSaved = true,
+                )
+            }
             message
         }
     }
@@ -213,7 +247,13 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     /** Opens the phone book screen; loads the books the first time. */
     fun openPhonebook() {
-        _state.update { it.copy(showPhonebook = true) }
+        _state.update {
+            it.copy(
+                showPhonebook = true,
+                askForDeviceContacts = !it.deviceContactsEnabled &&
+                    !settings.deviceContactsNeverAsk,
+            )
+        }
         if (!_state.value.phonebooksLoaded) reloadRouterPhonebooks()
         if (_state.value.deviceContacts == null) loadDeviceContacts()
     }
@@ -224,7 +264,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
      */
     fun loadDeviceContacts() {
         val app = getApplication<Application>()
-        if (!DeviceContacts.hasPermission(app)) return
+        if (!_state.value.deviceContactsEnabled || !DeviceContacts.hasPermission(app)) return
         viewModelScope.launch {
             val book = withContext(Dispatchers.IO) { runCatching { DeviceContacts.load(app) }.getOrNull() }
             if (book != null) _state.update { it.copy(deviceContacts = book) }
@@ -232,6 +272,25 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun closePhonebook() = _state.update { it.copy(showPhonebook = false) }
+
+    /**
+     * Switches the optional "this phone's contacts" feature. The settings screen only enables it
+     * once Android granted the contacts permission. Disabling stops reading the contacts at once
+     * (the permission itself can only be revoked in the Android settings).
+     */
+    fun setDeviceContactsEnabled(enabled: Boolean) {
+        settings.deviceContactsEnabled = enabled
+        // Switching it off on purpose also means: don't keep asking about it.
+        if (!enabled) settings.deviceContactsNeverAsk = true
+        _state.update {
+            it.copy(
+                deviceContactsEnabled = enabled,
+                deviceContacts = if (enabled) it.deviceContacts else null,
+                askForDeviceContacts = false,
+            )
+        }
+        if (enabled) loadDeviceContacts()
+    }
 
     fun reloadPhonebooks() {
         loadDeviceContacts()
@@ -242,6 +301,17 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         val books = dialer.loadPhonebooks()
         _state.update { it.copy(phonebooks = books, phonebooksLoaded = true) }
         "${books.sumOf { it.contacts.size }} contact(s) loaded"
+    }
+
+    /** Answer to the "include this phone's contacts?" question on the phone book screen. */
+    fun answerDeviceContactsQuestion(answer: DeviceContactsAnswer) {
+        _state.update { it.copy(askForDeviceContacts = false) }
+        when (answer) {
+            DeviceContactsAnswer.ALLOWED -> setDeviceContactsEnabled(true)
+            // Only for this visit: asked again the next time the phone books are opened.
+            DeviceContactsAnswer.NOT_NOW -> Unit
+            DeviceContactsAnswer.NEVER -> settings.deviceContactsNeverAsk = true
+        }
     }
 
     /** A number was tapped in the phone book: put it into the dialer and go back. */
