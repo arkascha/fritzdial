@@ -36,6 +36,18 @@ missing telephony permission, router not found or not reachable, wrong port / HT
 temporarily blocking logins). Errors during normal use appear in the same dialog on top of the dialer,
 with **Retry** and, when the cause is likely in the settings, **Open settings**.
 
+### Several FritzBoxes
+
+**Settings › FritzBox connections** holds any number of boxes (e.g. home and office), each with its
+own name, host, port, HTTPS, user, password and trusted certificate. **Add FritzBox** adds one; tap an
+entry to edit it, its menu offers **Use now** and **Delete**. The box in use is marked and shown under
+the app name on the dialer.
+
+The box of the current network is selected automatically – at start and whenever the phone's network
+changes. Every FritzBox publishes a public device description (`http://<box>:49000/tr64desc.xml`) with a
+unique device id; FritzDial records it when a connection is saved and asks the network's gateway (and
+the configured hosts) for it. If a FritzBox answers that is not configured, the dialer says so.
+
 ### Phone books
 
 The address-book button at the left of the number field opens the phone books stored on the
@@ -47,8 +59,8 @@ The books are loaded once per app start; the reload button at the top fetches th
 Optionally, the contacts stored on the phone itself appear as an additional book **This phone**
 (all Android accounts, e.g. Google or CardDAV via DAVx⁵). This is off by default. When the phone
 books are opened, FritzDial asks whether to include them: **Allow** (Android then asks for the
-contacts permission, `READ_CONTACTS`, used for nothing else), **Not now** (asks again after the next
-app start) or **Don't ask again**. It can always be switched in
+contacts permission, `READ_CONTACTS`, used for nothing else), **Not now** (asks again the next time
+the phone books are opened) or **Don't ask again**. It can always be switched in
 **Settings › Phone books › Include this phone's contacts**; switching it off there also stops the
 question. The permission itself can be revoked in the Android app settings.
 
@@ -86,9 +98,10 @@ Contacts or a web page; the number is pre-filled.
 | `tr064/Tr064Client.kt` | Generic SOAP call over HTTP/HTTPS + response / UPnP fault parsing |
 | `tr064/CertificateTrust.kt` | Pinning trust manager, certificate details, "untrusted certificate" exception |
 | `tr064/FritzDialer.kt` | `X_VoIP` actions: `X_AVM-DE_GetPhonePort`, `X_AVM-DE_DialGetConfig`, `X_AVM-DE_DialSetConfig`, `X_AVM-DE_DialNumber`, `X_AVM-DE_DialHangup` |
+| `tr064/BoxDiscovery.kt` | Recognises the FritzBox of the current network (gateway, `tr64desc.xml` device id) |
 | `tr064/Phonebooks.kt` | Phone book list / download / XML parsing (`X_AVM-DE_OnTel`) |
 | `data/DeviceContacts.kt` | The phone's own contacts as an extra phone book (`READ_CONTACTS`) |
-| `data/SettingsRepository.kt` | Connection settings; password encrypted via Android Keystore |
+| `data/SettingsRepository.kt` | FritzBox connections (passwords encrypted via Android Keystore) and options |
 | `ui/` | ViewModel and Compose screens (dialer, settings, certificate dialogs) |
 
 Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising and

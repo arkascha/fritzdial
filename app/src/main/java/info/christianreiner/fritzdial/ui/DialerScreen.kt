@@ -77,7 +77,23 @@ fun DialerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("FritzDial") },
+                title = {
+                    // App name, and below it the FritzBox in use – or a note about the network.
+                    val box = state.profiles.firstOrNull { it.id == state.activeProfileId }?.name
+                    Column {
+                        Text("FritzDial")
+                        val subtitle = state.networkNotice ?: box
+                        if (subtitle != null) {
+                            Text(
+                                subtitle,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (state.networkNotice != null) MaterialTheme.colorScheme.error
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                            )
+                        }
+                    }
+                },
                 actions = {
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")

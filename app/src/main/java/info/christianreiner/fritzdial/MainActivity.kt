@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.christianreiner.fritzdial.tr064.CertificateInfo
@@ -57,22 +58,33 @@ class MainActivity : ComponentActivity() {
                 } else if (state.showSettings && state.showConnectionSettings) {
                     val canGoBack = state.settingsSaved
                     BackHandler(enabled = canGoBack) { viewModel.closeConnectionSettings() }
-                    ConnectionSettingsScreen(
-                        initial = state.config,
-                        canGoBack = canGoBack,
-                        trustedFingerprint = trustedFingerprint,
-                        busy = state.busy,
-                        status = state.status,
-                        onSave = viewModel::saveSettings,
-                        onBack = viewModel::closeConnectionSettings,
-                        onShowCertificate = viewModel::showTrustedCertificate,
-                        onForgetCertificate = viewModel::forgetCertificate,
-                    )
+                    // A fresh form for every box being edited (or added).
+                    key(state.editingProfileId ?: "new") {
+                        ConnectionSettingsScreen(
+                            initial = state.config,
+                            canGoBack = canGoBack,
+                            trustedFingerprint = trustedFingerprint,
+                            busy = state.busy,
+                            status = state.status,
+                            initialName = state.editingName,
+                            isNew = state.editingProfileId == null,
+                            onSave = viewModel::saveSettings,
+                            onBack = viewModel::closeConnectionSettings,
+                            onDelete = state.editingProfileId?.let { id -> { viewModel.deleteProfile(id) } },
+                            onShowCertificate = viewModel::showTrustedCertificate,
+                            onForgetCertificate = viewModel::forgetCertificate,
+                        )
+                    }
                 } else if (state.showSettings) {
                     BackHandler { viewModel.closeSettings() }
                     SettingsScreen(
-                        config = state.config,
-                        onOpenConnection = viewModel::openConnectionSettings,
+                        profiles = state.profiles,
+                        activeProfileId = state.activeProfileId,
+                        networkNotice = state.networkNotice,
+                        onEditProfile = viewModel::editProfile,
+                        onActivateProfile = viewModel::activateProfile,
+                        onDeleteProfile = viewModel::deleteProfile,
+                        onAddProfile = viewModel::addProfile,
                         onBack = viewModel::closeSettings,
                         deviceContactsEnabled = state.deviceContactsEnabled,
                         onDeviceContactsChange = viewModel::setDeviceContactsEnabled,

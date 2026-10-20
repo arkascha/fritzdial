@@ -3,8 +3,13 @@ package info.christianreiner.fritzdial.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import android.net.ConnectivityManager
+import android.net.LinkProperties
+import android.net.Network
+import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.data.SettingsRepository
+import info.christianreiner.fritzdial.tr064.BoxDiscovery
 import info.christianreiner.fritzdial.tr064.CertificateInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import info.christianreiner.fritzdial.tr064.FritzDialer
@@ -48,7 +53,16 @@ data class UiState(
      * on hang-up or after [DIAL_ACTIVE_MILLIS].
      */
     val dialActive: Boolean = false,
+    /** Connection in use – or, while the connection page is open, the one being edited. */
     val config: FritzConfig = FritzConfig(),
+    /** All configured FritzBoxes; [activeProfileId] is the one in use. */
+    val profiles: List<BoxProfile> = emptyList(),
+    val activeProfileId: String? = null,
+    /** Connection page: the box being edited, or null when adding a new one. */
+    val editingProfileId: String? = null,
+    val editingName: String = "",
+    /** Note about the current network, e.g. an unknown FritzBox was found there. */
+    val networkNotice: String? = null,
     val showSettings: Boolean = false,
     /** The connection sub-page of the settings is open. */
     val showConnectionSettings: Boolean = false,
@@ -96,7 +110,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _state = MutableStateFlow(
         UiState(
-            config = settings.load(),
+            config = settings.activeProfile()?.config ?: FritzConfig(),
+            profiles = settings.profiles(),
+            activeProfileId = settings.activeProfileId,
             showSettings = !settings.isConfigured(),
             showConnectionSettings = !settings.isConfigured(),
             settingsSaved = settings.isConfigured(),
@@ -120,10 +136,6 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
      */
     private var verifyingSettings = false
 
-    init {
-        if (settings.isConfigured()) refreshPhones()
-    }
-
     // --- number input ---------------------------------------------------------------
 
     fun onNumberChange(value: String) = _state.update { it.copy(number = value) }
@@ -146,50 +158,109 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         runOnBox(action.first, action.second)
     }
 
-    /** From the error dialog: go to the settings to fix the connection. */
+    /** From the error dialog: go to the settings of the box in use to fix the connection. */
     fun openSettingsFromError() {
         dismissError()
-        _state.update { it.copy(showSettings = true, showConnectionSettings = true) }
+        val active = settings.activeProfile()
+        if (active != null) {
+            _state.update { it.copy(showSettings = true) }
+            editProfile(active.id)
+        } else {
+            openSettings()
+        }
     }
 
     // --- settings ---------------------------------------------------------------------
 
-    /** Opens the settings; before the first successful connection directly on the connection page. */
-    fun openSettings() = _state.update {
-        it.copy(showSettings = true, showConnectionSettings = !it.settingsSaved)
+    /** Opens the settings; without any box configured directly on the "add" page. */
+    fun openSettings() {
+        _state.update { it.copy(showSettings = true) }
+        if (!settings.isConfigured()) addProfile()
     }
 
-    fun openConnectionSettings() = _state.update { it.copy(showConnectionSettings = true) }
+    /** Connection page for a new FritzBox. */
+    fun addProfile() = _state.update {
+        it.copy(
+            showConnectionSettings = true,
+            editingProfileId = null,
+            editingName = "",
+            config = FritzConfig(),
+        )
+    }
 
-    /** Leaves the connection page without saving: back to the last working configuration. */
+    /** Connection page for an existing FritzBox. */
+    fun editProfile(id: String) {
+        val profile = settings.profiles().firstOrNull { it.id == id } ?: return
+        _state.update {
+            it.copy(
+                showConnectionSettings = true,
+                editingProfileId = id,
+                editingName = profile.name,
+                config = profile.config,
+            )
+        }
+    }
+
+    /** Leaves the connection page without saving: back to the connection in use. */
     fun closeConnectionSettings() {
         verifyingSettings = false
-        _state.update { it.copy(showConnectionSettings = false, config = settings.load(), error = null) }
+        _state.update {
+            it.copy(
+                showConnectionSettings = false,
+                editingProfileId = null,
+                config = activeConfig(),
+                error = null,
+            )
+        }
     }
 
-    /** Leaves the settings without saving: fall back to the last working configuration. */
+    /** Leaves the settings without saving: back to the connection in use. */
     fun closeSettings() {
         verifyingSettings = false
         _state.update {
-            it.copy(showSettings = false, showConnectionSettings = false, config = settings.load(), error = null)
+            it.copy(
+                showSettings = false,
+                showConnectionSettings = false,
+                editingProfileId = null,
+                config = activeConfig(),
+                error = null,
+            )
         }
     }
 
     /**
-     * Tries the edited settings against the router. Only if that works they are saved and the
-     * settings screen closes; otherwise the error is shown on the settings screen.
+     * Tries the edited connection against the router. Only if that works it is saved – and made
+     * the active one, since the box evidently is reachable from here; otherwise the error is shown.
      */
-    fun saveSettings(edited: FritzConfig) {
+    fun saveSettings(edited: FritzConfig, name: String) {
         val config = edited.copy(trustedCertDer = _state.value.config.trustedCertDer)
+        val editingId = _state.value.editingProfileId
         verifyingSettings = true
         _state.update { it.copy(config = config, error = null) }
         runOnBox("Connecting to ${config.host}…") { dialer ->
             val message = loadPhones(dialer)
-            settings.save(_state.value.config)
+            // Learn the box' device id, so it can be recognised automatically later.
+            val identity = BoxDiscovery.identify(config.host)
+            val previous = settings.profiles().firstOrNull { it.id == editingId }
+            val profile = BoxProfile(
+                id = editingId ?: java.util.UUID.randomUUID().toString(),
+                name = name.trim().ifEmpty { identity?.friendlyName ?: previous?.name ?: config.host },
+                config = _state.value.config,
+                deviceId = identity?.udn ?: previous?.deviceId,
+                model = identity?.modelName ?: previous?.model,
+            )
+            settings.saveProfile(profile)
+            settings.activeProfileId = profile.id
             verifyingSettings = false
             // First setup: straight to the dialer. Later changes: back to the settings overview.
             _state.update {
                 it.copy(
+                    profiles = settings.profiles(),
+                    activeProfileId = profile.id,
+                    editingProfileId = null,
+                    networkNotice = null,
+                    phonebooks = emptyList(),
+                    phonebooksLoaded = false,
                     showSettings = it.settingsSaved,
                     showConnectionSettings = false,
                     settingsSaved = true,
@@ -199,6 +270,114 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    /** Switches to another configured FritzBox (manually, or after automatic recognition). */
+    fun activateProfile(id: String) {
+        val profile = settings.profiles().firstOrNull { it.id == id } ?: return
+        settings.activeProfileId = id
+        _state.update {
+            it.copy(
+                activeProfileId = id,
+                config = if (it.showConnectionSettings) it.config else profile.config,
+                phones = emptyList(),
+                selectedPhone = null,
+                phonebooks = emptyList(),
+                phonebooksLoaded = false,
+                networkNotice = null,
+            )
+        }
+        refreshPhones()
+    }
+
+    fun deleteProfile(id: String) {
+        val wasActive = settings.activeProfileId == id
+        settings.deleteProfile(id)
+        val remaining = settings.profiles()
+        _state.update {
+            it.copy(
+                profiles = remaining,
+                activeProfileId = settings.activeProfileId,
+                settingsSaved = remaining.isNotEmpty(),
+                showConnectionSettings = if (it.editingProfileId == id) false else it.showConnectionSettings,
+                editingProfileId = if (it.editingProfileId == id) null else it.editingProfileId,
+            )
+        }
+        when {
+            remaining.isEmpty() -> {
+                _state.update { it.copy(phones = emptyList(), selectedPhone = null, config = FritzConfig()) }
+                addProfile()
+            }
+            wasActive -> activateProfile(remaining.first().id)
+        }
+    }
+
+    private fun activeConfig(): FritzConfig = settings.activeProfile()?.config ?: FritzConfig()
+
+    // --- recognising the FritzBox of the current network -------------------------------
+
+    private var detectJob: Job? = null
+
+    /**
+     * Asks the gateway of the current network (and the configured hosts) for their device id and
+     * switches to the matching connection. Returns true if it switched to another box.
+     */
+    private suspend fun detectBox(): Boolean {
+        val profiles = settings.profiles()
+        if (profiles.isEmpty()) return false
+        val gateway = BoxDiscovery.currentGateway(getApplication<Application>())
+        val hosts = listOfNotNull(gateway, "fritz.box") + profiles.map { it.config.host }
+        val found = BoxDiscovery.identifyAll(hosts)
+        // Boxes saved before this feature have no device id yet: learn it from their host.
+        profiles.filter { it.deviceId == null }.forEach { p ->
+            found.firstOrNull { it.host.equals(p.config.host, ignoreCase = true) }
+                ?.let { settings.updateDeviceId(p.id, it.udn, it.modelName) }
+        }
+        val known = settings.profiles()
+        val match = found.firstNotNullOfOrNull { identity -> known.firstOrNull { it.deviceId == identity.udn } }
+        val unknown = if (match == null) found.firstOrNull { it.host == gateway } else null
+        _state.update {
+            it.copy(
+                profiles = known,
+                networkNotice = unknown?.let { box ->
+                    "${box.friendlyName ?: box.modelName ?: "A FritzBox"} in this network is not configured"
+                },
+            )
+        }
+        if (match != null && match.id != settings.activeProfileId) {
+            activateProfile(match.id)
+            return true
+        }
+        return false
+    }
+
+    /** Re-detects the box whenever the phone's network changes (e.g. Wi-Fi at home vs. office). */
+    private fun watchNetwork() {
+        val cm = getApplication<Application>().getSystemService(ConnectivityManager::class.java) ?: return
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) = scheduleDetect()
+            override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) =
+                scheduleDetect()
+        }
+        runCatching { cm.registerDefaultNetworkCallback(callback) }
+        networkCallback = callback
+    }
+
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
+
+    private fun scheduleDetect() {
+        if (!settings.isConfigured()) return
+        detectJob?.cancel()
+        detectJob = viewModelScope.launch {
+            delay(1_500) // let the network settle (DHCP, routes)
+            detectBox()
+        }
+    }
+
+    override fun onCleared() {
+        val cm = getApplication<Application>().getSystemService(ConnectivityManager::class.java)
+        networkCallback?.let { cb -> runCatching { cm?.unregisterNetworkCallback(cb) } }
+        super.onCleared()
+    }
+
     // --- certificates -----------------------------------------------------------------
 
     /** User accepted the presented certificate: pin it and retry what was interrupted. */
@@ -206,7 +385,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         val prompt = _state.value.certificatePrompt ?: return
         val config = _state.value.config.copy(trustedCertDer = prompt.certificate.derBase64)
         // While verifying new settings, everything is persisted together once the login works.
-        if (!verifyingSettings) settings.save(config)
+        if (!verifyingSettings) persistedProfileId()?.let { settings.updateTrustedCert(it, config.trustedCertDer) }
         _state.update { it.copy(config = config, certificatePrompt = null) }
         val action = pendingAction
         pendingAction = null
@@ -237,9 +416,13 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     fun closeCertificateView() = _state.update { it.copy(viewedCertificate = null) }
 
+    /** The stored connection a certificate decision belongs to: the edited one, else the active one. */
+    private fun persistedProfileId(): String? =
+        if (_state.value.showConnectionSettings) _state.value.editingProfileId else settings.activeProfileId
+
     fun forgetCertificate() {
         val config = _state.value.config.copy(trustedCertDer = null)
-        if (!verifyingSettings) settings.save(config)
+        if (!verifyingSettings) persistedProfileId()?.let { settings.updateTrustedCert(it, null) }
         _state.update { it.copy(config = config, viewedCertificate = null) }
     }
 
@@ -320,7 +503,16 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     // --- router actions ---------------------------------------------------------------
 
-    fun refreshPhones() = runOnBox("Loading phones…") { dialer -> loadPhones(dialer) }
+    fun refreshPhones() {
+        // Another request is running (e.g. for the previous box): reload once it is done.
+        if (_state.value.busy) {
+            refreshWhenIdle = true
+            return
+        }
+        runOnBox("Loading phones…") { dialer -> loadPhones(dialer) }
+    }
+
+    private var refreshWhenIdle = false
 
     private fun loadPhones(dialer: FritzDialer): String {
         val phones = dialer.listPhones()
@@ -424,6 +616,10 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 }
             }
+            if (refreshWhenIdle && !_state.value.busy) {
+                refreshWhenIdle = false
+                refreshPhones()
+            }
         }
     }
 
@@ -486,5 +682,16 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             runCatching { FritzDialer(config).stopSecondFactor() }
         }
         _state.update { it.copy(secondFactor = null, busy = false, status = null) }
+    }
+
+    // Runs last: all fields above are initialised by now (Kotlin initialises in source order).
+    init {
+        if (settings.isConfigured()) {
+            // Pick the box of the current network first; if that did not switch (and load), load now.
+            viewModelScope.launch {
+                if (!detectBox()) refreshPhones()
+            }
+        }
+        watchNetwork()
     }
 }

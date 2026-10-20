@@ -15,7 +15,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,26 +49,35 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.tr064.FritzConfig
 
 /**
- * Settings overview: the connection (summary, opens [ConnectionSettingsScreen]) and the
- * phone book options.
+ * Settings overview: the configured FritzBoxes (the active one marked; tap to edit, menu to switch
+ * or delete), "Add FritzBox", and the phone book options.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    config: FritzConfig,
-    onOpenConnection: () -> Unit,
+    profiles: List<BoxProfile>,
+    activeProfileId: String?,
+    networkNotice: String?,
+    onEditProfile: (String) -> Unit,
+    onActivateProfile: (String) -> Unit,
+    onDeleteProfile: (String) -> Unit,
+    onAddProfile: () -> Unit,
     onBack: () -> Unit,
     deviceContactsEnabled: Boolean,
     onDeviceContactsChange: (Boolean) -> Unit,
 ) {
+    var confirmDelete by remember { mutableStateOf<BoxProfile?>(null) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,22 +96,41 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            ListItem(
-                headlineContent = { Text("FritzBox connection") },
-                supportingContent = {
-                    Text(
-                        buildString {
-                            append(if (config.useHttps) "HTTPS" else "HTTP")
-                            append(" \u00b7 ").append(config.host).append(':').append(config.port)
-                            if (config.username.isNotEmpty()) append(" \u00b7 ").append(config.username)
-                        }
-                    )
-                },
-                trailingContent = {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
-                },
-                modifier = Modifier.clickable(onClick = onOpenConnection),
+            Text(
+                "FritzBox connections",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
             )
+            Text(
+                "The FritzBox of the network the phone is in is selected automatically.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+            networkNotice?.let {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                )
+            }
+
+            profiles.forEach { profile ->
+                ProfileRow(
+                    profile = profile,
+                    active = profile.id == activeProfileId,
+                    onEdit = { onEditProfile(profile.id) },
+                    onActivate = { onActivateProfile(profile.id) },
+                    onDelete = { confirmDelete = profile },
+                )
+            }
+            ListItem(
+                headlineContent = { Text("Add FritzBox") },
+                leadingContent = { Icon(Icons.Default.Add, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = onAddProfile),
+            )
+
             HorizontalDivider()
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
@@ -103,6 +140,82 @@ fun SettingsScreen(
             }
         }
     }
+
+    confirmDelete?.let { profile ->
+        ConfirmDeleteDialog(
+            name = profile.name,
+            onConfirm = {
+                confirmDelete = null
+                onDeleteProfile(profile.id)
+            },
+            onDismiss = { confirmDelete = null },
+        )
+    }
+}
+
+/** One configured box on a single line: check mark when in use, its name, and a menu. */
+@Composable
+private fun ProfileRow(
+    profile: BoxProfile,
+    active: Boolean,
+    onEdit: () -> Unit,
+    onActivate: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    var menu by remember { mutableStateOf(false) }
+    ListItem(
+        // Just the name, on one line; the details are on the connection page.
+        headlineContent = { Text(profile.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        leadingContent = {
+            if (active) {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = "In use",
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            } else {
+                // keeps the names aligned with the active entry
+                Box(Modifier.size(24.dp))
+            }
+        },
+        trailingContent = {
+            Box {
+                IconButton(onClick = { menu = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "More options for ${profile.name}")
+                }
+                DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                    if (!active) {
+                        DropdownMenuItem(
+                            text = { Text("Use now") },
+                            onClick = { menu = false; onActivate() },
+                        )
+                    }
+                    DropdownMenuItem(
+                        text = { Text("Edit") },
+                        onClick = { menu = false; onEdit() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                        onClick = { menu = false; onDelete() },
+                    )
+                }
+            }
+        },
+        modifier = Modifier.clickable(onClick = onEdit),
+    )
+}
+
+@Composable
+private fun ConfirmDeleteDialog(name: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete \u201c$name\u201d?") },
+        text = { Text("The connection, its password and its trusted certificate are removed from this phone.") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+    )
 }
 
 /** Router connection: host, port, HTTPS, user, password and the trusted certificate. */
@@ -115,11 +228,19 @@ fun ConnectionSettingsScreen(
     trustedFingerprint: String?,
     busy: Boolean,
     status: String?,
-    onSave: (FritzConfig) -> Unit,
+    /** Name of the connection being edited (empty for a new one). */
+    initialName: String,
+    /** Adding a new FritzBox rather than editing an existing one. */
+    isNew: Boolean,
+    onSave: (FritzConfig, String) -> Unit,
     onBack: () -> Unit,
+    /** Deletes the edited connection; null for a new one. */
+    onDelete: (() -> Unit)?,
     onShowCertificate: () -> Unit,
     onForgetCertificate: () -> Unit,
 ) {
+    var name by remember { mutableStateOf(initialName) }
+    var confirmDelete by remember { mutableStateOf(false) }
     var host by remember { mutableStateOf(initial.host) }
     var port by remember { mutableStateOf(initial.port.toString()) }
     var user by remember { mutableStateOf(initial.username) }
@@ -132,7 +253,7 @@ fun ConnectionSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("FritzBox connection") },
+                title = { Text(if (isNew) "Add FritzBox" else "FritzBox connection") },
                 navigationIcon = {
                     if (canGoBack) {
                         IconButton(onClick = onBack) {
@@ -151,6 +272,12 @@ fun ConnectionSettingsScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            OutlinedTextField(
+                value = name, onValueChange = { name = it },
+                label = { Text("Name") },
+                placeholder = { Text("default: the box\u2019s own name", maxLines = 1) },
+                singleLine = true, modifier = Modifier.fillMaxWidth(),
+            )
             OutlinedTextField(
                 value = host, onValueChange = { host = it },
                 label = { Text("Host (e.g. fritz.box or 192.168.178.1)") },
@@ -215,7 +342,8 @@ fun ConnectionSettingsScreen(
                             username = user.trim(),
                             password = password,
                             useHttps = useHttps,
-                        )
+                        ),
+                        name,
                     )
                 },
                 enabled = valid && !busy,
@@ -248,7 +376,26 @@ fun ConnectionSettingsScreen(
                     }
                 }
             }
+
+            if (onDelete != null) {
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                OutlinedButton(onClick = { confirmDelete = true }, enabled = !busy) {
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                    Text("  Delete this FritzBox", color = MaterialTheme.colorScheme.error)
+                }
+            }
         }
+    }
+
+    if (confirmDelete && onDelete != null) {
+        ConfirmDeleteDialog(
+            name = name.ifBlank { initial.host },
+            onConfirm = {
+                confirmDelete = false
+                onDelete()
+            },
+            onDismiss = { confirmDelete = false },
+        )
     }
 }
 

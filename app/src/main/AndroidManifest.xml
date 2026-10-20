@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- To notice network changes and find the gateway (= the FritzBox of the current network). -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Optional: show the phone's own contacts in the phone book view (asked at runtime). -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
