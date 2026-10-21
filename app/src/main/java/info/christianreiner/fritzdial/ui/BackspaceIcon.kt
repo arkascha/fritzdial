@@ -47,3 +47,67 @@ internal val ContactsIcon: ImageVector by lazy {
         fill = SolidColor(Color.Black),
     ).build()
 }
+
+/** Material "history" glyph (clock with a turning arrow, Apache 2.0), for the recent numbers. */
+internal val HistoryIcon: ImageVector by lazy {
+    ImageVector.Builder(
+        name = "History",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f,
+    ).addPath(
+        pathData = addPathNodes(
+            "M13,3c-4.97,0 -9,4.03 -9,9L1,12l3.89,3.89 0.07,0.14L9,12L6,12c0,-3.87 3.13,-7 7,-7" +
+                "s7,3.13 7,7 -3.13,7 -7,7c-1.93,0 -3.68,-0.79 -4.94,-2.06l-1.42,1.42" +
+                "C8.27,19.99 10.51,21 13,21c4.97,0 9,-4.03 9,-9s-4.03,-9 -9,-9z" +
+                "M12,8v5l4.28,2.54 0.72,-1.21 -3.5,-2.08L13.5,8L12,8z"
+        ),
+        fill = SolidColor(Color.Black),
+    ).build()
+}
+
+/** Material "call_made" glyph (arrow up-right, Apache 2.0): a dialled call. */
+internal val CallMadeIcon: ImageVector by lazy {
+    ImageVector.Builder(
+        name = "CallMade",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f,
+        autoMirror = true,
+    ).addPath(
+        pathData = addPathNodes("M9,5v2h6.59L4,18.59 5.41,20 17,8.41V15h2V5z"),
+        fill = SolidColor(Color.Black),
+    ).build()
+}
+
+/** Material "call_received" glyph (arrow down-left, Apache 2.0): a received call. */
+internal val CallReceivedIcon: ImageVector by lazy {
+    ImageVector.Builder(
+        name = "CallReceived",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f,
+        autoMirror = true,
+    ).addPath(
+        pathData = addPathNodes("M20,5.41L18.59,4 7,15.59V9H5v10h10v-2H8.41z"),
+        fill = SolidColor(Color.Black),
+    ).build()
+}
+
+/** Material "call_missed" glyph (arrow down and back up, Apache 2.0): a missed call. */
+internal val CallMissedIcon: ImageVector by lazy {
+    ImageVector.Builder(
+        name = "CallMissed",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f,
+        autoMirror = true,
+    ).addPath(
+        pathData = addPathNodes("M19.59,7L12,14.59 6.41,9H11V7H3v8h2v-4.59l7,7 9,-9z"),
+        fill = SolidColor(Color.Black),
+    ).build()
+}

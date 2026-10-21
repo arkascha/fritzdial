@@ -80,6 +80,10 @@ class FritzDialer(
     @Throws(IOException::class)
     fun loadPhonebooks(): List<Phonebook> = FritzPhonebooks(config, authToken).loadAll()
 
+    /** The latest dialled, received and missed calls from the box' call list (see [FritzCallList]). */
+    @Throws(IOException::class)
+    fun loadRecentCalls(): List<RecentCall> = FritzCallList(config, authToken).load()
+
     // --- second factor (X_AVM-DE_Auth) ------------------------------------------------
 
     /**

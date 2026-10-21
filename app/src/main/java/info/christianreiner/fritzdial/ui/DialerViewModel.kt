@@ -7,6 +7,7 @@ import android.net.ConnectivityManager
 import android.net.LinkProperties
 import android.net.Network
 import info.christianreiner.fritzdial.data.BoxProfile
+import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.data.SettingsRepository
 import info.christianreiner.fritzdial.tr064.BoxDiscovery
@@ -14,6 +15,7 @@ import info.christianreiner.fritzdial.tr064.CertificateInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import info.christianreiner.fritzdial.tr064.FritzDialer
 import info.christianreiner.fritzdial.tr064.Phonebook
+import info.christianreiner.fritzdial.tr064.RecentCall
 import info.christianreiner.fritzdial.tr064.SecondFactorChallenge
 import info.christianreiner.fritzdial.tr064.Tr064Exception
 import info.christianreiner.fritzdial.tr064.UntrustedCertificateException
@@ -88,6 +90,17 @@ data class UiState(
     val deviceContacts: Phonebook? = null,
     /** Non-null while the box waits for a second-factor confirmation (error 866). */
     val secondFactor: SecondFactorChallenge? = null,
+    /** "Recent numbers" screen is open. */
+    val showRecents: Boolean = false,
+    /** Dialled, received and missed calls from the box' call list, loaded whenever the recent numbers are opened. */
+    val boxCalls: List<RecentCall> = emptyList(),
+    val boxCallsLoaded: Boolean = false,
+    /** Optional feature, switched in the settings: include the phone's own calls. */
+    val callLogEnabled: Boolean = false,
+    /** Dialled, received and missed calls from the phone's call log, once enabled (null = not loaded). */
+    val phoneCalls: List<RecentCall>? = null,
+    /** Why the phone's call log could not be read (on enabling the feature, or later). */
+    val callLogProblem: String? = null,
 )
 
 /** How long to wait for the user to confirm on the box before giving up. */
@@ -117,6 +130,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             showConnectionSettings = !settings.isConfigured(),
             settingsSaved = settings.isConfigured(),
             deviceContactsEnabled = settings.deviceContactsEnabled,
+            callLogEnabled = settings.callLogEnabled,
         )
     )
     val state: StateFlow<UiState> = _state.asStateFlow()
@@ -261,6 +275,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                     networkNotice = null,
                     phonebooks = emptyList(),
                     phonebooksLoaded = false,
+                    boxCalls = emptyList(),
+                    boxCallsLoaded = false,
                     showSettings = it.settingsSaved,
                     showConnectionSettings = false,
                     settingsSaved = true,
@@ -282,6 +298,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 selectedPhone = null,
                 phonebooks = emptyList(),
                 phonebooksLoaded = false,
+                boxCalls = emptyList(),
+                boxCallsLoaded = false,
                 networkNotice = null,
             )
         }
@@ -497,9 +515,80 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    /** A number was tapped in the phone book: put it into the dialer and go back. */
+    /** A number was tapped in the phone book or the recent numbers: put it into the dialer and go back. */
     fun pickNumber(number: String) =
-        _state.update { it.copy(number = number, showPhonebook = false) }
+        _state.update { it.copy(number = number, showPhonebook = false, showRecents = false) }
+
+    // --- recent numbers ---------------------------------------------------------------
+
+    /** Opens the recent numbers; both lists are read anew each time (they change with every call). */
+    fun openRecents() {
+        _state.update { it.copy(showRecents = true) }
+        reloadRecents()
+    }
+
+    fun closeRecents() = _state.update { it.copy(showRecents = false) }
+
+    fun reloadRecents() {
+        loadCallLog()
+        runOnBox("Loading call list…") { dialer ->
+            val calls = dialer.loadRecentCalls()
+            _state.update { it.copy(boxCalls = calls, boxCallsLoaded = true) }
+            "${calls.size} call(s) loaded"
+        }
+    }
+
+    /** (Re)reads the phone's calls, if the feature is on. A failure is shown, not thrown. */
+    fun loadCallLog() {
+        if (!_state.value.callLogEnabled) return
+        val app = getApplication<Application>()
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) { runCatching { DeviceCallLog.load(app) } }
+            _state.update {
+                it.copy(
+                    phoneCalls = result.getOrNull() ?: it.phoneCalls,
+                    callLogProblem = result.exceptionOrNull()?.let(::describeCallLogProblem),
+                )
+            }
+        }
+    }
+
+    /**
+     * Turns the "this phone's calls" feature on – but only if reading the call log actually works
+     * ([granted]: Android's answer to the permission request). Otherwise it stays off and the
+     * settings explain why.
+     */
+    fun enableCallLog(granted: Boolean) {
+        if (!granted) {
+            _state.update {
+                it.copy(callLogProblem = "Android did not allow FritzDial to read the call log.")
+            }
+            return
+        }
+        val app = getApplication<Application>()
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) { runCatching { DeviceCallLog.load(app) } }
+            val calls = result.getOrNull()
+            settings.callLogEnabled = calls != null
+            _state.update {
+                it.copy(
+                    callLogEnabled = calls != null,
+                    phoneCalls = calls,
+                    callLogProblem = result.exceptionOrNull()?.let(::describeCallLogProblem),
+                )
+            }
+        }
+    }
+
+    fun disableCallLog() {
+        settings.callLogEnabled = false
+        _state.update { it.copy(callLogEnabled = false, phoneCalls = null, callLogProblem = null) }
+    }
+
+    private fun describeCallLogProblem(error: Throwable): String =
+        "The phone\u2019s call log could not be read" +
+            (error.message?.let { " ($it)" } ?: "") +
+            ". This only works when FritzDial was not installed from Google Play."
 
     // --- router actions ---------------------------------------------------------------
 

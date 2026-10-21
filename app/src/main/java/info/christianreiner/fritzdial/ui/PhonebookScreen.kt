@@ -293,7 +293,7 @@ private fun ContactsRevokedCard(
 }
 
 @Composable
-private fun Message(text: String) {
+internal fun Message(text: String) {
     Text(
         text,
         modifier = Modifier.padding(24.dp),

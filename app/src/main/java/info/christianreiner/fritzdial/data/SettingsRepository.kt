@@ -87,6 +87,14 @@ class SettingsRepository(context: Context) {
         get() = prefs.getBoolean(KEY_DEVICE_CONTACTS_NEVER_ASK, false)
         set(value) = prefs.edit { putBoolean(KEY_DEVICE_CONTACTS_NEVER_ASK, value) }
 
+    /**
+     * Optional feature: also offer the numbers dialled with the phone's own telephony app (needs
+     * READ_CALL_LOG). Off by default; only switched on once reading the call log actually worked.
+     */
+    var callLogEnabled: Boolean
+        get() = prefs.getBoolean(KEY_CALL_LOG, false)
+        set(value) = prefs.edit { putBoolean(KEY_CALL_LOG, value) }
+
     // --- storage ----------------------------------------------------------------------
 
     private fun writeProfiles(list: List<BoxProfile>) {
@@ -150,6 +158,7 @@ class SettingsRepository(context: Context) {
         const val KEY_ACTIVE = "active_box"
         const val KEY_DEVICE_CONTACTS = "device_contacts_enabled"
         const val KEY_DEVICE_CONTACTS_NEVER_ASK = "device_contacts_never_ask"
+        const val KEY_CALL_LOG = "call_log_enabled"
 
         // single-connection keys of earlier versions (migrated)
         const val LEGACY_HOST = "host"

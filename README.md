@@ -64,6 +64,25 @@ the phone books are opened) or **Don't ask again**. It can always be switched in
 **Settings › Phone books › Include this phone's contacts**; switching it off there also stops the
 question. The permission itself can be revoked in the Android app settings.
 
+### Recent numbers
+
+The clock button in the dialer's top bar lists the numbers recently dialled, received or missed,
+newest first, each number once with an arrow for its latest call (dialled, received, missed); tap one
+to put it into the dialer. Rejected calls and calls with a withheld number are left out. The list is read anew every time it is opened (or with the
+reload button), from two sources:
+
+- **FritzBox** – the dialled, received and missed calls in the box' call list (TR-064 `X_AVM-DE_OnTel` `GetCallList`),
+  i.e. FritzDial's dial-help calls as well as the calls of the handsets themselves. The FRITZ!Box user
+  needs the permission *Voice messages, fax messages, FRITZ!App Fon and call list* for this.
+- **This phone** (optional, off by default) – the dialled, received and missed calls of the phone's own telephony app,
+  read from the Android call log (`READ_CALL_LOG`, used for nothing else). FritzDial's calls run on
+  the FRITZ!Box and never appear there. Switch it on in **Settings › Recent numbers › Include this
+  phone's calls**. **This only works if FritzDial was installed from outside Google Play** (APK or
+  F-Droid): Google Play allows the call log permission only for the default phone app.
+  On switching it on, FritzDial asks Android for the permission and test-reads the call log; if
+  either fails, the switch stays off and the settings show why. If reading fails later (e.g. the
+  permission was revoked), the recent numbers show a note with **Turn off** and **App settings**.
+
 ### Confirmation on the FRITZ!Box (two-factor)
 
 Newer FRITZ!OS versions protect settings changes with an *additional confirmation* on the box
@@ -101,15 +120,17 @@ Contacts or a web page; the number is pre-filled.
 | `tr064/BoxDiscovery.kt` | Recognises the FritzBox of the current network (gateway, `tr64desc.xml` device id) |
 | `tr064/Phonebooks.kt` | Phone book list / download / XML parsing (`X_AVM-DE_OnTel`) |
 | `data/DeviceContacts.kt` | The phone's own contacts as an extra phone book (`READ_CONTACTS`) |
+| `tr064/CallList.kt` | Dialled, received and missed calls from the box' call list (`X_AVM-DE_OnTel` `GetCallList`, XML export) |
+| `data/DeviceCallLog.kt` | The phone's own dialled, received and missed calls from the Android call log (`READ_CALL_LOG`) |
 | `data/SettingsRepository.kt` | FritzBox connections (passwords encrypted via Android Keystore) and options |
 | `ui/` | ViewModel and Compose screens (dialer, settings, certificate dialogs) |
 
-Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising and
-certificate pinning.
+Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising,
+the call list's date format, merging of the recent numbers and certificate pinning.
 
 ## Notes / ideas
 
 - Plain HTTP (port 49000) remains the default; even there the password never travels in clear text
   (digest auth). HTTPS additionally encrypts the numbers you dial and protects against spoofed routers.
 - Works only while the phone is in the home network (or via VPN to it).
-- Possible next steps: call list / phone book via `X_AVM-DE_OnTel`, recent numbers, a quick-settings tile.
+- Possible next steps: a quick-settings tile.

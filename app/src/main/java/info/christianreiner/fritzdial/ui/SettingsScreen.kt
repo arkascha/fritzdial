@@ -55,12 +55,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import info.christianreiner.fritzdial.data.BoxProfile
+import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.tr064.FritzConfig
 
 /**
  * Settings overview: the configured FritzBoxes (the active one marked; tap to edit, menu to switch
- * or delete), "Add FritzBox", and the phone book options.
+ * or delete), "Add FritzBox", the phone book and the recent numbers options.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +76,11 @@ fun SettingsScreen(
     onBack: () -> Unit,
     deviceContactsEnabled: Boolean,
     onDeviceContactsChange: (Boolean) -> Unit,
+    callLogEnabled: Boolean,
+    callLogProblem: String?,
+    /** Android's answer to the call log permission: try reading it, enable the feature if that works. */
+    onEnableCallLog: (granted: Boolean) -> Unit,
+    onDisableCallLog: () -> Unit,
 ) {
     var confirmDelete by remember { mutableStateOf<BoxProfile?>(null) }
 
@@ -137,6 +143,19 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 DeviceContactsSetting(enabled = deviceContactsEnabled, onChange = onDeviceContactsChange)
+            }
+
+            HorizontalDivider()
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                CallLogSetting(
+                    enabled = callLogEnabled,
+                    problem = callLogProblem,
+                    onEnable = onEnableCallLog,
+                    onDisable = onDisableCallLog,
+                )
             }
         }
     }
@@ -447,6 +466,62 @@ private fun DeviceContactsSetting(enabled: Boolean, onChange: (Boolean) -> Unit)
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )
+        OutlinedButton(onClick = { context.startActivity(DeviceContacts.appSettingsIntent(context)) }) {
+            Text("App settings")
+        }
+    }
+}
+
+/**
+ * Switch for the optional "this phone's calls" feature. Turning it on asks Android for the call log
+ * permission and then tries to read the call log; only if that works the feature is enabled,
+ * otherwise it stays off and [problem] says why.
+ */
+@Composable
+private fun CallLogSetting(
+    enabled: Boolean,
+    problem: String?,
+    onEnable: (granted: Boolean) -> Unit,
+    onDisable: () -> Unit,
+) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), onEnable)
+
+    Text("Recent numbers", style = MaterialTheme.typography.titleSmall)
+    Text(
+        "The recently dialled, received and missed numbers are read from the FritzBox\u2019 call list.",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text("Include this phone\u2019s calls", style = MaterialTheme.typography.bodyLarge)
+            Text(
+                "Also offers the numbers dialled, received and missed with the phone\u2019s own telephony app. Needs access " +
+                    "to your call log; it never leaves the phone.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                "Only works if FritzDial was installed from outside Google Play (APK or F-Droid): " +
+                    "Google Play allows reading the call log only for the phone\u2019s default phone app.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(
+            checked = enabled,
+            onCheckedChange = { on ->
+                when {
+                    !on -> onDisable()
+                    DeviceCallLog.hasPermission(context) -> onEnable(true)
+                    else -> launcher.launch(Manifest.permission.READ_CALL_LOG)
+                }
+            },
+        )
+    }
+    if (problem != null) {
+        Text(problem, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         OutlinedButton(onClick = { context.startActivity(DeviceContacts.appSettingsIntent(context)) }) {
             Text("App settings")
         }

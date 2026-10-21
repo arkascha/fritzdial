@@ -4,6 +4,7 @@ import android.content.Context
 import android.telephony.PhoneNumberUtils
 import android.telephony.TelephonyManager
 import info.christianreiner.fritzdial.tr064.PhonebookContact
+import info.christianreiner.fritzdial.tr064.RecentCall
 import java.util.Locale
 
 /**
@@ -20,6 +21,22 @@ fun dedupeNumbers(contacts: List<PhonebookContact>, key: (String) -> String): Li
         val numbers = contact.numbers.filter { seen.add(key(it.number)) }
         if (numbers.isEmpty()) null else contact.copy(numbers = numbers)
     }
+}
+
+/**
+ * Combines the recent calls of several sources into one list, newest first, with each number
+ * (compared via [key]) only once – at its latest call. A name missing there is taken from an
+ * older call of the same number.
+ */
+fun mergeRecents(calls: List<RecentCall>, key: (String) -> String): List<RecentCall> {
+    val byKey = LinkedHashMap<String, RecentCall>()
+    calls.sortedByDescending { it.time }.forEach { call ->
+        val k = key(call.number)
+        val newest = byKey[k]
+        if (newest == null) byKey[k] = call
+        else if (newest.name == null && call.name != null) byKey[k] = newest.copy(name = call.name)
+    }
+    return byKey.values.toList()
 }
 
 /** Country of the phone (SIM / network, else locale), used to read national numbers like "030…". */

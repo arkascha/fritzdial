@@ -73,6 +73,7 @@ fun DialerScreen(
     onRefresh: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenPhonebook: () -> Unit,
+    onOpenRecents: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -95,6 +96,9 @@ fun DialerScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onOpenRecents) {
+                        Icon(HistoryIcon, contentDescription = "Recent numbers")
+                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
