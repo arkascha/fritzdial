@@ -9,8 +9,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -21,6 +23,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
@@ -198,15 +201,25 @@ private fun ProfileRow(
         // Just the name, on one line; the details are on the connection page.
         headlineContent = { Text(profile.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         leadingContent = {
-            if (active) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (active) {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = stringResource(R.string.settings_in_use),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                } else {
+                    // keeps the router icons and names aligned with the active entry
+                    Box(Modifier.size(24.dp))
+                }
+                Spacer(Modifier.width(12.dp))
                 Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = stringResource(R.string.settings_in_use),
-                    tint = MaterialTheme.colorScheme.primary,
+                    RouterIcon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    // The glyph's weight (the box) sits low, under thin antenna arcs: lift it to look centred.
+                    modifier = Modifier.offset(y = (-2).dp),
                 )
-            } else {
-                // keeps the names aligned with the active entry
-                Box(Modifier.size(24.dp))
             }
         },
         trailingContent = {
