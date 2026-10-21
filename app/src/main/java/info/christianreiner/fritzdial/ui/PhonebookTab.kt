@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,25 +20,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,12 +56,11 @@ import kotlinx.coroutines.launch
 import java.text.Collator
 
 /**
- * Searchable list of all contacts from the box' phone books.
- * Tapping a number puts it into the dialer.
+ * The number picker's "Phone books" tab: searchable list of all contacts from the box' phone
+ * books (and optionally the phone's own). Tapping a number puts it into the dialer.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhonebookScreen(
+fun PhonebookTab(
     routerBooks: List<Phonebook>,
     deviceContacts: Phonebook?,
     /** The optional "this phone's contacts" feature is switched on in the settings. */
@@ -76,8 +68,6 @@ fun PhonebookScreen(
     loaded: Boolean,
     busy: Boolean,
     onPick: (String) -> Unit,
-    onReload: () -> Unit,
-    onBack: () -> Unit,
     /** Called when the feature is on and access is (or became) granted: (re)load the contacts. */
     onDeviceContactsAllowed: () -> Unit,
     /** Switches the feature off (used when the permission was revoked in Android). */
@@ -137,108 +127,78 @@ fun PhonebookScreen(
     val scope = rememberCoroutineScope()
     val letters = remember(filtered) { filtered.map { indexLetter(it.name) } }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Phone books") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onReload, enabled = !busy) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Reload phone books")
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        Column(
-            Modifier
-                .padding(padding)
-                .fillMaxSize()
-        ) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-            ) {
-                if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            }
-
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                singleLine = true,
-                placeholder = { Text("Search name or number") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                trailingIcon = {
-                    if (query.isNotEmpty()) {
-                        IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear search")
-                        }
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            )
-
-            // Feature is on, but the permission was revoked in Android meanwhile.
-            if (deviceContactsEnabled && !contactsAllowed) {
-                ContactsRevokedCard(
-                    onOpenSettings = { context.startActivity(DeviceContacts.appSettingsIntent(context)) },
-                    onTurnOff = onDisableDeviceContacts,
-                )
-            }
-
-            // One chip per phone book, only when there is more than one.
-            if (phonebooks.size > 1) {
-                LazyRow(
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(phonebooks, key = { it.id }) { book ->
-                        val selected = book.name !in hidden
-                        FilterChip(
-                            selected = selected,
-                            onClick = {
-                                hidden = if (selected) hidden + book.name else hidden - book.name
-                            },
-                            label = { Text("${book.name} (${book.contacts.size})") },
-                        )
+    Column(Modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = { query = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            singleLine = true,
+            placeholder = { Text("Search name or number") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = { query = "" }) {
+                        Icon(Icons.Default.Clear, contentDescription = "Clear search")
                     }
                 }
-            }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        )
 
-            when {
-                phonebooks.isEmpty() && busy -> Message("Loading phone books…")
-                phonebooks.isEmpty() && !loaded ->
-                    Message("Phone books could not be loaded. Tap reload to try again.")
-                phonebooks.all { it.contacts.isEmpty() } -> Message("The phone books are empty.")
-                filtered.isEmpty() -> Message("No matching contacts.")
-                else -> Row(Modifier.fillMaxSize()) {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                    ) {
-                        items(filtered) { contact ->
-                            ContactRow(contact, showBook = phonebooks.size > 1, onPick = onPick)
-                            HorizontalDivider()
-                        }
-                    }
-                    AlphabetBar(
-                        available = letters.toSet(),
-                        onLetter = { letter ->
-                            val index = jumpIndex(letters, letter)
-                            if (index >= 0) scope.launch { listState.scrollToItem(index) }
+        // Feature is on, but the permission was revoked in Android meanwhile.
+        if (deviceContactsEnabled && !contactsAllowed) {
+            ContactsRevokedCard(
+                onOpenSettings = { context.startActivity(DeviceContacts.appSettingsIntent(context)) },
+                onTurnOff = onDisableDeviceContacts,
+            )
+        }
+
+        // One chip per phone book, only when there is more than one.
+        if (phonebooks.size > 1) {
+            LazyRow(
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(phonebooks, key = { it.id }) { book ->
+                    val selected = book.name !in hidden
+                    FilterChip(
+                        selected = selected,
+                        onClick = {
+                            hidden = if (selected) hidden + book.name else hidden - book.name
                         },
+                        label = { Text("${book.name} (${book.contacts.size})") },
                     )
                 }
+            }
+        }
+
+        when {
+            phonebooks.isEmpty() && busy -> Message("Loading phone books…")
+            phonebooks.isEmpty() && !loaded ->
+                Message("Phone books could not be loaded. Tap reload to try again.")
+            phonebooks.all { it.contacts.isEmpty() } -> Message("The phone books are empty.")
+            filtered.isEmpty() -> Message("No matching contacts.")
+            else -> Row(Modifier.fillMaxSize()) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                ) {
+                    items(filtered) { contact ->
+                        ContactRow(contact, showBook = phonebooks.size > 1, onPick = onPick)
+                        HorizontalDivider()
+                    }
+                }
+                AlphabetBar(
+                    available = letters.toSet(),
+                    onLetter = { letter ->
+                        val index = jumpIndex(letters, letter)
+                        if (index >= 0) scope.launch { listState.scrollToItem(index) }
+                    },
+                )
             }
         }
     }

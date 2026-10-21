@@ -61,4 +61,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
+    // XmlPullParser implementation for parser tests (Android's own is only a stub on the JVM).
+    testImplementation(libs.kxml2)
 }

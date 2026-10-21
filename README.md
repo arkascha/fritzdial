@@ -48,40 +48,47 @@ changes. Every FritzBox publishes a public device description (`http://<box>:490
 unique device id; FritzDial records it when a connection is saved and asks the network's gateway (and
 the configured hosts) for it. If a FritzBox answers that is not configured, the dialer says so.
 
+### Choosing a number: recent calls and phone books
+
+The address-book button at the left of the number field opens **Choose number** with two tabs,
+**Recent** and **Phone books**; tapping a number in either puts it into the dialer. The reload button
+at the top refreshes both.
+
 ### Phone books
 
-The address-book button at the left of the number field opens the phone books stored on the
+The **Phone books** tab shows the phone books stored on the
 FRITZ!Box (TR-064 `X_AVM-DE_OnTel`: `GetPhonebookList`, `GetPhonebook`, then the XML export).
 Online phone books configured on the box (e.g. CardDAV) are synced into it and should appear as well.
 Search by name or number, filter by phone book, and tap a number to put it into the dialer.
 The books are loaded once per app start; the reload button at the top fetches them again.
 
 Optionally, the contacts stored on the phone itself appear as an additional book **This phone**
-(all Android accounts, e.g. Google or CardDAV via DAVx⁵). This is off by default. When the phone
-books are opened, FritzDial asks whether to include them: **Allow** (Android then asks for the
+(all Android accounts, e.g. Google or CardDAV via DAVx⁵). This is off by default. When the **Phone books**
+tab is shown, FritzDial asks whether to include them: **Allow** (Android then asks for the
 contacts permission, `READ_CONTACTS`, used for nothing else), **Not now** (asks again the next time
 the phone books are opened) or **Don't ask again**. It can always be switched in
 **Settings › Phone books › Include this phone's contacts**; switching it off there also stops the
 question. The permission itself can be revoked in the Android app settings.
 
-### Recent numbers
+### Recent calls
 
-The clock button in the dialer's top bar lists the numbers recently dialled, received or missed,
-newest first, each number once with an arrow for its latest call (dialled, received, missed); tap one
-to put it into the dialer. Rejected calls and calls with a withheld number are left out. The list is read anew every time it is opened (or with the
+The **Recent** tab lists the numbers recently dialled, received or missed, newest first, each number
+once at its latest call: name and number, the time, then an arrow for how the call went (dialled,
+received, missed) and an icon for where it was recorded. Rejected calls and calls with a
+withheld number are left out. The list is read anew every time the picker is opened (or with the
 reload button), from two sources:
 
-- **FritzBox** – the dialled, received and missed calls in the box' call list (TR-064 `X_AVM-DE_OnTel` `GetCallList`),
+- **FritzBox** (router icon with the box' name from the settings) – the dialled, received and missed calls in the box' call list (TR-064 `X_AVM-DE_OnTel` `GetCallList`),
   i.e. FritzDial's dial-help calls as well as the calls of the handsets themselves. The FRITZ!Box user
   needs the permission *Voice messages, fax messages, FRITZ!App Fon and call list* for this.
-- **This phone** (optional, off by default) – the dialled, received and missed calls of the phone's own telephony app,
+- **This phone** (phone icon; optional, off by default) – the dialled, received and missed calls of the phone's own telephony app,
   read from the Android call log (`READ_CALL_LOG`, used for nothing else). FritzDial's calls run on
   the FRITZ!Box and never appear there. Switch it on in **Settings › Recent numbers › Include this
   phone's calls**. **This only works if FritzDial was installed from outside Google Play** (APK or
   F-Droid): Google Play allows the call log permission only for the default phone app.
   On switching it on, FritzDial asks Android for the permission and test-reads the call log; if
   either fails, the switch stays off and the settings show why. If reading fails later (e.g. the
-  permission was revoked), the recent numbers show a note with **Turn off** and **App settings**.
+  permission was revoked), the **Recent** tab shows a note with **Turn off** and **App settings**.
 
 ### Confirmation on the FRITZ!Box (two-factor)
 

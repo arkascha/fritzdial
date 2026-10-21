@@ -74,9 +74,9 @@ data class UiState(
     val certificatePrompt: CertificatePrompt? = null,
     /** Non-null while the trusted certificate is shown read-only. */
     val viewedCertificate: CertificateInfo? = null,
-    /** Phone book screen is open. */
-    val showPhonebook: Boolean = false,
-    /** Phone books of the box, loaded on first use of the phone book screen (cached). */
+    /** The number picker (tabs "Recent" and "Phone books") is open. */
+    val showPicker: Boolean = false,
+    /** Phone books of the box, loaded on first use of the number picker (cached). */
     val phonebooks: List<Phonebook> = emptyList(),
     val phonebooksLoaded: Boolean = false,
     /** Optional feature, switched in the settings: include the phone's own contacts. */
@@ -90,9 +90,7 @@ data class UiState(
     val deviceContacts: Phonebook? = null,
     /** Non-null while the box waits for a second-factor confirmation (error 866). */
     val secondFactor: SecondFactorChallenge? = null,
-    /** "Recent numbers" screen is open. */
-    val showRecents: Boolean = false,
-    /** Dialled, received and missed calls from the box' call list, loaded whenever the recent numbers are opened. */
+    /** Dialled, received and missed calls from the box' call list, loaded whenever the picker is opened. */
     val boxCalls: List<RecentCall> = emptyList(),
     val boxCallsLoaded: Boolean = false,
     /** Optional feature, switched in the settings: include the phone's own calls. */
@@ -446,17 +444,30 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     // --- phone books ------------------------------------------------------------------
 
-    /** Opens the phone book screen; loads the books the first time. */
-    fun openPhonebook() {
+    /**
+     * Opens the number picker. The recent calls are read anew each time (they change with every
+     * call); the phone books only the first time.
+     */
+    fun openPicker() {
         _state.update {
             it.copy(
-                showPhonebook = true,
+                showPicker = true,
                 askForDeviceContacts = !it.deviceContactsEnabled &&
                     !settings.deviceContactsNeverAsk,
             )
         }
+        reloadRecents()
         if (!_state.value.phonebooksLoaded) reloadRouterPhonebooks()
         if (_state.value.deviceContacts == null) loadDeviceContacts()
+    }
+
+    fun closePicker() = _state.update { it.copy(showPicker = false) }
+
+    /** The picker's reload button: recent calls and phone books. */
+    fun reloadPicker() {
+        reloadRecents()
+        loadDeviceContacts()
+        reloadRouterPhonebooks()
     }
 
     /**
@@ -471,8 +482,6 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             if (book != null) _state.update { it.copy(deviceContacts = book) }
         }
     }
-
-    fun closePhonebook() = _state.update { it.copy(showPhonebook = false) }
 
     /**
      * Switches the optional "this phone's contacts" feature. The settings screen only enables it
@@ -493,18 +502,16 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         if (enabled) loadDeviceContacts()
     }
 
-    fun reloadPhonebooks() {
-        loadDeviceContacts()
-        reloadRouterPhonebooks()
+    private fun reloadRouterPhonebooks() {
+        if (_state.value.busy) return runWhenIdle("phonebooks", ::reloadRouterPhonebooks)
+        runOnBox("Loading phone books…") { dialer ->
+            val books = dialer.loadPhonebooks()
+            _state.update { it.copy(phonebooks = books, phonebooksLoaded = true) }
+            "${books.sumOf { it.contacts.size }} contact(s) loaded"
+        }
     }
 
-    private fun reloadRouterPhonebooks() = runOnBox("Loading phone books…") { dialer ->
-        val books = dialer.loadPhonebooks()
-        _state.update { it.copy(phonebooks = books, phonebooksLoaded = true) }
-        "${books.sumOf { it.contacts.size }} contact(s) loaded"
-    }
-
-    /** Answer to the "include this phone's contacts?" question on the phone book screen. */
+    /** Answer to the "include this phone's contacts?" question on the picker's phone book tab. */
     fun answerDeviceContactsQuestion(answer: DeviceContactsAnswer) {
         _state.update { it.copy(askForDeviceContacts = false) }
         when (answer) {
@@ -515,22 +522,15 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    /** A number was tapped in the phone book or the recent numbers: put it into the dialer and go back. */
+    /** A number was tapped in the picker (recent calls or phone books): put it into the dialer and go back. */
     fun pickNumber(number: String) =
-        _state.update { it.copy(number = number, showPhonebook = false, showRecents = false) }
+        _state.update { it.copy(number = number, showPicker = false) }
 
-    // --- recent numbers ---------------------------------------------------------------
+    // --- recent calls -----------------------------------------------------------------
 
-    /** Opens the recent numbers; both lists are read anew each time (they change with every call). */
-    fun openRecents() {
-        _state.update { it.copy(showRecents = true) }
-        reloadRecents()
-    }
-
-    fun closeRecents() = _state.update { it.copy(showRecents = false) }
-
-    fun reloadRecents() {
+    private fun reloadRecents() {
         loadCallLog()
+        if (_state.value.busy) return runWhenIdle("recents") { if (_state.value.showPicker) reloadRecents() }
         runOnBox("Loading call list…") { dialer ->
             val calls = dialer.loadRecentCalls()
             _state.update { it.copy(boxCalls = calls, boxCallsLoaded = true) }
@@ -594,14 +594,27 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     fun refreshPhones() {
         // Another request is running (e.g. for the previous box): reload once it is done.
-        if (_state.value.busy) {
-            refreshWhenIdle = true
-            return
-        }
+        if (_state.value.busy) return runWhenIdle("phones", ::refreshPhones)
         runOnBox("Loading phones…") { dialer -> loadPhones(dialer) }
     }
 
-    private var refreshWhenIdle = false
+    /**
+     * Box requests that came in while another one was running (one per [runWhenIdle] key, so
+     * repeated requests are not repeated). They start one after the other once the running one
+     * succeeded – not after a failure, whose error dialog or certificate question they would replace.
+     */
+    private val whenIdle = LinkedHashMap<String, () -> Unit>()
+
+    private fun runWhenIdle(key: String, action: () -> Unit) {
+        whenIdle[key] = action
+    }
+
+    private fun startQueuedRequests() {
+        while (whenIdle.isNotEmpty() && !_state.value.busy) {
+            val key = whenIdle.keys.first()
+            whenIdle.remove(key)?.invoke()
+        }
+    }
 
     private fun loadPhones(dialer: FritzDialer): String {
         val phones = dialer.listPhones()
@@ -705,10 +718,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 }
             }
-            if (refreshWhenIdle && !_state.value.busy) {
-                refreshWhenIdle = false
-                refreshPhones()
-            }
+            if (error == null) startQueuedRequests()
         }
     }
 
@@ -750,6 +760,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             _state.update { it.copy(secondFactor = null, busy = false) }
             if (error == null) {
                 _state.update { it.copy(status = result.getOrNull()) }
+                startQueuedRequests()
             } else {
                 failedAction = progress to block
                 val shown = if (error is Tr064Exception && error.secondFactorRequired) {

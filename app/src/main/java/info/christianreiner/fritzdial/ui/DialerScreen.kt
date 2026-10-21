@@ -72,8 +72,7 @@ fun DialerScreen(
     onSelectPhone: (String) -> Unit,
     onRefresh: () -> Unit,
     onOpenSettings: () -> Unit,
-    onOpenPhonebook: () -> Unit,
-    onOpenRecents: () -> Unit,
+    onOpenPicker: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -96,9 +95,6 @@ fun DialerScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onOpenRecents) {
-                        Icon(HistoryIcon, contentDescription = "Recent numbers")
-                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
@@ -148,8 +144,8 @@ fun DialerScreen(
                         disabledLeadingIconColor = MaterialTheme.colorScheme.primary,
                     ),
                     leadingIcon = {
-                        IconButton(onClick = onOpenPhonebook) {
-                            Icon(ContactsIcon, contentDescription = "Choose from phone book")
+                        IconButton(onClick = onOpenPicker) {
+                            Icon(ContactsIcon, contentDescription = "Choose from recent calls or phone books")
                         }
                     },
                     trailingIcon = {

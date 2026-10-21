@@ -19,8 +19,9 @@ import info.christianreiner.fritzdial.ui.TrustCertificateDialog
 import info.christianreiner.fritzdial.ui.ViewCertificateDialog
 import info.christianreiner.fritzdial.ui.DialerViewModel
 import info.christianreiner.fritzdial.ui.ErrorDialog
-import info.christianreiner.fritzdial.ui.PhonebookScreen
-import info.christianreiner.fritzdial.ui.RecentsScreen
+import info.christianreiner.fritzdial.ui.NumberPickerScreen
+import info.christianreiner.fritzdial.ui.PhonebookTab
+import info.christianreiner.fritzdial.ui.RecentsTab
 import info.christianreiner.fritzdial.ui.SettingsScreen
 import info.christianreiner.fritzdial.ui.SecondFactorDialog
 import info.christianreiner.fritzdial.ui.theme.FritzDialTheme
@@ -40,36 +41,40 @@ class MainActivity : ComponentActivity() {
                 val trustedFingerprint = remember(state.config.trustedCertDer) {
                     state.config.trustedCertDer?.let(CertificateInfo::fromDerBase64)?.sha256
                 }
-                if (state.showPhonebook && !state.showSettings) {
-                    BackHandler { viewModel.closePhonebook() }
-                    PhonebookScreen(
-                        routerBooks = state.phonebooks,
-                        deviceContacts = state.deviceContacts,
-                        deviceContactsEnabled = state.deviceContactsEnabled,
-                        loaded = state.phonebooksLoaded,
+                if (state.showPicker && !state.showSettings) {
+                    BackHandler { viewModel.closePicker() }
+                    NumberPickerScreen(
                         busy = state.busy,
-                        onPick = viewModel::pickNumber,
-                        onReload = viewModel::reloadPhonebooks,
-                        onBack = viewModel::closePhonebook,
-                        onDeviceContactsAllowed = viewModel::loadDeviceContacts,
-                        onDisableDeviceContacts = { viewModel.setDeviceContactsEnabled(false) },
-                        askForDeviceContacts = state.askForDeviceContacts,
-                        onDeviceContactsAnswer = viewModel::answerDeviceContactsQuestion,
-                    )
-                } else if (state.showRecents && !state.showSettings) {
-                    BackHandler { viewModel.closeRecents() }
-                    RecentsScreen(
-                        boxCalls = state.boxCalls,
-                        boxCallsLoaded = state.boxCallsLoaded,
-                        phoneCalls = state.phoneCalls,
-                        callLogEnabled = state.callLogEnabled,
-                        callLogProblem = state.callLogProblem,
-                        busy = state.busy,
-                        onPick = viewModel::pickNumber,
-                        onReload = viewModel::reloadRecents,
-                        onBack = viewModel::closeRecents,
-                        onReloadCallLog = viewModel::loadCallLog,
-                        onDisableCallLog = viewModel::disableCallLog,
+                        onReload = viewModel::reloadPicker,
+                        onBack = viewModel::closePicker,
+                        recents = {
+                            RecentsTab(
+                                boxCalls = state.boxCalls,
+                                boxCallsLoaded = state.boxCallsLoaded,
+                                boxName = state.profiles.firstOrNull { it.id == state.activeProfileId }?.name,
+                                phoneCalls = state.phoneCalls,
+                                callLogEnabled = state.callLogEnabled,
+                                callLogProblem = state.callLogProblem,
+                                busy = state.busy,
+                                onPick = viewModel::pickNumber,
+                                onReloadCallLog = viewModel::loadCallLog,
+                                onDisableCallLog = viewModel::disableCallLog,
+                            )
+                        },
+                        phonebooks = {
+                            PhonebookTab(
+                                routerBooks = state.phonebooks,
+                                deviceContacts = state.deviceContacts,
+                                deviceContactsEnabled = state.deviceContactsEnabled,
+                                loaded = state.phonebooksLoaded,
+                                busy = state.busy,
+                                onPick = viewModel::pickNumber,
+                                onDeviceContactsAllowed = viewModel::loadDeviceContacts,
+                                onDisableDeviceContacts = { viewModel.setDeviceContactsEnabled(false) },
+                                askForDeviceContacts = state.askForDeviceContacts,
+                                onDeviceContactsAnswer = viewModel::answerDeviceContactsQuestion,
+                            )
+                        },
                     )
                 } else if (state.showSettings && state.showConnectionSettings) {
                     val canGoBack = state.settingsSaved
@@ -120,8 +125,7 @@ class MainActivity : ComponentActivity() {
                         onSelectPhone = viewModel::selectPhone,
                         onRefresh = viewModel::refreshPhones,
                         onOpenSettings = viewModel::openSettings,
-                        onOpenPhonebook = viewModel::openPhonebook,
-                        onOpenRecents = viewModel::openRecents,
+                        onOpenPicker = viewModel::openPicker,
                     )
                 }
 
