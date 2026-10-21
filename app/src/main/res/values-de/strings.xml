@@ -73,6 +73,8 @@
     <string name="settings_connections_hint">Die FritzBox des Netzwerks, in dem das Telefon ist, wird automatisch ausgewählt.</string>
     <string name="settings_add_box">FritzBox hinzufügen</string>
     <string name="settings_in_use">In Verwendung</string>
+    <string name="settings_in_use_not_found">In Verwendung, aber im aktuellen Netzwerk nicht gefunden</string>
+    <string name="settings_in_use_not_working">In Verwendung, aber nicht funktionsfähig: die letzte Anfrage ist fehlgeschlagen</string>
     <string name="settings_more_options">Weitere Optionen für %1$s</string>
     <string name="settings_use_now">Jetzt verwenden</string>
     <string name="settings_delete_title">„%1$s“ löschen?</string>

@@ -73,6 +73,8 @@
     <string name="settings_connections_hint">De FritzBox van het netwerk waarin de telefoon zich bevindt, wordt automatisch gekozen.</string>
     <string name="settings_add_box">FritzBox toevoegen</string>
     <string name="settings_in_use">In gebruik</string>
+    <string name="settings_in_use_not_found">In gebruik, maar niet gevonden in het huidige netwerk</string>
+    <string name="settings_in_use_not_working">In gebruik, maar werkt niet: het laatste verzoek is mislukt</string>
     <string name="settings_more_options">Meer opties voor %1$s</string>
     <string name="settings_use_now">Nu gebruiken</string>
     <string name="settings_delete_title">‘%1$s’ verwijderen?</string>

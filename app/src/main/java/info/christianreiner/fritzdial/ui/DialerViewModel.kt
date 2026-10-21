@@ -12,6 +12,7 @@ import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.data.SettingsRepository
 import info.christianreiner.fritzdial.tr064.BoxDiscovery
+import info.christianreiner.fritzdial.tr064.BoxIdentity
 import info.christianreiner.fritzdial.tr064.CertificateInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import info.christianreiner.fritzdial.tr064.FritzDialer
@@ -64,6 +65,12 @@ data class UiState(
     /** Connection page: the box being edited, or null when adding a new one. */
     val editingProfileId: String? = null,
     val editingName: String = "",
+    /**
+     * Whether the box in use answered the last detection in the current network (null = not
+     * detected yet), and whether the last request to it worked (null = none since it became active).
+     */
+    val activeBoxSeen: Boolean? = null,
+    val activeBoxWorking: Boolean? = null,
     /** Note about the current network, e.g. an unknown FritzBox was found there. */
     val networkNotice: UiText? = null,
     val showSettings: Boolean = false,
@@ -101,6 +108,16 @@ data class UiState(
     /** Why the phone's call log could not be read (on enabling the feature, or later). */
     val callLogProblem: UiText? = null,
 )
+
+/** Why the box in use does not meet the expectations, if it does not; a failed request weighs more. */
+val UiState.activeBoxIssue: ActiveBoxIssue?
+    get() = when {
+        activeBoxWorking == false -> ActiveBoxIssue.NOT_WORKING
+        activeBoxSeen == false -> ActiveBoxIssue.NOT_FOUND
+        else -> null
+    }
+
+enum class ActiveBoxIssue { NOT_FOUND, NOT_WORKING }
 
 /** How long to wait for the user to confirm on the box before giving up. */
 private const val SECOND_FACTOR_TIMEOUT_MILLIS = 120_000L
@@ -270,6 +287,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 it.copy(
                     profiles = settings.profiles(),
                     activeProfileId = profile.id,
+                    // It just answered its device description (if not: it is not a FritzBox we can recognise).
+                    activeBoxSeen = identity != null,
                     editingProfileId = null,
                     networkNotice = null,
                     phonebooks = emptyList(),
@@ -292,6 +311,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         _state.update {
             it.copy(
                 activeProfileId = id,
+                // Chosen by hand, it may well not be the box of this network.
+                activeBoxSeen = seenInNetwork(profile),
+                activeBoxWorking = null,
                 config = if (it.showConnectionSettings) it.config else profile.config,
                 phones = emptyList(),
                 selectedPhone = null,
@@ -343,6 +365,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         val gateway = BoxDiscovery.currentGateway(getApplication<Application>())
         val hosts = listOfNotNull(gateway, "fritz.box") + profiles.map { it.config.host }
         val found = BoxDiscovery.identifyAll(hosts)
+        lastFound = found
         // Boxes saved before this feature have no device id yet: learn it from their host.
         profiles.filter { it.deviceId == null }.forEach { p ->
             found.firstOrNull { it.host.equals(p.config.host, ignoreCase = true) }
@@ -354,6 +377,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         _state.update {
             it.copy(
                 profiles = known,
+                activeBoxSeen = known.firstOrNull { p -> p.id == settings.activeProfileId }?.let(::seenInNetwork),
+                // A request that failed in the previous network says nothing about this one.
+                activeBoxWorking = null,
                 networkNotice = unknown?.let { box ->
                     (box.friendlyName ?: box.modelName)?.let { uiText(R.string.notice_unknown_box, it) }
                         ?: uiText(R.string.notice_unknown_box_generic)
@@ -365,6 +391,18 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             return true
         }
         return false
+    }
+
+    /** The boxes that answered the last detection; null before the first one. */
+    private var lastFound: List<BoxIdentity>? = null
+
+    /**
+     * Whether [profile]'s box answered the last detection – by its device id, or by its host for a
+     * connection whose device id is not known yet. Null before the first detection.
+     */
+    private fun seenInNetwork(profile: BoxProfile): Boolean? = lastFound?.any { box ->
+        if (profile.deviceId != null) box.udn == profile.deviceId
+        else box.host.equals(profile.config.host, ignoreCase = true)
     }
 
     /** Re-detects the box whenever the phone's network changes (e.g. Wi-Fi at home vs. office). */
@@ -694,7 +732,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             }
             val error = result.exceptionOrNull()
             when {
-                error == null -> _state.update { it.copy(busy = false, status = result.getOrNull()) }
+                error == null -> _state.update {
+                    it.copy(busy = false, status = result.getOrNull(), activeBoxWorking = true)
+                }
 
                 error is Tr064Exception && error.secondFactorRequired ->
                     confirmAndRepeat(progress, block, config)
@@ -718,6 +758,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                             status = null,
                             error = describeError(error, config),
                             canRetry = true,
+                            // A failed check of edited settings says nothing about the box in use.
+                            activeBoxWorking = if (verifyingSettings) it.activeBoxWorking else false,
                         )
                     }
                 }
@@ -763,7 +805,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             if (error is CancellationException) return@launch
             _state.update { it.copy(secondFactor = null, busy = false) }
             if (error == null) {
-                _state.update { it.copy(status = result.getOrNull()) }
+                _state.update { it.copy(status = result.getOrNull(), activeBoxWorking = true) }
                 startQueuedRequests()
             } else {
                 failedAction = progress to block
@@ -771,7 +813,12 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                     SecondFactorNotConfirmedException()
                 } else error
                 _state.update {
-                    it.copy(status = null, error = describeError(shown, config), canRetry = true)
+                    it.copy(
+                        status = null,
+                        error = describeError(shown, config),
+                        canRetry = true,
+                        activeBoxWorking = if (verifyingSettings) it.activeBoxWorking else false,
+                    )
                 }
             }
         }

@@ -19,6 +19,7 @@ import info.christianreiner.fritzdial.ui.ConnectionSettingsScreen
 import info.christianreiner.fritzdial.ui.DialerScreen
 import info.christianreiner.fritzdial.ui.TrustCertificateDialog
 import info.christianreiner.fritzdial.ui.ViewCertificateDialog
+import info.christianreiner.fritzdial.ui.activeBoxIssue
 import info.christianreiner.fritzdial.ui.DialerViewModel
 import info.christianreiner.fritzdial.ui.ErrorDialog
 import info.christianreiner.fritzdial.ui.NumberPickerScreen
@@ -108,6 +109,7 @@ class MainActivity : ComponentActivity() {
                     SettingsScreen(
                         profiles = state.profiles,
                         activeProfileId = state.activeProfileId,
+                        activeIssue = state.activeBoxIssue,
                         networkNotice = state.networkNotice,
                         onEditProfile = viewModel::editProfile,
                         onActivateProfile = viewModel::activateProfile,

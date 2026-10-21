@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -80,6 +81,8 @@ import info.christianreiner.fritzdial.tr064.FritzConfig
 fun SettingsScreen(
     profiles: List<BoxProfile>,
     activeProfileId: String?,
+    /** Shown on the box in use: it was not found in this network, or the last request failed. */
+    activeIssue: ActiveBoxIssue?,
     networkNotice: UiText?,
     onEditProfile: (String) -> Unit,
     onActivateProfile: (String) -> Unit,
@@ -138,6 +141,7 @@ fun SettingsScreen(
                 ProfileRow(
                     profile = profile,
                     active = profile.id == activeProfileId,
+                    issue = activeIssue,
                     onEdit = { onEditProfile(profile.id) },
                     onActivate = { onActivateProfile(profile.id) },
                     onDelete = { confirmDelete = profile },
@@ -192,6 +196,7 @@ fun SettingsScreen(
 private fun ProfileRow(
     profile: BoxProfile,
     active: Boolean,
+    issue: ActiveBoxIssue?,
     onEdit: () -> Unit,
     onActivate: () -> Unit,
     onDelete: () -> Unit,
@@ -202,7 +207,19 @@ private fun ProfileRow(
         headlineContent = { Text(profile.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         leadingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (active) {
+                if (active && issue != null) {
+                    // In use, but not as expected: a warning instead of the check mark.
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = stringResource(
+                            when (issue) {
+                                ActiveBoxIssue.NOT_FOUND -> R.string.settings_in_use_not_found
+                                ActiveBoxIssue.NOT_WORKING -> R.string.settings_in_use_not_working
+                            }
+                        ),
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                } else if (active) {
                     Icon(
                         Icons.Default.CheckCircle,
                         contentDescription = stringResource(R.string.settings_in_use),
