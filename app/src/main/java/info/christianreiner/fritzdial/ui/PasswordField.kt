@@ -18,13 +18,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.unit.dp
+import info.christianreiner.fritzdial.R
 import kotlinx.coroutines.delay
 
 /**
@@ -77,7 +79,7 @@ fun PasswordField(
             IconButton(onClick = { visible = !visible }) {
                 Icon(
                     imageVector = if (visible) VisibilityOffIcon else VisibilityIcon,
-                    contentDescription = if (visible) "Hide password" else "Show password",
+                    contentDescription = stringResource(if (visible) R.string.password_hide else R.string.password_show),
                 )
             }
         },

@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
+import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.tr064.FritzDialer
 
 /**
@@ -81,8 +83,8 @@ fun DialerScreen(
                     // App name, and below it the FritzBox in use – or a note about the network.
                     val box = state.profiles.firstOrNull { it.id == state.activeProfileId }?.name
                     Column {
-                        Text("FritzDial")
-                        val subtitle = state.networkNotice ?: box
+                        Text(stringResource(R.string.app_name))
+                        val subtitle = state.networkNotice?.asString() ?: box
                         if (subtitle != null) {
                             Text(
                                 subtitle,
@@ -96,7 +98,7 @@ fun DialerScreen(
                 },
                 actions = {
                     IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
                     }
                 },
             )
@@ -134,7 +136,7 @@ fun DialerScreen(
                     enabled = false,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    label = { Text("Number to dial") },
+                    label = { Text(stringResource(R.string.dialer_number_label)) },
                     textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
                     colors = OutlinedTextFieldDefaults.colors(
                         disabledTextColor = onSurface,
@@ -145,7 +147,7 @@ fun DialerScreen(
                     ),
                     leadingIcon = {
                         IconButton(onClick = onOpenPicker) {
-                            Icon(ContactsIcon, contentDescription = "Choose from recent calls or phone books")
+                            Icon(ContactsIcon, contentDescription = stringResource(R.string.dialer_choose_number))
                         }
                     },
                     trailingIcon = {
@@ -187,10 +189,10 @@ fun DialerScreen(
                         enabled = !state.busy && FritzDialer.sanitizeNumber(state.number).isNotEmpty(),
                         color = CallGreen,
                     ) {
-                        Icon(Icons.Default.Call, contentDescription = "Dial", modifier = Modifier.size(30.dp))
+                        Icon(Icons.Default.Call, contentDescription = stringResource(R.string.dialer_dial), modifier = Modifier.size(30.dp))
                     }
                     RoundActionButton(onClick = onHangup, enabled = state.dialActive && !state.busy, color = HangupRed) {
-                        Icon(Icons.Default.Close, contentDescription = "Hang up", modifier = Modifier.size(30.dp))
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.dialer_hang_up), modifier = Modifier.size(30.dp))
                     }
                 }
             }
@@ -210,8 +212,8 @@ private fun BackspaceButton(onBackspace: () -> Unit, onClear: () -> Unit) {
             .clip(CircleShape)
             .combinedClickable(
                 role = Role.Button,
-                onClickLabel = "Delete last digit",
-                onLongClickLabel = "Clear number",
+                onClickLabel = stringResource(R.string.dialer_delete_digit),
+                onLongClickLabel = stringResource(R.string.dialer_clear_number),
                 onClick = onBackspace,
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -219,7 +221,7 @@ private fun BackspaceButton(onBackspace: () -> Unit, onClear: () -> Unit) {
                 },
             ),
     ) {
-        Icon(BackspaceIcon, contentDescription = "Delete last digit, long press to clear")
+        Icon(BackspaceIcon, contentDescription = stringResource(R.string.dialer_backspace_description))
     }
 }
 
@@ -257,11 +259,11 @@ private fun PhoneSelector(
     ) {
         OutlinedTextField(
             value = selected?.let(FritzDialer::displayName)
-                ?: if (phones.isEmpty()) "No phones loaded" else "Choose phone",
+                ?: stringResource(if (phones.isEmpty()) R.string.dialer_no_phones else R.string.dialer_choose_phone),
             onValueChange = {},
             readOnly = true,
             enabled = !busy,
-            label = { Text("Ring phone") },
+            label = { Text(stringResource(R.string.dialer_ring_phone)) },
             trailingIcon = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Reloads the list from the router. The menu anchor sees the same tap and would
@@ -273,7 +275,7 @@ private fun PhoneSelector(
                         },
                         enabled = !busy,
                     ) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Reload phones from the router")
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.dialer_reload_phones))
                     }
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded && canOpen)
                     Spacer(Modifier.size(8.dp))

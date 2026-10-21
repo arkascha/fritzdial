@@ -1,5 +1,8 @@
 package info.christianreiner.fritzdial.ui
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -35,6 +39,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -45,15 +50,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import info.christianreiner.fritzdial.R
+import info.christianreiner.fritzdial.data.AppLanguage
 import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
@@ -68,7 +77,7 @@ import info.christianreiner.fritzdial.tr064.FritzConfig
 fun SettingsScreen(
     profiles: List<BoxProfile>,
     activeProfileId: String?,
-    networkNotice: String?,
+    networkNotice: UiText?,
     onEditProfile: (String) -> Unit,
     onActivateProfile: (String) -> Unit,
     onDeleteProfile: (String) -> Unit,
@@ -77,7 +86,7 @@ fun SettingsScreen(
     deviceContactsEnabled: Boolean,
     onDeviceContactsChange: (Boolean) -> Unit,
     callLogEnabled: Boolean,
-    callLogProblem: String?,
+    callLogProblem: UiText?,
     /** Android's answer to the call log permission: try reading it, enable the feature if that works. */
     onEnableCallLog: (granted: Boolean) -> Unit,
     onDisableCallLog: () -> Unit,
@@ -87,10 +96,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )
@@ -103,19 +112,19 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             Text(
-                "FritzBox connections",
+                stringResource(R.string.settings_connections),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
             )
             Text(
-                "The FritzBox of the network the phone is in is selected automatically.",
+                stringResource(R.string.settings_connections_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
             networkNotice?.let {
                 Text(
-                    it,
+                    it.asString(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -132,7 +141,7 @@ fun SettingsScreen(
                 )
             }
             ListItem(
-                headlineContent = { Text("Add FritzBox") },
+                headlineContent = { Text(stringResource(R.string.settings_add_box)) },
                 leadingContent = { Icon(Icons.Default.Add, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = onAddProfile),
             )
@@ -157,6 +166,9 @@ fun SettingsScreen(
                     onDisable = onDisableCallLog,
                 )
             }
+
+            HorizontalDivider()
+            LanguageSetting()
         }
     }
 
@@ -189,7 +201,7 @@ private fun ProfileRow(
             if (active) {
                 Icon(
                     Icons.Default.CheckCircle,
-                    contentDescription = "In use",
+                    contentDescription = stringResource(R.string.settings_in_use),
                     tint = MaterialTheme.colorScheme.primary,
                 )
             } else {
@@ -200,21 +212,21 @@ private fun ProfileRow(
         trailingContent = {
             Box {
                 IconButton(onClick = { menu = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More options for ${profile.name}")
+                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.settings_more_options, profile.name))
                 }
                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                     if (!active) {
                         DropdownMenuItem(
-                            text = { Text("Use now") },
+                            text = { Text(stringResource(R.string.settings_use_now)) },
                             onClick = { menu = false; onActivate() },
                         )
                     }
                     DropdownMenuItem(
-                        text = { Text("Edit") },
+                        text = { Text(stringResource(R.string.edit)) },
                         onClick = { menu = false; onEdit() },
                     )
                     DropdownMenuItem(
-                        text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                        text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
                         onClick = { menu = false; onDelete() },
                     )
                 }
@@ -228,12 +240,12 @@ private fun ProfileRow(
 private fun ConfirmDeleteDialog(name: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete \u201c$name\u201d?") },
-        text = { Text("The connection, its password and its trusted certificate are removed from this phone.") },
+        title = { Text(stringResource(R.string.settings_delete_title, name)) },
+        text = { Text(stringResource(R.string.settings_delete_text)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+            TextButton(onClick = onConfirm) { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
 }
 
@@ -246,7 +258,7 @@ fun ConnectionSettingsScreen(
     /** SHA-256 fingerprint of the currently trusted certificate, or null. */
     trustedFingerprint: String?,
     busy: Boolean,
-    status: String?,
+    status: UiText?,
     /** Name of the connection being edited (empty for a new one). */
     initialName: String,
     /** Adding a new FritzBox rather than editing an existing one. */
@@ -272,11 +284,11 @@ fun ConnectionSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (isNew) "Add FritzBox" else "FritzBox connection") },
+                title = { Text(stringResource(if (isNew) R.string.settings_add_box else R.string.connection_title)) },
                 navigationIcon = {
                     if (canGoBack) {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                         }
                     }
                 },
@@ -293,22 +305,21 @@ fun ConnectionSettingsScreen(
         ) {
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                label = { Text("Name") },
-                placeholder = { Text("default: the box\u2019s own name", maxLines = 1) },
+                label = { Text(stringResource(R.string.connection_name)) },
+                placeholder = { Text(stringResource(R.string.connection_name_placeholder), maxLines = 1) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = host, onValueChange = { host = it },
-                label = { Text("Host (e.g. fritz.box or 192.168.178.1)") },
+                label = { Text(stringResource(R.string.connection_host)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Use HTTPS", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.connection_https), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Encrypted connection (port ${FritzConfig.HTTPS_PORT}). The box' self-signed " +
-                            "certificate must be confirmed once.",
+                        stringResource(R.string.connection_https_hint, FritzConfig.HTTPS_PORT),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -328,26 +339,23 @@ fun ConnectionSettingsScreen(
             }
             OutlinedTextField(
                 value = port, onValueChange = { port = it.filter(Char::isDigit) },
-                label = { Text("TR-064 port") },
+                label = { Text(stringResource(R.string.connection_port)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
             OutlinedTextField(
                 value = user, onValueChange = { user = it },
-                label = { Text("FRITZ!Box user name") },
+                label = { Text(stringResource(R.string.connection_user)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
             )
             PasswordField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Password",
+                label = stringResource(R.string.connection_password),
                 modifier = Modifier.fillMaxWidth(),
             )
             Text(
-                "On the box, enable \"Allow access for applications\" (Home Network › Network › " +
-                    "Network Settings) and \"Dial help\" (Telephony › Calls › Dial Help). The user " +
-                    "needs telephony permission. If you log in with password only, use the " +
-                    "auto-generated user name shown under System › FRITZ!Box Users.",
+                stringResource(R.string.connection_help),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -367,31 +375,31 @@ fun ConnectionSettingsScreen(
                 },
                 enabled = valid && !busy,
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text(if (busy) "Connecting…" else "Save & connect") }
+            ) { Text(stringResource(if (busy) R.string.connection_connecting else R.string.connection_save)) }
 
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
             if (busy && status != null) {
-                Text(status, style = MaterialTheme.typography.bodySmall)
+                Text(status.asString(), style = MaterialTheme.typography.bodySmall)
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            Text("Trusted certificate", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.connection_trusted_cert), style = MaterialTheme.typography.titleSmall)
             if (trustedFingerprint == null) {
                 Text(
-                    "None. When connecting via HTTPS you will be asked to confirm the router's certificate.",
+                    stringResource(R.string.connection_no_cert),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else {
                 Text(
-                    "SHA-256 $trustedFingerprint",
+                    stringResource(R.string.connection_cert_fingerprint, trustedFingerprint),
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = FontFamily.Monospace,
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedButton(onClick = onShowCertificate) { Text("Show") }
+                    OutlinedButton(onClick = onShowCertificate) { Text(stringResource(R.string.show)) }
                     OutlinedButton(onClick = onForgetCertificate) {
-                        Text("Forget", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.forget), color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
@@ -400,7 +408,7 @@ fun ConnectionSettingsScreen(
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 OutlinedButton(onClick = { confirmDelete = true }, enabled = !busy) {
                     Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                    Text("  Delete this FritzBox", color = MaterialTheme.colorScheme.error)
+                    Text("  " + stringResource(R.string.connection_delete_box), color = MaterialTheme.colorScheme.error)
                 }
             }
         }
@@ -438,13 +446,12 @@ private fun DeviceContactsSetting(enabled: Boolean, onChange: (Boolean) -> Unit)
         if (allowed) denied = false
     }
 
-    Text("Phone books", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.phone_books), style = MaterialTheme.typography.titleSmall)
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text("Include this phone\u2019s contacts", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.settings_device_contacts), style = MaterialTheme.typography.bodyLarge)
             Text(
-                "Shows the contacts stored on this phone next to the FRITZ!Box phone books. " +
-                    "Needs access to your contacts; they never leave the phone.",
+                stringResource(R.string.settings_device_contacts_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -462,12 +469,12 @@ private fun DeviceContactsSetting(enabled: Boolean, onChange: (Boolean) -> Unit)
     }
     if (denied || (enabled && !allowed)) {
         Text(
-            "Android does not allow FritzDial to read your contacts. You can allow it in the app settings.",
+            stringResource(R.string.settings_device_contacts_denied),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )
         OutlinedButton(onClick = { context.startActivity(DeviceContacts.appSettingsIntent(context)) }) {
-            Text("App settings")
+            Text(stringResource(R.string.app_settings))
         }
     }
 }
@@ -480,31 +487,29 @@ private fun DeviceContactsSetting(enabled: Boolean, onChange: (Boolean) -> Unit)
 @Composable
 private fun CallLogSetting(
     enabled: Boolean,
-    problem: String?,
+    problem: UiText?,
     onEnable: (granted: Boolean) -> Unit,
     onDisable: () -> Unit,
 ) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), onEnable)
 
-    Text("Recent numbers", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.settings_recents), style = MaterialTheme.typography.titleSmall)
     Text(
-        "The recently dialled, received and missed numbers are read from the FritzBox\u2019 call list.",
+        stringResource(R.string.settings_recents_hint),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text("Include this phone\u2019s calls", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.settings_call_log), style = MaterialTheme.typography.bodyLarge)
             Text(
-                "Also offers the numbers dialled, received and missed with the phone\u2019s own telephony app. Needs access " +
-                    "to your call log; it never leaves the phone.",
+                stringResource(R.string.settings_call_log_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                "Only works if FritzDial was installed from outside Google Play (APK or F-Droid): " +
-                    "Google Play allows reading the call log only for the phone\u2019s default phone app.",
+                stringResource(R.string.settings_call_log_play),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -521,9 +526,68 @@ private fun CallLogSetting(
         )
     }
     if (problem != null) {
-        Text(problem, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        Text(problem.asString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         OutlinedButton(onClick = { context.startActivity(DeviceContacts.appSettingsIntent(context)) }) {
-            Text("App settings")
+            Text(stringResource(R.string.app_settings))
         }
     }
+}
+
+/**
+ * The app's language: the system's, or one of the languages FritzDial is translated into.
+ * Choosing one redraws the app in it (see [AppLanguage]).
+ */
+@Composable
+private fun LanguageSetting() {
+    val context = LocalContext.current
+    val current = remember { AppLanguage.current(context) }
+    var choosing by remember { mutableStateOf(false) }
+    val system = stringResource(R.string.settings_language_system)
+    val currentName = AppLanguage.supported.firstOrNull { it.first == current }?.second ?: system
+
+    ListItem(
+        headlineContent = { Text(stringResource(R.string.settings_language)) },
+        supportingContent = { Text(currentName) },
+        modifier = Modifier.clickable { choosing = true },
+    )
+
+    if (choosing) {
+        val options = listOf<Pair<String?, String>>(null to system) + AppLanguage.supported
+        AlertDialog(
+            onDismissRequest = { choosing = false },
+            title = { Text(stringResource(R.string.settings_language)) },
+            text = {
+                Column {
+                    Text(
+                        stringResource(R.string.settings_language_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    options.forEach { (tag, name) ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(selected = tag == current, role = Role.RadioButton) {
+                                    choosing = false
+                                    if (tag != current) context.findActivity()?.let { AppLanguage.set(it, tag) }
+                                },
+                        ) {
+                            RadioButton(selected = tag == current, onClick = null)
+                            Text(name, modifier = Modifier.padding(start = 12.dp, top = 12.dp, bottom = 12.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { choosing = false }) { Text(stringResource(R.string.cancel)) } },
+        )
+    }
+}
+
+/** The activity behind a (possibly wrapped) context. */
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

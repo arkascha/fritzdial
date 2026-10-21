@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import android.net.ConnectivityManager
 import android.net.LinkProperties
 import android.net.Network
+import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
@@ -43,7 +44,7 @@ data class UiState(
     val phones: List<String> = emptyList(),
     val selectedPhone: String? = null,
     /** Progress / success information (not an error). */
-    val status: String? = null,
+    val status: UiText? = null,
     /** The last failure, shown prominently until dismissed or the next action starts. */
     val error: BoxError? = null,
     /** The failed action can be retried as-is. */
@@ -64,7 +65,7 @@ data class UiState(
     val editingProfileId: String? = null,
     val editingName: String = "",
     /** Note about the current network, e.g. an unknown FritzBox was found there. */
-    val networkNotice: String? = null,
+    val networkNotice: UiText? = null,
     val showSettings: Boolean = false,
     /** The connection sub-page of the settings is open. */
     val showConnectionSettings: Boolean = false,
@@ -98,7 +99,7 @@ data class UiState(
     /** Dialled, received and missed calls from the phone's call log, once enabled (null = not loaded). */
     val phoneCalls: List<RecentCall>? = null,
     /** Why the phone's call log could not be read (on enabling the feature, or later). */
-    val callLogProblem: String? = null,
+    val callLogProblem: UiText? = null,
 )
 
 /** How long to wait for the user to confirm on the box before giving up. */
@@ -113,7 +114,7 @@ private const val DIAL_ACTIVE_MILLIS = 30_000L
 /** Answers to the "include this phone's contacts?" question. */
 enum class DeviceContactsAnswer { ALLOWED, NOT_NOW, NEVER }
 
-private typealias BoxAction = suspend (FritzDialer) -> String
+private typealias BoxAction = suspend (FritzDialer) -> UiText
 
 class DialerViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -134,13 +135,13 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     val state: StateFlow<UiState> = _state.asStateFlow()
 
     /** Action interrupted by an untrusted certificate; re-run once the user trusts it. */
-    private var pendingAction: Pair<String, BoxAction>? = null
+    private var pendingAction: Pair<UiText, BoxAction>? = null
 
     /** Ends [UiState.dialActive] after [DIAL_ACTIVE_MILLIS]. */
     private var dialTimeout: Job? = null
 
     /** The last action that failed, for "Retry". */
-    private var failedAction: Pair<String, BoxAction>? = null
+    private var failedAction: Pair<UiText, BoxAction>? = null
 
     /**
      * True while settings entered on the settings screen are being verified. The edited
@@ -249,7 +250,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         val editingId = _state.value.editingProfileId
         verifyingSettings = true
         _state.update { it.copy(config = config, error = null) }
-        runOnBox("Connecting to ${config.host}…") { dialer ->
+        runOnBox(uiText(R.string.status_connecting, config.host)) { dialer ->
             val message = loadPhones(dialer)
             // Learn the box' device id, so it can be recognised automatically later.
             val identity = BoxDiscovery.identify(config.host)
@@ -354,7 +355,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             it.copy(
                 profiles = known,
                 networkNotice = unknown?.let { box ->
-                    "${box.friendlyName ?: box.modelName ?: "A FritzBox"} in this network is not configured"
+                    (box.friendlyName ?: box.modelName)?.let { uiText(R.string.notice_unknown_box, it) }
+                        ?: uiText(R.string.notice_unknown_box_generic)
                 },
             )
         }
@@ -417,8 +419,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 status = null,
                 canRetry = failedAction != null,
                 error = BoxError(
-                    "Certificate not trusted",
-                    "The connection was refused because you did not trust the router's certificate.",
+                    uiText(R.string.error_cert_rejected_title),
+                    uiText(R.string.error_cert_rejected),
                     settingsRelated = true,
                 ),
             )
@@ -504,10 +506,10 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     private fun reloadRouterPhonebooks() {
         if (_state.value.busy) return runWhenIdle("phonebooks", ::reloadRouterPhonebooks)
-        runOnBox("Loading phone books…") { dialer ->
+        runOnBox(uiText(R.string.phonebook_loading)) { dialer ->
             val books = dialer.loadPhonebooks()
             _state.update { it.copy(phonebooks = books, phonebooksLoaded = true) }
-            "${books.sumOf { it.contacts.size }} contact(s) loaded"
+            UiText.Plural(R.plurals.status_contacts_loaded, books.sumOf { it.contacts.size })
         }
     }
 
@@ -531,10 +533,10 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     private fun reloadRecents() {
         loadCallLog()
         if (_state.value.busy) return runWhenIdle("recents") { if (_state.value.showPicker) reloadRecents() }
-        runOnBox("Loading call list…") { dialer ->
+        runOnBox(uiText(R.string.recents_loading)) { dialer ->
             val calls = dialer.loadRecentCalls()
             _state.update { it.copy(boxCalls = calls, boxCallsLoaded = true) }
-            "${calls.size} call(s) loaded"
+            UiText.Plural(R.plurals.status_calls_loaded, calls.size)
         }
     }
 
@@ -561,7 +563,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     fun enableCallLog(granted: Boolean) {
         if (!granted) {
             _state.update {
-                it.copy(callLogProblem = "Android did not allow FritzDial to read the call log.")
+                it.copy(callLogProblem = uiText(R.string.call_log_denied))
             }
             return
         }
@@ -585,17 +587,18 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         _state.update { it.copy(callLogEnabled = false, phoneCalls = null, callLogProblem = null) }
     }
 
-    private fun describeCallLogProblem(error: Throwable): String =
-        "The phone\u2019s call log could not be read" +
-            (error.message?.let { " ($it)" } ?: "") +
-            ". This only works when FritzDial was not installed from Google Play."
+    /** No access / no call log say enough as they are; other failures add their (technical) message. */
+    private fun describeCallLogProblem(error: Throwable): UiText =
+        error.message?.takeIf { error !is SecurityException && error !is IllegalStateException }
+            ?.let { uiText(R.string.call_log_failed, it) }
+            ?: uiText(R.string.call_log_failed_plain)
 
     // --- router actions ---------------------------------------------------------------
 
     fun refreshPhones() {
         // Another request is running (e.g. for the previous box): reload once it is done.
         if (_state.value.busy) return runWhenIdle("phones", ::refreshPhones)
-        runOnBox("Loading phones…") { dialer -> loadPhones(dialer) }
+        runOnBox(uiText(R.string.status_loading_phones)) { dialer -> loadPhones(dialer) }
     }
 
     /**
@@ -616,7 +619,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private fun loadPhones(dialer: FritzDialer): String {
+    private fun loadPhones(dialer: FritzDialer): UiText {
         val phones = dialer.listPhones()
         val current = dialer.getDialPhone()
         _state.update {
@@ -625,14 +628,14 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 selectedPhone = current ?: it.selectedPhone ?: phones.firstOrNull(),
             )
         }
-        return "Connected – ${phones.size} phone(s) found"
+        return UiText.Plural(R.plurals.status_connected, phones.size)
     }
 
     fun selectPhone(name: String) {
         _state.update { it.copy(selectedPhone = name) }
-        runOnBox("Selecting $name…") { dialer ->
+        runOnBox(uiText(R.string.status_selecting, FritzDialer.displayName(name))) { dialer ->
             dialer.ensureDialPhone(name)
-            "Calls will ring on ${FritzDialer.displayName(name)}"
+            uiText(R.string.status_ring_on, FritzDialer.displayName(name))
         }
     }
 
@@ -642,19 +645,20 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             _state.update {
                 it.copy(
                     status = null,
-                    error = BoxError("No number", "Please enter a number to dial.", false),
+                    error = BoxError(uiText(R.string.error_no_number_title), uiText(R.string.error_no_number), false),
                     canRetry = false,
                 )
             }
             return
         }
         val phone = _state.value.selectedPhone
-        runOnBox("Dialling $number…") { dialer ->
+        runOnBox(uiText(R.string.status_dialling, number)) { dialer ->
             // Only changes the box setting if needed: a change may require confirmation on the box.
             if (phone != null) dialer.ensureDialPhone(phone)
             dialer.dial(number)
             markDialActive()
-            "Pick up ${phone ?: "your phone"} – the box then calls $number"
+            phone?.let { uiText(R.string.status_pick_up, FritzDialer.displayName(it), number) }
+                ?: uiText(R.string.status_pick_up_any, number)
         }
     }
 
@@ -673,13 +677,13 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         _state.update { it.copy(dialActive = false) }
     }
 
-    fun hangup() = runOnBox("Hanging up…") { dialer ->
+    fun hangup() = runOnBox(uiText(R.string.status_hanging_up)) { dialer ->
         dialer.hangup()
         clearDialActive()
-        "Call cancelled"
+        uiText(R.string.status_call_cancelled)
     }
 
-    private fun runOnBox(progress: String, block: BoxAction) {
+    private fun runOnBox(progress: UiText, block: BoxAction) {
         if (_state.value.busy) return
         failedAction = null
         _state.update { it.copy(busy = true, status = progress, error = null, canRetry = false) }
@@ -700,7 +704,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                     _state.update {
                         it.copy(
                             busy = false,
-                            status = "Waiting for certificate decision…",
+                            status = uiText(R.string.status_waiting_cert),
                             certificatePrompt = CertificatePrompt(error.certificate, error.previouslyTrusted),
                         )
                     }
@@ -730,8 +734,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
      * The box refused [block] with 866: start a second-factor confirmation, show how to
      * confirm (dialog), wait for it, then repeat [block] with the confirmation token.
      */
-    private fun confirmAndRepeat(progress: String, block: BoxAction, config: FritzConfig) {
-        _state.update { it.copy(busy = true, status = "Waiting for confirmation on the FRITZ!Box…") }
+    private fun confirmAndRepeat(progress: UiText, block: BoxAction, config: FritzConfig) {
+        _state.update { it.copy(busy = true, status = uiText(R.string.status_waiting_confirmation)) }
         secondFactorJob = viewModelScope.launch {
             val result = runCatching {
                 withContext(Dispatchers.IO) {

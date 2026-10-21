@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import info.christianreiner.fritzdial.R
 
 /**
  * Modal error: a failed connection blocks all use of the app, so it is shown on top of
@@ -28,20 +30,20 @@ fun ErrorDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Default.Warning, contentDescription = null) },
         iconContentColor = MaterialTheme.colorScheme.error,
-        title = { Text(error.title) },
-        text = { Text(error.detail) },
+        title = { Text(error.title.asString()) },
+        text = { Text(error.detail.asString()) },
         confirmButton = {
             Row {
                 if (offerSettings && error.settingsRelated) {
-                    TextButton(onClick = onOpenSettings) { Text("Open settings") }
+                    TextButton(onClick = onOpenSettings) { Text(stringResource(R.string.open_settings)) }
                 }
                 if (canRetry) {
-                    TextButton(onClick = onRetry) { Text("Retry") }
+                    TextButton(onClick = onRetry) { Text(stringResource(R.string.retry)) }
                 }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Close") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
         },
     )
 }

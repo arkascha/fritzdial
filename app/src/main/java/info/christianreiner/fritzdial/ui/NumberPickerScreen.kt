@@ -24,7 +24,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import info.christianreiner.fritzdial.R
 
 /**
  * Picks a number for the dialer: tab "Recent" (calls from the box' call list and the phone's call
@@ -44,15 +46,15 @@ fun NumberPickerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Choose number") },
+                title = { Text(stringResource(R.string.picker_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
                     IconButton(onClick = onReload, enabled = !busy) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Reload recent calls and phone books")
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.picker_reload))
                     }
                 },
             )
@@ -67,13 +69,13 @@ fun NumberPickerScreen(
                 Tab(
                     selected = tab == TAB_RECENT,
                     onClick = { tab = TAB_RECENT },
-                    text = { Text("Recent") },
+                    text = { Text(stringResource(R.string.picker_tab_recent)) },
                     icon = { Icon(HistoryIcon, contentDescription = null) },
                 )
                 Tab(
                     selected = tab == TAB_PHONEBOOKS,
                     onClick = { tab = TAB_PHONEBOOKS },
-                    text = { Text("Phone books") },
+                    text = { Text(stringResource(R.string.phone_books)) },
                     icon = { Icon(ContactsIcon, contentDescription = null) },
                 )
             }

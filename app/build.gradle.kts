@@ -34,6 +34,13 @@ android {
     buildFeatures {
         compose = true
     }
+
+    // The language can be chosen in the app, so an app bundle must keep all translations.
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 }
 
 kotlin {

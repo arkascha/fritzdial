@@ -26,10 +26,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.tr064.CertificateInfo
 
 /**
@@ -45,29 +47,21 @@ fun TrustCertificateDialog(
     AlertDialog(
         onDismissRequest = onReject,
         title = {
-            Text(if (prompt.changed) "Certificate has changed!" else "Trust this certificate?")
+            Text(stringResource(if (prompt.changed) R.string.cert_changed_title else R.string.cert_trust_title))
         },
         text = {
             CertificateDetails(
                 info = prompt.certificate,
-                intro = if (prompt.changed) {
-                    "The router presents a different certificate than the one you trusted before. " +
-                        "This happens after a factory reset or a changed box name – but it could also " +
-                        "mean someone is intercepting the connection. Only continue if you can explain it."
-                } else {
-                    "The router uses a self-signed certificate that cannot be verified automatically. " +
-                        "Compare the SHA-256 fingerprint with the one your browser shows for " +
-                        "https://fritz.box (or the certificate in the FRITZ!Box web UI) before trusting it."
-                },
+                intro = stringResource(if (prompt.changed) R.string.cert_changed_text else R.string.cert_trust_text),
                 warning = prompt.changed,
                 initiallyExpanded = false,
             )
         },
         confirmButton = {
-            TextButton(onClick = onTrust) { Text(if (prompt.changed) "Trust new certificate" else "Trust") }
+            TextButton(onClick = onTrust) { Text(stringResource(if (prompt.changed) R.string.cert_trust_new else R.string.cert_trust)) }
         },
         dismissButton = {
-            TextButton(onClick = onReject) { Text("Cancel") }
+            TextButton(onClick = onReject) { Text(stringResource(R.string.cancel)) }
         },
     )
 }
@@ -81,12 +75,12 @@ fun ViewCertificateDialog(
 ) {
     AlertDialog(
         onDismissRequest = onClose,
-        title = { Text("Trusted certificate") },
+        title = { Text(stringResource(R.string.connection_trusted_cert)) },
         text = { CertificateDetails(info = info, intro = null, warning = false, initiallyExpanded = true) },
-        confirmButton = { TextButton(onClick = onClose) { Text("Close") } },
+        confirmButton = { TextButton(onClick = onClose) { Text(stringResource(R.string.close)) } },
         dismissButton = {
             TextButton(onClick = onForget) {
-                Text("Forget", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.forget), color = MaterialTheme.colorScheme.error)
             }
         },
     )
@@ -126,7 +120,7 @@ private fun CertificateDetails(
         }
         if (info.expired) {
             Text(
-                "This certificate is outside its validity period.",
+                stringResource(R.string.cert_expired),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -134,11 +128,11 @@ private fun CertificateDetails(
 
         // The fingerprint is always visible: it is what the user compares before trusting.
         SelectionContainer {
-            Field("SHA-256 fingerprint", info.sha256, mono = true)
+            Field(stringResource(R.string.cert_sha256), info.sha256, mono = true)
         }
 
         TextButton(onClick = { expanded = !expanded }) {
-            Text(if (expanded) "Hide certificate details" else "Show certificate details")
+            Text(stringResource(if (expanded) R.string.cert_hide_details else R.string.cert_show_details))
         }
 
         if (expanded) {
@@ -148,19 +142,22 @@ private fun CertificateDetails(
             ) {
                 SelectionContainer {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Field("Subject", info.subject)
-                        Field("Issuer", if (info.selfSigned) "${info.issuer} (self-signed)" else info.issuer)
+                        Field(stringResource(R.string.cert_subject), info.subject)
+                        Field(
+                            stringResource(R.string.cert_issuer),
+                            if (info.selfSigned) stringResource(R.string.cert_self_signed, info.issuer) else info.issuer,
+                        )
                         if (info.subjectAltNames.isNotEmpty()) {
-                            Field("Alternative names", info.subjectAltNames.joinToString("\n"))
+                            Field(stringResource(R.string.cert_alt_names), info.subjectAltNames.joinToString("\n"))
                         }
-                        Field("Valid", "${info.validFrom}\n– ${info.validUntil}")
-                        Field("Serial number", info.serialNumber, mono = true)
-                        Field("Key / signature", "${info.publicKey}, ${info.signatureAlgorithm}")
-                        Field("SHA-1 fingerprint", info.sha1, mono = true)
+                        Field(stringResource(R.string.cert_valid), "${info.validFrom}\n– ${info.validUntil}")
+                        Field(stringResource(R.string.cert_serial), info.serialNumber, mono = true)
+                        Field(stringResource(R.string.cert_key), "${info.publicKey}, ${info.signatureAlgorithm}")
+                        Field(stringResource(R.string.cert_sha1), info.sha1, mono = true)
                     }
                 }
                 Text(
-                    "Certificate (PEM)",
+                    stringResource(R.string.cert_pem),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

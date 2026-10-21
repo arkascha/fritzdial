@@ -90,6 +90,16 @@ reload button), from two sources:
   either fails, the switch stays off and the settings show why. If reading fails later (e.g. the
   permission was revoked), the **Recent** tab shows a note with **Turn off** and **App settings**.
 
+### Language
+
+FritzDial is available in English, German, Dutch, French, Italian, Spanish and Polish.
+**Settings › Language** offers **System language** (the default) or one of these. From Android 13
+on this is Android's own per-app language, so the same choice also appears under the system's
+*Settings › Apps › FritzDial › Language*; before Android 13 the app applies it itself.
+Texts from the FRITZ!Box (e.g. its error descriptions) and the phone's own number labels stay as
+they come. The translations still need a review by native speakers; menu names of the FRITZ!Box
+are taken from the German FRITZ!OS and translated descriptively for the other languages.
+
 ### Confirmation on the FRITZ!Box (two-factor)
 
 Newer FRITZ!OS versions protect settings changes with an *additional confirmation* on the box
@@ -129,8 +139,10 @@ Contacts or a web page; the number is pre-filled.
 | `data/DeviceContacts.kt` | The phone's own contacts as an extra phone book (`READ_CONTACTS`) |
 | `tr064/CallList.kt` | Dialled, received and missed calls from the box' call list (`X_AVM-DE_OnTel` `GetCallList`, XML export) |
 | `data/DeviceCallLog.kt` | The phone's own dialled, received and missed calls from the Android call log (`READ_CALL_LOG`) |
+| `data/AppLanguage.kt` | UI language: system or chosen (per-app language on Android 13+, own handling before) |
 | `data/SettingsRepository.kt` | FritzBox connections (passwords encrypted via Android Keystore) and options |
-| `ui/` | ViewModel and Compose screens (dialer, settings, certificate dialogs) |
+| `ui/` | ViewModel and Compose screens (dialer, settings, certificate dialogs); `UiText` carries ViewModel texts as resources |
+| `res/values*/strings.xml` | All UI texts: English (`values/`) and the translations (`values-de/`, …) |
 
 Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising,
 the call list's date format, merging of the recent numbers and certificate pinning.

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- common -->
+    <string name="back">Terug</string>
+    <string name="cancel">Annuleren</string>
+    <string name="close">Sluiten</string>
+    <string name="delete">Verwijderen</string>
+    <string name="edit">Bewerken</string>
+    <string name="forget">Vergeten</string>
+    <string name="show">Tonen</string>
+    <string name="allow">Toestaan</string>
+    <string name="not_now">Niet nu</string>
+    <string name="dont_ask_again">Niet meer vragen</string>
+    <string name="turn_off">Uitschakelen</string>
+    <string name="app_settings">App-instellingen</string>
+    <string name="retry">Opnieuw</string>
+    <string name="open_settings">Instellingen openen</string>
+    <string name="settings">Instellingen</string>
+    <string name="this_phone">Deze telefoon</string>
+    <string name="fritzbox">FritzBox</string>
+    <string name="phone_books">Telefoonboeken</string>
+
+    <!-- dialer -->
+    <string name="dialer_number_label">Te bellen nummer</string>
+    <string name="dialer_choose_number">Kiezen uit recente gesprekken of telefoonboeken</string>
+    <string name="dialer_dial">Bellen</string>
+    <string name="dialer_hang_up">Ophangen</string>
+    <string name="dialer_delete_digit">Laatste cijfer wissen</string>
+    <string name="dialer_clear_number">Nummer wissen</string>
+    <string name="dialer_backspace_description">Laatste cijfer wissen, lang drukken om alles te wissen</string>
+    <string name="dialer_no_phones">Geen telefoons geladen</string>
+    <string name="dialer_choose_phone">Telefoon kiezen</string>
+    <string name="dialer_ring_phone">Laten overgaan op</string>
+    <string name="dialer_reload_phones">Telefoons opnieuw van de router laden</string>
+
+    <!-- number picker -->
+    <string name="picker_title">Nummer kiezen</string>
+    <string name="picker_reload">Recente gesprekken en telefoonboeken opnieuw laden</string>
+    <string name="picker_tab_recent">Recent</string>
+
+    <!-- phone books -->
+    <string name="phonebook_search">Naam of nummer zoeken</string>
+    <string name="phonebook_clear_search">Zoekopdracht wissen</string>
+    <string name="phonebook_chip">%1$s (%2$d)</string>
+    <string name="phonebook_loading">Telefoonboeken laden…</string>
+    <string name="phonebook_load_failed">De telefoonboeken konden niet worden geladen. Tik op opnieuw laden om het nog eens te proberen.</string>
+    <string name="phonebook_empty">De telefoonboeken zijn leeg.</string>
+    <string name="phonebook_no_match">Geen passende contacten.</string>
+    <string name="device_contacts_question_title">Contacten van deze telefoon opnemen?</string>
+    <string name="device_contacts_question_text">FritzDial kan naast de telefoonboeken van de FRITZ!Box ook de contacten tonen die op deze telefoon zijn opgeslagen. Daarvoor vraagt Android toegang tot je contacten – ze verlaten de telefoon nooit. Je kunt dit later in de instellingen wijzigen.</string>
+    <string name="device_contacts_revoked">De contacten van deze telefoon zijn ingeschakeld, maar Android staat FritzDial niet meer toe ze te lezen.</string>
+    <string name="number_type_home">Thuis</string>
+    <string name="number_type_mobile">Mobiel</string>
+    <string name="number_type_work">Werk</string>
+    <string name="number_type_fax">Fax</string>
+    <string name="number_type_internal">Intern</string>
+    <string name="number_type_memo">Memo</string>
+    <string name="number_type_other">Overig</string>
+
+    <!-- recent calls -->
+    <string name="recents_loading">Gesprekkenlijst laden…</string>
+    <string name="recents_load_failed">De gesprekkenlijst kon niet worden geladen. Tik op opnieuw laden om het nog eens te proberen.</string>
+    <string name="recents_empty">Nog geen recente gesprekken.</string>
+    <string name="recents_box_load_failed">De gesprekkenlijst van de FritzBox kon niet worden geladen. Tik op opnieuw laden om het nog eens te proberen.</string>
+    <string name="recents_recorded_by_box">Vastgelegd door %1$s</string>
+    <string name="recents_recorded_by_phone">Vastgelegd door deze telefoon</string>
+    <string name="recents_dialled">Gebeld</string>
+    <string name="recents_received">Aangenomen</string>
+    <string name="recents_missed">Gemist</string>
+
+    <!-- settings overview -->
+    <string name="settings_connections">FritzBox-verbindingen</string>
+    <string name="settings_connections_hint">De FritzBox van het netwerk waarin de telefoon zich bevindt, wordt automatisch gekozen.</string>
+    <string name="settings_add_box">FritzBox toevoegen</string>
+    <string name="settings_in_use">In gebruik</string>
+    <string name="settings_more_options">Meer opties voor %1$s</string>
+    <string name="settings_use_now">Nu gebruiken</string>
+    <string name="settings_delete_title">‘%1$s’ verwijderen?</string>
+    <string name="settings_delete_text">De verbinding, het wachtwoord en het vertrouwde certificaat worden van deze telefoon verwijderd.</string>
+    <string name="settings_device_contacts">Contacten van deze telefoon opnemen</string>
+    <string name="settings_device_contacts_hint">Toont de op deze telefoon opgeslagen contacten naast de telefoonboeken van de FRITZ!Box. Vereist toegang tot je contacten; ze verlaten de telefoon nooit.</string>
+    <string name="settings_device_contacts_denied">Android staat FritzDial niet toe je contacten te lezen. Je kunt het toestaan in de app-instellingen.</string>
+    <string name="settings_recents">Recente nummers</string>
+    <string name="settings_recents_hint">De recent gebelde, aangenomen en gemiste nummers worden uit de gesprekkenlijst van de FritzBox gelezen.</string>
+    <string name="settings_call_log">Gesprekken van deze telefoon opnemen</string>
+    <string name="settings_call_log_hint">Biedt ook de nummers aan die met de telefoon-app van deze telefoon zijn gebeld, aangenomen of gemist. Vereist toegang tot je gesprekkenlijst; die verlaat de telefoon nooit.</string>
+    <string name="settings_call_log_play">Werkt alleen als FritzDial niet via Google Play is geïnstalleerd (APK of F-Droid): Google Play staat het lezen van de gesprekkenlijst alleen toe voor de standaard telefoon-app.</string>
+    <string name="settings_language">Taal</string>
+    <string name="settings_language_hint">Taal van de teksten van FritzDial.</string>
+    <string name="settings_language_system">Systeemtaal</string>
+
+    <!-- connection page -->
+    <string name="connection_title">FritzBox-verbinding</string>
+    <string name="connection_name">Naam</string>
+    <string name="connection_name_placeholder">standaard: de eigen naam van de box</string>
+    <string name="connection_host">Host (bijv. fritz.box of 192.168.178.1)</string>
+    <string name="connection_https">HTTPS gebruiken</string>
+    <string name="connection_https_hint">Versleutelde verbinding (poort %1$d). Het zelfondertekende certificaat van de box moet één keer worden bevestigd.</string>
+    <string name="connection_port">TR-064-poort</string>
+    <string name="connection_user">FRITZ!Box-gebruikersnaam</string>
+    <string name="connection_password">Wachtwoord</string>
+    <string name="connection_help">Schakel op de box “Toegang voor toepassingen toestaan” in (Thuisnetwerk › Netwerk › Netwerkinstellingen) en de “Kieshulp” (Telefonie › Gesprekken › Kieshulp). De gebruiker heeft het recht voor telefonie nodig. Als je alleen met een wachtwoord inlogt, gebruik dan de automatisch aangemaakte gebruikersnaam onder Systeem › FRITZ!Box-gebruikers.</string>
+    <string name="connection_connecting">Verbinden…</string>
+    <string name="connection_save">Opslaan &amp; verbinden</string>
+    <string name="connection_trusted_cert">Vertrouwd certificaat</string>
+    <string name="connection_no_cert">Geen. Bij een verbinding via HTTPS word je gevraagd het certificaat van de router te bevestigen.</string>
+    <string name="connection_cert_fingerprint">SHA-256 %1$s</string>
+    <string name="connection_delete_box">Deze FritzBox verwijderen</string>
+
+    <!-- certificates -->
+    <string name="cert_changed_title">Het certificaat is gewijzigd!</string>
+    <string name="cert_trust_title">Dit certificaat vertrouwen?</string>
+    <string name="cert_changed_text">De router toont een ander certificaat dan het certificaat dat je eerder vertrouwde. Dat gebeurt na een fabrieksreset of een gewijzigde naam van de box – maar het kan ook betekenen dat iemand de verbinding onderschept. Ga alleen verder als je het kunt verklaren.</string>
+    <string name="cert_trust_text">De router gebruikt een zelfondertekend certificaat dat niet automatisch kan worden gecontroleerd. Vergelijk de SHA-256-vingerafdruk met die welke je browser voor https://fritz.box toont (of met het certificaat in de webinterface van de FRITZ!Box) voordat je het vertrouwt.</string>
+    <string name="cert_trust_new">Nieuw certificaat vertrouwen</string>
+    <string name="cert_trust">Vertrouwen</string>
+    <string name="cert_expired">Dit certificaat valt buiten zijn geldigheidsperiode.</string>
+    <string name="cert_sha256">SHA-256-vingerafdruk</string>
+    <string name="cert_show_details">Certificaatdetails tonen</string>
+    <string name="cert_hide_details">Certificaatdetails verbergen</string>
+    <string name="cert_subject">Onderwerp</string>
+    <string name="cert_issuer">Uitgever</string>
+    <string name="cert_self_signed">%1$s (zelfondertekend)</string>
+    <string name="cert_alt_names">Alternatieve namen</string>
+    <string name="cert_valid">Geldig</string>
+    <string name="cert_serial">Serienummer</string>
+    <string name="cert_key">Sleutel / handtekening</string>
+    <string name="cert_sha1">SHA-1-vingerafdruk</string>
+    <string name="cert_pem">Certificaat (PEM)</string>
+
+    <!-- password field -->
+    <string name="password_show">Wachtwoord tonen</string>
+    <string name="password_hide">Wachtwoord verbergen</string>
+
+    <!-- second factor -->
+    <string name="second_factor_title">Bevestigen op de FRITZ!Box</string>
+    <string name="second_factor_intro">Je FRITZ!Box vraagt je deze stap te bevestigen voordat hij hem uitvoert.</string>
+    <string name="second_factor_button">• Druk op een knop van de FRITZ!Box.</string>
+    <string name="second_factor_dial">• Bel %1$s op een telefoon die op de FRITZ!Box is aangesloten.</string>
+    <string name="second_factor_or_dial">• Of bel %1$s op een telefoon die op de FRITZ!Box is aangesloten.</string>
+    <string name="second_factor_other">Bevestig zoals op de FRITZ!Box aangegeven.</string>
+    <string name="second_factor_other_methods">Bevestig zoals op de FRITZ!Box aangegeven (%1$s).</string>
+    <string name="second_factor_waiting">Wachten op bevestiging…</string>
+
+    <!-- errors -->
+    <string name="error_login_title">Inloggen mislukt</string>
+    <string name="error_login">De router heeft gebruikersnaam ‘%1$s’ of het wachtwoord geweigerd. Als je op de box alleen met een wachtwoord inlogt, gebruik dan de automatisch aangemaakte gebruikersnaam onder Systeem › FRITZ!Box-gebruikers.</string>
+    <string name="error_empty_user">(leeg)</string>
+    <string name="error_not_confirmed_title">Niet bevestigd</string>
+    <string name="error_not_confirmed">De FRITZ!Box heeft de bevestiging niet op tijd ontvangen. Tik op Opnieuw en bevestig op de box (druk op de knop, of bel de getoonde code op een aangesloten telefoon).</string>
+    <string name="error_confirmation_blocked_title">Bevestiging geblokkeerd</string>
+    <string name="error_confirmation_blocked">De FRITZ!Box blokkeert momenteel bevestigingen (te veel pogingen). Wacht een paar minuten en probeer het opnieuw.</string>
+    <string name="error_confirmation_busy_title">Bevestiging al bezig</string>
+    <string name="error_confirmation_busy">Er loopt al een andere bevestiging op de FRITZ!Box. Rond die af of wacht erop, en probeer het dan opnieuw.</string>
+    <string name="error_not_authorized_title">Niet gemachtigd</string>
+    <string name="error_not_authorized">Gebruiker ‘%1$s’ is ingelogd, maar mag de kieshulp niet gebruiken. Geef hem het recht voor telefonie onder Systeem › FRITZ!Box-gebruikers.</string>
+    <string name="error_no_dial_help_title">Kieshulp niet beschikbaar</string>
+    <string name="error_no_dial_help">De router biedt deze functie niet via TR-064 aan (verouderd FRITZ!OS?).</string>
+    <string name="error_router_title">Routerfout</string>
+    <string name="error_router_code_title">Routerfout %1$s</string>
+    <string name="error_router_busy_title">Router bezet</string>
+    <string name="error_router_busy">De router weigert tijdelijk verzoeken – na mislukte inlogpogingen blokkeert hij verdere pogingen een tijdje. Wacht een minuut en probeer het opnieuw.</string>
+    <string name="error_unexpected_title">Onverwacht antwoord</string>
+    <string name="error_unexpected">De router op %1$s antwoordde met HTTP %2$d. Is dit echt de TR-064-poort?</string>
+    <string name="error_not_found_title">Router niet gevonden</string>
+    <string name="error_not_found">De hostnaam ‘%1$s’ kan niet worden opgezocht. Controleer de hostnaam en of deze telefoon in je thuisnetwerk is (wifi of VPN).</string>
+    <string name="error_cannot_connect_title">Kan geen verbinding maken</string>
+    <string name="error_cannot_connect">Op %1$s antwoordt niets. Controleer host en poort (%2$d voor HTTP, %3$d voor HTTPS) en of “Toegang voor toepassingen toestaan” op de box is ingeschakeld.</string>
+    <string name="error_no_answer_title">Geen antwoord</string>
+    <string name="error_no_answer">De router op %1$s antwoordde niet op tijd. Controleer host en poort, en of deze telefoon in je thuisnetwerk is.</string>
+    <string name="error_ssl_title">Beveiligde verbinding mislukt</string>
+    <string name="error_ssl_https">HTTPS naar %1$s is mislukt. Gebruikt de box HTTPS op deze poort (meestal %2$d)? %3$s</string>
+    <string name="error_connection_title">Verbindingsprobleem</string>
+    <string name="error_connection_https_port">%1$s – poort %2$d verwacht HTTPS.</string>
+    <string name="error_cert_rejected_title">Certificaat niet vertrouwd</string>
+    <string name="error_cert_rejected">De verbinding is geweigerd omdat je het certificaat van de router niet hebt vertrouwd.</string>
+    <string name="error_no_number_title">Geen nummer</string>
+    <string name="error_no_number">Voer een nummer in om te bellen.</string>
+
+    <!-- progress and status -->
+    <string name="status_connecting">Verbinden met %1$s…</string>
+    <string name="status_loading_phones">Telefoons laden…</string>
+    <string name="status_selecting">%1$s kiezen…</string>
+    <string name="status_ring_on">Gesprekken gaan over op %1$s</string>
+    <string name="status_dialling">%1$s bellen…</string>
+    <string name="status_pick_up">Neem %1$s op – dan belt de box %2$s</string>
+    <string name="status_pick_up_any">Neem je telefoon op – dan belt de box %1$s</string>
+    <string name="status_hanging_up">Ophangen…</string>
+    <string name="status_call_cancelled">Gesprek geannuleerd</string>
+    <string name="status_waiting_cert">Wachten op beslissing over het certificaat…</string>
+    <string name="status_waiting_confirmation">Wachten op bevestiging op de FRITZ!Box…</string>
+    <plurals name="status_connected">
+        <item quantity="one">Verbonden – %d telefoon gevonden</item>
+        <item quantity="other">Verbonden – %d telefoons gevonden</item>
+    </plurals>
+    <plurals name="status_contacts_loaded">
+        <item quantity="one">%d contact geladen</item>
+        <item quantity="other">%d contacten geladen</item>
+    </plurals>
+    <plurals name="status_calls_loaded">
+        <item quantity="one">%d gesprek geladen</item>
+        <item quantity="other">%d gesprekken geladen</item>
+    </plurals>
+
+    <!-- notes -->
+    <string name="notice_unknown_box">%1$s in dit netwerk is niet ingesteld</string>
+    <string name="notice_unknown_box_generic">Een FritzBox in dit netwerk is niet ingesteld</string>
+    <string name="call_log_denied">Android heeft FritzDial niet toegestaan de gesprekkenlijst te lezen.</string>
+    <string name="call_log_failed">De gesprekkenlijst van de telefoon kon niet worden gelezen (%1$s). Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>
+    <string name="call_log_failed_plain">De gesprekkenlijst van de telefoon kon niet worden gelezen. Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>
+</resources>

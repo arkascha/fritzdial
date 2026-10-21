@@ -1,5 +1,6 @@
 package info.christianreiner.fritzdial
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import info.christianreiner.fritzdial.data.AppLanguage
 import info.christianreiner.fritzdial.tr064.CertificateInfo
 import info.christianreiner.fritzdial.ui.ConnectionSettingsScreen
 import info.christianreiner.fritzdial.ui.DialerScreen
@@ -29,6 +31,11 @@ import info.christianreiner.fritzdial.ui.theme.FritzDialTheme
 class MainActivity : ComponentActivity() {
 
     private val viewModel: DialerViewModel by viewModels()
+
+    /** Before Android 13: apply the language chosen in the settings (from then on Android does it). */
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLanguage.wrap(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

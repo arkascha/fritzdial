@@ -1,3 +1,213 @@
-<resources>
-    <string name="app_name">FritzDial</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" translatable="false">FritzDial</string>
+
+    <!-- common -->
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="forget">Forget</string>
+    <string name="show">Show</string>
+    <string name="allow">Allow</string>
+    <string name="not_now">Not now</string>
+    <string name="dont_ask_again">Don’t ask again</string>
+    <string name="turn_off">Turn off</string>
+    <string name="app_settings">App settings</string>
+    <string name="retry">Retry</string>
+    <string name="open_settings">Open settings</string>
+    <string name="settings">Settings</string>
+    <string name="this_phone">This phone</string>
+    <string name="fritzbox">FritzBox</string>
+    <string name="phone_books">Phone books</string>
+
+    <!-- dialer -->
+    <string name="dialer_number_label">Number to dial</string>
+    <string name="dialer_choose_number">Choose from recent calls or phone books</string>
+    <string name="dialer_dial">Dial</string>
+    <string name="dialer_hang_up">Hang up</string>
+    <string name="dialer_delete_digit">Delete last digit</string>
+    <string name="dialer_clear_number">Clear number</string>
+    <string name="dialer_backspace_description">Delete last digit, long press to clear</string>
+    <string name="dialer_no_phones">No phones loaded</string>
+    <string name="dialer_choose_phone">Choose phone</string>
+    <string name="dialer_ring_phone">Ring phone</string>
+    <string name="dialer_reload_phones">Reload phones from the router</string>
+
+    <!-- number picker -->
+    <string name="picker_title">Choose number</string>
+    <string name="picker_reload">Reload recent calls and phone books</string>
+    <string name="picker_tab_recent">Recent</string>
+
+    <!-- phone books -->
+    <string name="phonebook_search">Search name or number</string>
+    <string name="phonebook_clear_search">Clear search</string>
+    <string name="phonebook_chip">%1$s (%2$d)</string>
+    <string name="phonebook_loading">Loading phone books…</string>
+    <string name="phonebook_load_failed">Phone books could not be loaded. Tap reload to try again.</string>
+    <string name="phonebook_empty">The phone books are empty.</string>
+    <string name="phonebook_no_match">No matching contacts.</string>
+    <string name="device_contacts_question_title">Include this phone’s contacts?</string>
+    <string name="device_contacts_question_text">FritzDial can also show the contacts stored on this phone next to the FRITZ!Box phone books. For that, Android asks for access to your contacts – they never leave the phone. You can change this later in the settings.</string>
+    <string name="device_contacts_revoked">This phone’s contacts are switched on, but Android no longer allows FritzDial to read them.</string>
+    <string name="number_type_home">Home</string>
+    <string name="number_type_mobile">Mobile</string>
+    <string name="number_type_work">Work</string>
+    <string name="number_type_fax">Fax</string>
+    <string name="number_type_internal">Internal</string>
+    <string name="number_type_memo">Memo</string>
+    <string name="number_type_other">Other</string>
+
+    <!-- recent calls -->
+    <string name="recents_loading">Loading call list…</string>
+    <string name="recents_load_failed">The call list could not be loaded. Tap reload to try again.</string>
+    <string name="recents_empty">No recent calls yet.</string>
+    <string name="recents_box_load_failed">The FritzBox call list could not be loaded. Tap reload to try again.</string>
+    <string name="recents_recorded_by_box">Recorded by %1$s</string>
+    <string name="recents_recorded_by_phone">Recorded by this phone</string>
+    <string name="recents_dialled">Dialled</string>
+    <string name="recents_received">Received</string>
+    <string name="recents_missed">Missed</string>
+
+    <!-- settings overview -->
+    <string name="settings_connections">FritzBox connections</string>
+    <string name="settings_connections_hint">The FritzBox of the network the phone is in is selected automatically.</string>
+    <string name="settings_add_box">Add FritzBox</string>
+    <string name="settings_in_use">In use</string>
+    <string name="settings_more_options">More options for %1$s</string>
+    <string name="settings_use_now">Use now</string>
+    <string name="settings_delete_title">Delete “%1$s”?</string>
+    <string name="settings_delete_text">The connection, its password and its trusted certificate are removed from this phone.</string>
+    <string name="settings_device_contacts">Include this phone’s contacts</string>
+    <string name="settings_device_contacts_hint">Shows the contacts stored on this phone next to the FRITZ!Box phone books. Needs access to your contacts; they never leave the phone.</string>
+    <string name="settings_device_contacts_denied">Android does not allow FritzDial to read your contacts. You can allow it in the app settings.</string>
+    <string name="settings_recents">Recent numbers</string>
+    <string name="settings_recents_hint">The recently dialled, received and missed numbers are read from the FritzBox’s call list.</string>
+    <string name="settings_call_log">Include this phone’s calls</string>
+    <string name="settings_call_log_hint">Also offers the numbers dialled, received and missed with the phone’s own telephony app. Needs access to your call log; it never leaves the phone.</string>
+    <string name="settings_call_log_play">Only works if FritzDial was installed from outside Google Play (APK or F-Droid): Google Play allows reading the call log only for the phone’s default phone app.</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_hint">Language of FritzDial’s texts.</string>
+    <string name="settings_language_system">System language</string>
+
+    <!-- connection page -->
+    <string name="connection_title">FritzBox connection</string>
+    <string name="connection_name">Name</string>
+    <string name="connection_name_placeholder">default: the box’s own name</string>
+    <string name="connection_host">Host (e.g. fritz.box or 192.168.178.1)</string>
+    <string name="connection_https">Use HTTPS</string>
+    <string name="connection_https_hint">Encrypted connection (port %1$d). The box’s self-signed certificate must be confirmed once.</string>
+    <string name="connection_port">TR-064 port</string>
+    <string name="connection_user">FRITZ!Box user name</string>
+    <string name="connection_password">Password</string>
+    <string name="connection_help">On the box, enable “Allow access for applications” (Home Network › Network › Network Settings) and “Dial help” (Telephony › Calls › Dial Help). The user needs telephony permission. If you log in with password only, use the auto-generated user name shown under System › FRITZ!Box Users.</string>
+    <string name="connection_connecting">Connecting…</string>
+    <string name="connection_save">Save &amp; connect</string>
+    <string name="connection_trusted_cert">Trusted certificate</string>
+    <string name="connection_no_cert">None. When connecting via HTTPS you will be asked to confirm the router’s certificate.</string>
+    <string name="connection_cert_fingerprint">SHA-256 %1$s</string>
+    <string name="connection_delete_box">Delete this FritzBox</string>
+
+    <!-- certificates -->
+    <string name="cert_changed_title">Certificate has changed!</string>
+    <string name="cert_trust_title">Trust this certificate?</string>
+    <string name="cert_changed_text">The router presents a different certificate than the one you trusted before. This happens after a factory reset or a changed box name – but it could also mean someone is intercepting the connection. Only continue if you can explain it.</string>
+    <string name="cert_trust_text">The router uses a self-signed certificate that cannot be verified automatically. Compare the SHA-256 fingerprint with the one your browser shows for https://fritz.box (or the certificate in the FRITZ!Box web UI) before trusting it.</string>
+    <string name="cert_trust_new">Trust new certificate</string>
+    <string name="cert_trust">Trust</string>
+    <string name="cert_expired">This certificate is outside its validity period.</string>
+    <string name="cert_sha256">SHA-256 fingerprint</string>
+    <string name="cert_show_details">Show certificate details</string>
+    <string name="cert_hide_details">Hide certificate details</string>
+    <string name="cert_subject">Subject</string>
+    <string name="cert_issuer">Issuer</string>
+    <string name="cert_self_signed">%1$s (self-signed)</string>
+    <string name="cert_alt_names">Alternative names</string>
+    <string name="cert_valid">Valid</string>
+    <string name="cert_serial">Serial number</string>
+    <string name="cert_key">Key / signature</string>
+    <string name="cert_sha1">SHA-1 fingerprint</string>
+    <string name="cert_pem">Certificate (PEM)</string>
+
+    <!-- password field -->
+    <string name="password_show">Show password</string>
+    <string name="password_hide">Hide password</string>
+
+    <!-- second factor -->
+    <string name="second_factor_title">Confirm on the FRITZ!Box</string>
+    <string name="second_factor_intro">Your FRITZ!Box asks you to confirm this step before it carries it out.</string>
+    <string name="second_factor_button">• Press a button on the FRITZ!Box.</string>
+    <string name="second_factor_dial">• Dial %1$s on a phone connected to the FRITZ!Box.</string>
+    <string name="second_factor_or_dial">• Or dial %1$s on a phone connected to the FRITZ!Box.</string>
+    <string name="second_factor_other">Confirm as shown on the FRITZ!Box.</string>
+    <string name="second_factor_other_methods">Confirm as shown on the FRITZ!Box (%1$s).</string>
+    <string name="second_factor_waiting">Waiting for confirmation…</string>
+
+    <!-- errors -->
+    <string name="error_login_title">Login failed</string>
+    <string name="error_login">The router rejected user name “%1$s” or the password. If you log in to the box with a password only, use the auto-generated user name shown under System › FRITZ!Box Users.</string>
+    <string name="error_empty_user">(empty)</string>
+    <string name="error_not_confirmed_title">Not confirmed</string>
+    <string name="error_not_confirmed">The FRITZ!Box did not receive the confirmation in time. Tap Retry and confirm on the box (press its button, or dial the shown code on a connected phone).</string>
+    <string name="error_confirmation_blocked_title">Confirmation blocked</string>
+    <string name="error_confirmation_blocked">The FRITZ!Box currently blocks confirmations (too many attempts). Wait a few minutes and try again.</string>
+    <string name="error_confirmation_busy_title">Confirmation busy</string>
+    <string name="error_confirmation_busy">Another confirmation is already running on the FRITZ!Box. Finish or wait for it, then retry.</string>
+    <string name="error_not_authorized_title">Not authorized</string>
+    <string name="error_not_authorized">User “%1$s” is logged in but may not use dial help. Grant it the telephony permission under System › FRITZ!Box Users.</string>
+    <string name="error_no_dial_help_title">Dial help not available</string>
+    <string name="error_no_dial_help">The router does not offer this function via TR-064 (outdated firmware?).</string>
+    <string name="error_router_title">Router error</string>
+    <string name="error_router_code_title">Router error %1$s</string>
+    <string name="error_router_busy_title">Router busy</string>
+    <string name="error_router_busy">The router temporarily refuses requests – after failed logins it blocks further attempts for a while. Wait a minute and try again.</string>
+    <string name="error_unexpected_title">Unexpected answer</string>
+    <string name="error_unexpected">The router at %1$s answered with HTTP %2$d. Is this really the TR-064 port?</string>
+    <string name="error_not_found_title">Router not found</string>
+    <string name="error_not_found">The host name “%1$s” cannot be resolved. Check the host name and that this phone is in your home network (Wi-Fi or VPN).</string>
+    <string name="error_cannot_connect_title">Cannot connect</string>
+    <string name="error_cannot_connect" tools:ignore="PluralsCandidate">Nothing answers at %1$s. Check host and port (%2$d for HTTP, %3$d for HTTPS) and that “Allow access for applications” is enabled on the box.</string>
+    <string name="error_no_answer_title">No answer</string>
+    <string name="error_no_answer">The router at %1$s did not answer in time. Check host and port, and that this phone is in your home network.</string>
+    <string name="error_ssl_title">Secure connection failed</string>
+    <string name="error_ssl_https">HTTPS to %1$s failed. Does the box use HTTPS on this port (usually %2$d)? %3$s</string>
+    <string name="error_connection_title">Connection problem</string>
+    <string name="error_connection_https_port" tools:ignore="PluralsCandidate">%1$s – port %2$d expects HTTPS.</string>
+    <string name="error_cert_rejected_title">Certificate not trusted</string>
+    <string name="error_cert_rejected">The connection was refused because you did not trust the router’s certificate.</string>
+    <string name="error_no_number_title">No number</string>
+    <string name="error_no_number">Please enter a number to dial.</string>
+
+    <!-- progress and status -->
+    <string name="status_connecting">Connecting to %1$s…</string>
+    <string name="status_loading_phones">Loading phones…</string>
+    <string name="status_selecting">Selecting %1$s…</string>
+    <string name="status_ring_on">Calls will ring on %1$s</string>
+    <string name="status_dialling">Dialling %1$s…</string>
+    <string name="status_pick_up">Pick up %1$s – the box then calls %2$s</string>
+    <string name="status_pick_up_any">Pick up your phone – the box then calls %1$s</string>
+    <string name="status_hanging_up">Hanging up…</string>
+    <string name="status_call_cancelled">Call cancelled</string>
+    <string name="status_waiting_cert">Waiting for certificate decision…</string>
+    <string name="status_waiting_confirmation">Waiting for confirmation on the FRITZ!Box…</string>
+    <plurals name="status_connected">
+        <item quantity="one">Connected – %d phone found</item>
+        <item quantity="other">Connected – %d phones found</item>
+    </plurals>
+    <plurals name="status_contacts_loaded">
+        <item quantity="one">%d contact loaded</item>
+        <item quantity="other">%d contacts loaded</item>
+    </plurals>
+    <plurals name="status_calls_loaded">
+        <item quantity="one">%d call loaded</item>
+        <item quantity="other">%d calls loaded</item>
+    </plurals>
+
+    <!-- notes -->
+    <string name="notice_unknown_box">%1$s in this network is not configured</string>
+    <string name="notice_unknown_box_generic">A FritzBox in this network is not configured</string>
+    <string name="call_log_denied">Android did not allow FritzDial to read the call log.</string>
+    <string name="call_log_failed">The phone’s call log could not be read (%1$s). This only works when FritzDial was not installed from Google Play.</string>
+    <string name="call_log_failed_plain">The phone’s call log could not be read. This only works when FritzDial was not installed from Google Play.</string>
 </resources>

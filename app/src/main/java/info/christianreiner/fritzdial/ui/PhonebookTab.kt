@@ -44,11 +44,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.tr064.Phonebook
 import info.christianreiner.fritzdial.tr064.PhonebookContact
@@ -135,12 +137,12 @@ fun PhonebookTab(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             singleLine = true,
-            placeholder = { Text("Search name or number") },
+            placeholder = { Text(stringResource(R.string.phonebook_search)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             trailingIcon = {
                 if (query.isNotEmpty()) {
                     IconButton(onClick = { query = "" }) {
-                        Icon(Icons.Default.Clear, contentDescription = "Clear search")
+                        Icon(Icons.Default.Clear, contentDescription = stringResource(R.string.phonebook_clear_search))
                     }
                 }
             },
@@ -168,18 +170,18 @@ fun PhonebookTab(
                         onClick = {
                             hidden = if (selected) hidden + book.name else hidden - book.name
                         },
-                        label = { Text("${book.name} (${book.contacts.size})") },
+                        label = { Text(stringResource(R.string.phonebook_chip, bookLabel(book.name), book.contacts.size)) },
                     )
                 }
             }
         }
 
         when {
-            phonebooks.isEmpty() && busy -> Message("Loading phone books…")
+            phonebooks.isEmpty() && busy -> Message(stringResource(R.string.phonebook_loading))
             phonebooks.isEmpty() && !loaded ->
-                Message("Phone books could not be loaded. Tap reload to try again.")
-            phonebooks.all { it.contacts.isEmpty() } -> Message("The phone books are empty.")
-            filtered.isEmpty() -> Message("No matching contacts.")
+                Message(stringResource(R.string.phonebook_load_failed))
+            phonebooks.all { it.contacts.isEmpty() } -> Message(stringResource(R.string.phonebook_empty))
+            filtered.isEmpty() -> Message(stringResource(R.string.phonebook_no_match))
             else -> Row(Modifier.fillMaxSize()) {
                 LazyColumn(
                     state = listState,
@@ -210,19 +212,15 @@ private fun DeviceContactsQuestion(onAllow: () -> Unit, onNotNow: () -> Unit, on
     AlertDialog(
         onDismissRequest = onNotNow,
         icon = { Icon(ContactsIcon, contentDescription = null) },
-        title = { Text("Include this phone\u2019s contacts?") },
+        title = { Text(stringResource(R.string.device_contacts_question_title)) },
         text = {
-            Text(
-                "FritzDial can also show the contacts stored on this phone next to the FRITZ!Box " +
-                    "phone books. For that, Android asks for access to your contacts \u2013 they never " +
-                    "leave the phone. You can change this later in the settings."
-            )
+            Text(stringResource(R.string.device_contacts_question_text))
         },
-        confirmButton = { TextButton(onClick = onAllow) { Text("Allow") } },
+        confirmButton = { TextButton(onClick = onAllow) { Text(stringResource(R.string.allow)) } },
         dismissButton = {
             Row {
-                TextButton(onClick = onNever) { Text("Don\u2019t ask again") }
-                TextButton(onClick = onNotNow) { Text("Not now") }
+                TextButton(onClick = onNever) { Text(stringResource(R.string.dont_ask_again)) }
+                TextButton(onClick = onNotNow) { Text(stringResource(R.string.not_now)) }
             }
         },
     )
@@ -241,12 +239,12 @@ private fun ContactsRevokedCard(
     ) {
         Column(Modifier.padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 4.dp)) {
             Text(
-                "This phone's contacts are switched on, but Android no longer allows FritzDial to read them.",
+                stringResource(R.string.device_contacts_revoked),
                 style = MaterialTheme.typography.bodyMedium,
             )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = onTurnOff) { Text("Turn off") }
-                TextButton(onClick = onOpenSettings) { Text("App settings") }
+                TextButton(onClick = onTurnOff) { Text(stringResource(R.string.turn_off)) }
+                TextButton(onClick = onOpenSettings) { Text(stringResource(R.string.app_settings)) }
             }
         }
     }
@@ -277,7 +275,7 @@ private fun ContactRow(contact: PhonebookContact, showBook: Boolean, onPick: (St
             )
             if (showBook) {
                 Text(
-                    contact.book,
+                    bookLabel(contact.book),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -299,7 +297,7 @@ private fun ContactRow(contact: PhonebookContact, showBook: Boolean, onPick: (St
                 Spacer(Modifier.width(12.dp))
                 Text(n.number, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Text(
-                    n.label,
+                    numberTypeLabel(n.type),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -317,6 +315,27 @@ private fun jumpIndex(letters: List<Char>, letter: Char): Int {
     val wanted = INDEX_LETTERS.indexOf(letter)
     val i = letters.indexOfFirst { INDEX_LETTERS.indexOf(it) >= wanted }
     return if (i >= 0) i else letters.lastIndex
+}
+
+/** Display name of a phone book: the phone's own contacts in the app's language, the box' as they are. */
+@Composable
+private fun bookLabel(name: String): String =
+    if (name == DeviceContacts.BOOK_NAME) stringResource(R.string.this_phone) else name
+
+/**
+ * Label of a number's type. The box tags them "home", "mobile", …; the phone's own contacts
+ * already bring Android's label in the system language, which is shown as it is.
+ */
+@Composable
+private fun numberTypeLabel(type: String): String = when (type.lowercase()) {
+    "home" -> stringResource(R.string.number_type_home)
+    "mobile" -> stringResource(R.string.number_type_mobile)
+    "work" -> stringResource(R.string.number_type_work)
+    "fax_work", "fax" -> stringResource(R.string.number_type_fax)
+    "intern" -> stringResource(R.string.number_type_internal)
+    "memo" -> stringResource(R.string.number_type_memo)
+    "other", "" -> stringResource(R.string.number_type_other)
+    else -> type.replaceFirstChar { it.uppercase() }
 }
 
 /** Case-insensitive name match; number match ignores spaces, dashes and the like. */

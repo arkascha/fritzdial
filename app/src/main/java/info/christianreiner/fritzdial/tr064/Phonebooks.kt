@@ -5,21 +5,11 @@ import org.xmlpull.v1.XmlPullParserFactory
 import java.io.IOException
 import java.io.StringReader
 
-/** One number of a contact, with the box' type tag ("home", "mobile", "work", …). */
-data class PhonebookNumber(val number: String, val type: String) {
-    /** Human readable label for [type]. */
-    val label: String
-        get() = when (type.lowercase()) {
-            "home" -> "Home"
-            "mobile" -> "Mobile"
-            "work" -> "Work"
-            "fax_work", "fax" -> "Fax"
-            "intern" -> "Internal"
-            "memo" -> "Memo"
-            "other", "" -> "Other"
-            else -> type.replaceFirstChar { it.uppercase() }
-        }
-}
+/**
+ * One number of a contact, with the box' type tag ("home", "mobile", "work", …) – or, for the
+ * phone's own contacts, Android's label for it. The UI turns it into a label.
+ */
+data class PhonebookNumber(val number: String, val type: String)
 
 data class PhonebookContact(
     val name: String,
