@@ -21,7 +21,7 @@
     <string name="phone_books">Rubriche</string>
 
     <!-- dialer -->
-    <string name="dialer_number_label">Numero da chiamare</string>
+    <string name="dialer_number_label">Numero telefono</string>
     <string name="dialer_choose_number">Scegli dalle chiamate recenti o dalle rubriche</string>
     <string name="dialer_dial">Chiama</string>
     <string name="dialer_hang_up">Riaggancia</string>

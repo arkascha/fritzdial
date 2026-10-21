@@ -54,6 +54,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -150,7 +151,14 @@ fun DialerScreen(
                     enabled = false,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    label = { Text(stringResource(R.string.dialer_number_label)) },
+                    // Never on two lines (long translation, large font): rather cut off with "…".
+                    label = {
+                        Text(
+                            stringResource(R.string.dialer_number_label),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
                     textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
                     colors = OutlinedTextFieldDefaults.colors(
                         disabledTextColor = onSurface,

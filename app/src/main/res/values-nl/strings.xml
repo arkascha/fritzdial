@@ -21,7 +21,7 @@
     <string name="phone_books">Telefoonboeken</string>
 
     <!-- dialer -->
-    <string name="dialer_number_label">Te bellen nummer</string>
+    <string name="dialer_number_label">Telefoonnummer</string>
     <string name="dialer_choose_number">Kiezen uit recente gesprekken of telefoonboeken</string>
     <string name="dialer_dial">Bellen</string>
     <string name="dialer_hang_up">Ophangen</string>

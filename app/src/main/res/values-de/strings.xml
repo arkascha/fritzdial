@@ -21,7 +21,7 @@
     <string name="phone_books">Telefonbücher</string>
 
     <!-- dialer -->
-    <string name="dialer_number_label">Zu wählende Nummer</string>
+    <string name="dialer_number_label">Rufnummer</string>
     <string name="dialer_choose_number">Aus letzten Anrufen oder Telefonbüchern wählen</string>
     <string name="dialer_dial">Wählen</string>
     <string name="dialer_hang_up">Auflegen</string>

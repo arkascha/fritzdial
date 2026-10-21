@@ -21,7 +21,7 @@
     <string name="phone_books">Répertoires</string>
 
     <!-- dialer -->
-    <string name="dialer_number_label">Numéro à composer</string>
+    <string name="dialer_number_label">Numéro d’appel</string>
     <string name="dialer_choose_number">Choisir parmi les appels récents ou les répertoires</string>
     <string name="dialer_dial">Appeler</string>
     <string name="dialer_hang_up">Raccrocher</string>
