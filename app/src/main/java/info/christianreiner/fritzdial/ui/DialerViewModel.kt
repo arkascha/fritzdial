@@ -82,6 +82,8 @@ data class UiState(
     val certificatePrompt: CertificatePrompt? = null,
     /** Non-null while the trusted certificate is shown read-only. */
     val viewedCertificate: CertificateInfo? = null,
+    /** The language screen is open. */
+    val showLanguage: Boolean = false,
     /** The number picker (tabs "Recent" and "Phone books") is open. */
     val showPicker: Boolean = false,
     /** Phone books of the box, loaded on first use of the number picker (cached). */
@@ -502,6 +504,10 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun closePicker() = _state.update { it.copy(showPicker = false) }
+
+    fun openLanguage() = _state.update { it.copy(showLanguage = true) }
+
+    fun closeLanguage() = _state.update { it.copy(showLanguage = false) }
 
     /** The picker's reload button: recent calls and phone books. */
     fun reloadPicker() {

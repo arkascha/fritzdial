@@ -1,8 +1,5 @@
 package info.christianreiner.fritzdial.ui
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -43,7 +39,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -58,7 +53,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,7 +60,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import info.christianreiner.fritzdial.R
-import info.christianreiner.fritzdial.data.AppLanguage
 import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
@@ -173,9 +166,6 @@ fun SettingsScreen(
                     onDisable = onDisableCallLog,
                 )
             }
-
-            HorizontalDivider()
-            LanguageSetting()
         }
     }
 
@@ -561,63 +551,4 @@ private fun CallLogSetting(
             Text(stringResource(R.string.app_settings))
         }
     }
-}
-
-/**
- * The app's language: the system's, or one of the languages FritzDial is translated into.
- * Choosing one redraws the app in it (see [AppLanguage]).
- */
-@Composable
-private fun LanguageSetting() {
-    val context = LocalContext.current
-    val current = remember { AppLanguage.current(context) }
-    var choosing by remember { mutableStateOf(false) }
-    val system = stringResource(R.string.settings_language_system)
-    val currentName = AppLanguage.supported.firstOrNull { it.first == current }?.second ?: system
-
-    ListItem(
-        headlineContent = { Text(stringResource(R.string.settings_language)) },
-        supportingContent = { Text(currentName) },
-        modifier = Modifier.clickable { choosing = true },
-    )
-
-    if (choosing) {
-        val options = listOf<Pair<String?, String>>(null to system) + AppLanguage.supported
-        AlertDialog(
-            onDismissRequest = { choosing = false },
-            title = { Text(stringResource(R.string.settings_language)) },
-            text = {
-                Column {
-                    Text(
-                        stringResource(R.string.settings_language_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    options.forEach { (tag, name) ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .selectable(selected = tag == current, role = Role.RadioButton) {
-                                    choosing = false
-                                    if (tag != current) context.findActivity()?.let { AppLanguage.set(it, tag) }
-                                },
-                        ) {
-                            RadioButton(selected = tag == current, onClick = null)
-                            Text(name, modifier = Modifier.padding(start = 12.dp, top = 12.dp, bottom = 12.dp))
-                        }
-                    }
-                }
-            },
-            confirmButton = {},
-            dismissButton = { TextButton(onClick = { choosing = false }) { Text(stringResource(R.string.cancel)) } },
-        )
-    }
-}
-
-/** The activity behind a (possibly wrapped) context. */
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
 }

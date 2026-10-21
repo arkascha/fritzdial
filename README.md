@@ -95,8 +95,11 @@ reload button), from two sources:
 ### Language
 
 FritzDial is available in English, German, Dutch, French, Italian, Spanish and Polish.
-**Settings › Language** offers **System language** (the default) or one of these. From Android 13
-on this is Android's own per-app language, so the same choice also appears under the system's
+The flag button in the dialer's top bar (left of the settings) opens **Language**: **Auto** (the
+system language, the default) or one of these, each with its national flag. Choosing one returns to
+the dialer, already in the new language. The button shows the flag of the language in use – the
+region of the system language with *Auto* (e.g. 🇦🇹 for German in Austria), else the language's usual
+country; English (🇬🇧) when the system language is not one of the above. From Android 13 on this is Android's own per-app language, so the same choice also appears under the system's
 *Settings › Apps › FritzDial › Language*; before Android 13 the app applies it itself.
 Texts from the FRITZ!Box (e.g. its error descriptions) and the phone's own number labels stay as
 they come. The translations still need a review by native speakers; menu names of the FRITZ!Box

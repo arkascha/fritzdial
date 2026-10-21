@@ -89,7 +89,7 @@
     <string name="settings_call_log_play">Werkt alleen als FritzDial niet via Google Play is geïnstalleerd (APK of F-Droid): Google Play staat het lezen van de gesprekkenlijst alleen toe voor de standaard telefoon-app.</string>
     <string name="settings_language">Taal</string>
     <string name="settings_language_hint">Taal van de teksten van FritzDial.</string>
-    <string name="settings_language_system">Systeemtaal</string>
+    <string name="settings_language_system">Auto</string>
 
     <!-- connection page -->
     <string name="connection_title">FritzBox-verbinding</string>

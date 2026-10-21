@@ -89,7 +89,7 @@
     <string name="settings_call_log_play">Działa tylko wtedy, gdy FritzDial nie został zainstalowany z Google Play (APK lub F-Droid): Google Play pozwala odczytywać rejestr połączeń tylko domyślnej aplikacji Telefon.</string>
     <string name="settings_language">Język</string>
     <string name="settings_language_hint">Język tekstów FritzDial.</string>
-    <string name="settings_language_system">Język systemu</string>
+    <string name="settings_language_system">Auto</string>
 
     <!-- connection page -->
     <string name="connection_title">Połączenie z FritzBox</string>

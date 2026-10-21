@@ -29,6 +29,25 @@ object AppLanguage {
         "pl" to "Polski",
     )
 
+    /** Country whose flag stands for a language when its locale names none (e.g. a chosen "de"). */
+    private val flagCountry = mapOf(
+        "en" to "GB", "de" to "DE", "nl" to "NL", "fr" to "FR", "it" to "IT", "es" to "ES", "pl" to "PL",
+    )
+
+    /**
+     * National flag (emoji) for the language the app shows in [locale]: its region if it has one
+     * (de-AT → 🇦🇹), else the language's usual country. A system language FritzDial is not
+     * translated into is shown in English, so is its flag.
+     */
+    fun flag(locale: Locale): String {
+        val shown = locale.language.takeIf { language -> supported.any { it.first == language } }
+        val country = locale.country.takeIf { shown != null && it.length == 2 && it.all(Char::isLetter) }
+            ?: flagCountry.getValue(shown ?: "en")
+        // A flag emoji is the country code in "regional indicator" letters.
+        return country.uppercase(Locale.ROOT).map { c -> String(Character.toChars(0x1F1E6 + (c - 'A'))) }
+            .joinToString("")
+    }
+
     /** The chosen language tag, or null for the system language. */
     fun current(context: Context): String? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -22,6 +22,7 @@ import info.christianreiner.fritzdial.ui.ViewCertificateDialog
 import info.christianreiner.fritzdial.ui.activeBoxIssue
 import info.christianreiner.fritzdial.ui.DialerViewModel
 import info.christianreiner.fritzdial.ui.ErrorDialog
+import info.christianreiner.fritzdial.ui.LanguageScreen
 import info.christianreiner.fritzdial.ui.NumberPickerScreen
 import info.christianreiner.fritzdial.ui.PhonebookTab
 import info.christianreiner.fritzdial.ui.RecentsTab
@@ -49,7 +50,10 @@ class MainActivity : ComponentActivity() {
                 val trustedFingerprint = remember(state.config.trustedCertDer) {
                     state.config.trustedCertDer?.let(CertificateInfo::fromDerBase64)?.sha256
                 }
-                if (state.showPicker && !state.showSettings) {
+                if (state.showLanguage && !state.showSettings) {
+                    BackHandler { viewModel.closeLanguage() }
+                    LanguageScreen(onBack = viewModel::closeLanguage)
+                } else if (state.showPicker && !state.showSettings) {
                     BackHandler { viewModel.closePicker() }
                     NumberPickerScreen(
                         busy = state.busy,
@@ -134,6 +138,7 @@ class MainActivity : ComponentActivity() {
                         onSelectPhone = viewModel::selectPhone,
                         onRefresh = viewModel::refreshPhones,
                         onOpenSettings = viewModel::openSettings,
+                        onOpenLanguage = viewModel::openLanguage,
                         onOpenPicker = viewModel::openPicker,
                     )
                 }

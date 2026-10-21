@@ -46,9 +46,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -56,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import info.christianreiner.fritzdial.R
+import info.christianreiner.fritzdial.data.AppLanguage
 import info.christianreiner.fritzdial.tr064.FritzDialer
 
 /**
@@ -74,6 +78,7 @@ fun DialerScreen(
     onSelectPhone: (String) -> Unit,
     onRefresh: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenLanguage: () -> Unit,
     onOpenPicker: () -> Unit,
 ) {
     Scaffold(
@@ -97,6 +102,15 @@ fun DialerScreen(
                     }
                 },
                 actions = {
+                    // The national flag of the language in use, as an emoji.
+                    val flag = AppLanguage.flag(LocalConfiguration.current.locales[0])
+                    val languageLabel = stringResource(R.string.settings_language)
+                    IconButton(
+                        onClick = onOpenLanguage,
+                        modifier = Modifier.semantics { contentDescription = languageLabel },
+                    ) {
+                        Text(flag, fontSize = 22.sp)
+                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
                     }
