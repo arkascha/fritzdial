@@ -99,9 +99,9 @@ reload button), from two sources:
 ### Language
 
 FritzDial is available in English, German, Dutch, French, Italian, Spanish and Polish.
-The flag button in the dialer's top bar (left of the settings) opens **Language**: **Auto** (the
-system language, the default) or one of these, each with its national flag. Choosing one returns to
-the dialer, already in the new language. The button shows the flag of the language in use – the
+The flag button in the top bar of the **Settings** opens **Language**: **Auto** (the system
+language, the default) or one of these, each with its national flag. Choosing one returns to the
+settings, already in the new language. The button shows the flag of the language in use – the
 region of the system language with *Auto* (e.g. 🇦🇹 for German in Austria), else the language's usual
 country; English (🇬🇧) when the system language is not one of the above. From Android 13 on this is Android's own per-app language, so the same choice also appears under the system's
 *Settings › Apps › FritzDial › Language*; before Android 13 the app applies it itself.

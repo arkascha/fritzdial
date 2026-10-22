@@ -257,6 +257,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             it.copy(
                 showSettings = false,
                 showConnectionSettings = false,
+                showLanguage = false,
                 editingProfileId = null,
                 config = activeConfig(),
                 error = null,

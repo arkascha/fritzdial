@@ -89,7 +89,7 @@ fun LanguageScreen(onBack: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .selectable(selected = tag == current, role = Role.RadioButton) {
-                                // Back to the dialer first, so it is what gets redrawn in the new language.
+                                // Back to the settings first, so they are what gets redrawn in the new language.
                                 onBack()
                                 if (tag != current) context.findActivity()?.let { AppLanguage.set(it, tag) }
                             },

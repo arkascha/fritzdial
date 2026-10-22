@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
                 val trustedFingerprint = remember(state.config.trustedCertDer) {
                     state.config.trustedCertDer?.let(CertificateInfo::fromDerBase64)?.sha256
                 }
-                if (state.showLanguage && !state.showSettings) {
+                if (state.showLanguage && state.showSettings) {
                     BackHandler { viewModel.closeLanguage() }
                     LanguageScreen(onBack = viewModel::closeLanguage)
                 } else if (state.showPicker && !state.showSettings) {
@@ -126,6 +126,7 @@ class MainActivity : ComponentActivity() {
                         onDeleteProfile = viewModel::deleteProfile,
                         onAddProfile = viewModel::addProfile,
                         onBack = viewModel::closeSettings,
+                        onOpenLanguage = viewModel::openLanguage,
                         deviceContactsEnabled = state.deviceContactsEnabled,
                         onDeviceContactsChange = viewModel::setDeviceContactsEnabled,
                         callLogEnabled = state.callLogEnabled,
@@ -144,7 +145,6 @@ class MainActivity : ComponentActivity() {
                         onSelectPhone = viewModel::selectPhone,
                         onRefresh = viewModel::refreshPhones,
                         onOpenSettings = viewModel::openSettings,
-                        onOpenLanguage = viewModel::openLanguage,
                         onOpenPicker = viewModel::openPicker,
                     )
                 }

@@ -50,16 +50,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import info.christianreiner.fritzdial.R
+import info.christianreiner.fritzdial.data.AppLanguage
 import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
@@ -67,7 +72,8 @@ import info.christianreiner.fritzdial.tr064.FritzConfig
 
 /**
  * Settings overview: the configured FritzBoxes (the active one marked; tap to edit, menu to switch
- * or delete), "Add FritzBox", the phone book and the recent numbers options.
+ * or delete), "Add FritzBox", the phone book and the recent numbers options. The flag in the top
+ * bar opens the language screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +88,7 @@ fun SettingsScreen(
     onDeleteProfile: (String) -> Unit,
     onAddProfile: () -> Unit,
     onBack: () -> Unit,
+    onOpenLanguage: () -> Unit,
     deviceContactsEnabled: Boolean,
     onDeviceContactsChange: (Boolean) -> Unit,
     callLogEnabled: Boolean,
@@ -99,6 +106,17 @@ fun SettingsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                    }
+                },
+                actions = {
+                    // The national flag of the language in use, as an emoji.
+                    val flag = AppLanguage.flag(LocalConfiguration.current.locales[0])
+                    val languageLabel = stringResource(R.string.settings_language)
+                    IconButton(
+                        onClick = onOpenLanguage,
+                        modifier = Modifier.semantics { contentDescription = languageLabel },
+                    ) {
+                        Text(flag, fontSize = 22.sp)
                     }
                 },
             )
