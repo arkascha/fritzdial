@@ -216,4 +216,23 @@
     <string name="call_log_denied">Android did not allow FritzDial to read the call log.</string>
     <string name="call_log_failed">The phone’s call log could not be read (%1$s). This only works when FritzDial was not installed from Google Play.</string>
     <string name="call_log_failed_plain">The phone’s call log could not be read. This only works when FritzDial was not installed from Google Play.</string>
+    <string name="speed_dial">Speed dial</string>
+    <string name="speed_dial_none_enabled">No speed dials are switched on. You can switch them on in the settings.</string>
+    <string name="speed_dial_phone_help">Speed dials 1 to 9 stored on this phone; they work with every FritzBox. In the dialer, long-press the digit. Tap a free one to choose its number from the phone books, long-press a set one to change or remove it.</string>
+    <string name="speed_dial_box_help">The speed dials set up in this FritzBox’s phone books, as dialled on its handsets with **7. In the dialer, tap the first digit and long-press the second – or enter **7 and the number.</string>
+    <string name="speed_dial_box_failed">The speed dials of the FritzBox could not be loaded. Tap reload to try again.</string>
+    <string name="speed_dial_box_none">No speed dials are set up in the phone books of this FritzBox.</string>
+    <string name="speed_dial_free">Not set</string>
+    <string name="speed_dial_change_or_remove">Change or remove</string>
+    <string name="speed_dial_set_up">Set up</string>
+    <string name="speed_dial_change">Change</string>
+    <string name="speed_dial_remove">Remove</string>
+    <string name="speed_dial_choose_number">Tap the number for speed dial %1$s.</string>
+    <string name="speed_dial_for">Speed dial for %1$s</string>
+    <string name="speed_dial_make">Make speed dial</string>
+    <string name="dialer_speed_dial_label">Speed dial %1$s: %2$s</string>
+    <string name="settings_phone_speed_dials">This phone’s speed dials</string>
+    <string name="settings_phone_speed_dials_hint">Speed dials 1 to 9, chosen from the phone books and stored on this phone, so they work with every FritzBox. To use one, long-press its digit in the dialer.</string>
+    <string name="connection_speed_dials">Speed dials</string>
+    <string name="connection_speed_dials_hint">The speed dials set up in this FritzBox’s phone books (00 to 99, as dialled on its handsets with **7). To use one, tap the first digit in the dialer and long-press the second. Also works with the phone books switched off.</string>
 </resources>

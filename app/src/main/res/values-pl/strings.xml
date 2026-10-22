@@ -220,4 +220,23 @@
     <string name="call_log_denied">Android nie pozwolił FritzDial odczytać rejestru połączeń.</string>
     <string name="call_log_failed">Nie udało się odczytać rejestru połączeń telefonu (%1$s). Działa to tylko wtedy, gdy FritzDial nie został zainstalowany z Google Play.</string>
     <string name="call_log_failed_plain">Nie udało się odczytać rejestru połączeń telefonu. Działa to tylko wtedy, gdy FritzDial nie został zainstalowany z Google Play.</string>
+    <string name="speed_dial">Szybkie wybieranie</string>
+    <string name="speed_dial_none_enabled">Żadne szybkie wybieranie nie jest włączone. Możesz je włączyć w ustawieniach.</string>
+    <string name="speed_dial_phone_help">Szybkie wybieranie 1–9 jest zapisane na tym telefonie i działa z każdym FritzBox. Na klawiaturze przytrzymaj cyfrę. Dotknij wolnego miejsca, aby wybrać numer z książek telefonicznych; przytrzymaj zajęte, aby je zmienić lub usunąć.</string>
+    <string name="speed_dial_box_help">Szybkie wybieranie ustawione w książkach telefonicznych tego FritzBox, wybierane na jego słuchawkach przez **7. Na klawiaturze dotknij pierwszej cyfry i przytrzymaj drugą – albo wpisz **7 i numer.</string>
+    <string name="speed_dial_box_failed">Nie udało się wczytać szybkiego wybierania z FritzBox. Dotknij Wczytaj ponownie, aby spróbować jeszcze raz.</string>
+    <string name="speed_dial_box_none">W książkach telefonicznych tego FritzBox nie ustawiono szybkiego wybierania.</string>
+    <string name="speed_dial_free">Wolne</string>
+    <string name="speed_dial_change_or_remove">Zmień lub usuń</string>
+    <string name="speed_dial_set_up">Ustaw</string>
+    <string name="speed_dial_change">Zmień</string>
+    <string name="speed_dial_remove">Usuń</string>
+    <string name="speed_dial_choose_number">Dotknij numeru dla szybkiego wybierania %1$s.</string>
+    <string name="speed_dial_for">Szybkie wybieranie: %1$s</string>
+    <string name="speed_dial_make">Ustaw jako szybkie wybieranie</string>
+    <string name="dialer_speed_dial_label">Szybkie wybieranie %1$s: %2$s</string>
+    <string name="settings_phone_speed_dials">Szybkie wybieranie tego telefonu</string>
+    <string name="settings_phone_speed_dials_hint">Szybkie wybieranie 1–9, wybierane z książek telefonicznych i zapisane na tym telefonie, dlatego działa z każdym FritzBox. Aby go użyć, przytrzymaj cyfrę na klawiaturze.</string>
+    <string name="connection_speed_dials">Szybkie wybieranie</string>
+    <string name="connection_speed_dials_hint">Szybkie wybieranie ustawione w książkach telefonicznych tego FritzBox (00–99, wybierane na jego słuchawkach przez **7). Aby go użyć, dotknij pierwszej cyfry na klawiaturze i przytrzymaj drugą. Działa także przy wyłączonych książkach telefonicznych.</string>
 </resources>

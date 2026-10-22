@@ -217,4 +217,23 @@
     <string name="call_log_denied">Android non ha consentito a FritzDial di leggere il registro chiamate.</string>
     <string name="call_log_failed">Impossibile leggere il registro chiamate del telefono (%1$s). Funziona solo se FritzDial non è stato installato da Google Play.</string>
     <string name="call_log_failed_plain">Impossibile leggere il registro chiamate del telefono. Funziona solo se FritzDial non è stato installato da Google Play.</string>
+    <string name="speed_dial">Selezione rapida</string>
+    <string name="speed_dial_none_enabled">Nessuna selezione rapida attivata. Puoi attivarle nelle impostazioni.</string>
+    <string name="speed_dial_phone_help">Le selezioni rapide da 1 a 9 sono salvate su questo telefono e funzionano con ogni FritzBox. Nel tastierino, tieni premuta la cifra. Tocca una libera per sceglierne il numero dalle rubriche; tieni premuta una assegnata per modificarla o rimuoverla.</string>
+    <string name="speed_dial_box_help">Le selezioni rapide impostate nelle rubriche di questa FritzBox, come si compongono sui suoi portatili con **7. Nel tastierino, tocca la prima cifra e tieni premuta la seconda, oppure inserisci **7 e il numero.</string>
+    <string name="speed_dial_box_failed">Non è stato possibile caricare le selezioni rapide della FritzBox. Tocca Ricarica per riprovare.</string>
+    <string name="speed_dial_box_none">Nelle rubriche di questa FritzBox non sono impostate selezioni rapide.</string>
+    <string name="speed_dial_free">Libera</string>
+    <string name="speed_dial_change_or_remove">Modifica o rimuovi</string>
+    <string name="speed_dial_set_up">Imposta</string>
+    <string name="speed_dial_change">Modifica</string>
+    <string name="speed_dial_remove">Rimuovi</string>
+    <string name="speed_dial_choose_number">Tocca il numero per la selezione rapida %1$s.</string>
+    <string name="speed_dial_for">Selezione rapida per %1$s</string>
+    <string name="speed_dial_make">Imposta come selezione rapida</string>
+    <string name="dialer_speed_dial_label">Selezione rapida %1$s: %2$s</string>
+    <string name="settings_phone_speed_dials">Selezioni rapide di questo telefono</string>
+    <string name="settings_phone_speed_dials_hint">Selezioni rapide da 1 a 9, scelte dalle rubriche e salvate su questo telefono, quindi funzionano con ogni FritzBox. Per usarne una, tieni premuta la sua cifra nel tastierino.</string>
+    <string name="connection_speed_dials">Selezioni rapide</string>
+    <string name="connection_speed_dials_hint">Le selezioni rapide impostate nelle rubriche di questa FritzBox (da 00 a 99, come si compongono sui suoi portatili con **7). Per usarne una, tocca la prima cifra nel tastierino e tieni premuta la seconda. Funziona anche con le rubriche disattivate.</string>
 </resources>

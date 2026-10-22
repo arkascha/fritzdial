@@ -214,4 +214,23 @@
     <string name="call_log_denied">Android hat FritzDial nicht erlaubt, die Anrufliste zu lesen.</string>
     <string name="call_log_failed">Die Anrufliste des Telefons konnte nicht gelesen werden (%1$s). Das funktioniert nur, wenn FritzDial nicht aus Google Play installiert wurde.</string>
     <string name="call_log_failed_plain">Die Anrufliste des Telefons konnte nicht gelesen werden. Das funktioniert nur, wenn FritzDial nicht aus Google Play installiert wurde.</string>
+    <string name="speed_dial">Kurzwahl</string>
+    <string name="speed_dial_none_enabled">Keine Kurzwahlen eingeschaltet. Du kannst sie in den Einstellungen einschalten.</string>
+    <string name="speed_dial_phone_help">Die Kurzwahlen 1 bis 9 sind auf diesem Telefon gespeichert und gelten mit jeder FritzBox. Im Wählfeld die Ziffer lange drücken. Eine freie antippen, um ihre Nummer aus den Telefonbüchern zu wählen; eine belegte lange drücken, um sie zu ändern oder zu entfernen.</string>
+    <string name="speed_dial_box_help">Die in den Telefonbüchern dieser FritzBox eingerichteten Kurzwahlen, wie an ihren Mobilteilen mit **7 gewählt. Im Wählfeld die erste Ziffer antippen und die zweite lange drücken – oder **7 und die Nummer eingeben.</string>
+    <string name="speed_dial_box_failed">Die Kurzwahlen der FritzBox konnten nicht geladen werden. Zum Wiederholen auf Neu laden tippen.</string>
+    <string name="speed_dial_box_none">In den Telefonbüchern dieser FritzBox sind keine Kurzwahlen eingerichtet.</string>
+    <string name="speed_dial_free">Nicht belegt</string>
+    <string name="speed_dial_change_or_remove">Ändern oder entfernen</string>
+    <string name="speed_dial_set_up">Einrichten</string>
+    <string name="speed_dial_change">Ändern</string>
+    <string name="speed_dial_remove">Entfernen</string>
+    <string name="speed_dial_choose_number">Tippe auf die Nummer für Kurzwahl %1$s.</string>
+    <string name="speed_dial_for">Kurzwahl für %1$s</string>
+    <string name="speed_dial_make">Als Kurzwahl</string>
+    <string name="dialer_speed_dial_label">Kurzwahl %1$s: %2$s</string>
+    <string name="settings_phone_speed_dials">Kurzwahlen dieses Telefons</string>
+    <string name="settings_phone_speed_dials_hint">Die Kurzwahlen 1 bis 9 werden aus den Telefonbüchern gewählt und auf diesem Telefon gespeichert, sie gelten also mit jeder FritzBox. Zum Verwenden im Wählfeld die Ziffer lange drücken.</string>
+    <string name="connection_speed_dials">Kurzwahlen</string>
+    <string name="connection_speed_dials_hint">Die in den Telefonbüchern dieser FritzBox eingerichteten Kurzwahlen (00 bis 99, wie an ihren Mobilteilen mit **7 gewählt). Zum Verwenden im Wählfeld die erste Ziffer antippen und die zweite lange drücken. Funktioniert auch, wenn die Telefonbücher ausgeschaltet sind.</string>
 </resources>

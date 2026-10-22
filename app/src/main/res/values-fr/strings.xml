@@ -217,4 +217,23 @@
     <string name="call_log_denied">Android n’a pas autorisé FritzDial à lire le journal d’appels.</string>
     <string name="call_log_failed">Impossible de lire le journal d’appels du téléphone (%1$s). Cela ne fonctionne que si FritzDial n’a pas été installé depuis Google Play.</string>
     <string name="call_log_failed_plain">Impossible de lire le journal d’appels du téléphone. Cela ne fonctionne que si FritzDial n’a pas été installé depuis Google Play.</string>
+    <string name="speed_dial">Numéros abrégés</string>
+    <string name="speed_dial_none_enabled">Aucun numéro abrégé n’est activé. Vous pouvez les activer dans les paramètres.</string>
+    <string name="speed_dial_phone_help">Les numéros abrégés 1 à 9 sont enregistrés sur ce téléphone et fonctionnent avec toutes les FritzBox. Sur le clavier, appuyez longuement sur le chiffre. Touchez un emplacement libre pour choisir son numéro dans les répertoires ; appuyez longuement sur un emplacement occupé pour le modifier ou le supprimer.</string>
+    <string name="speed_dial_box_help">Les numéros abrégés configurés dans les répertoires de cette FritzBox, tels qu’ils se composent sur ses combinés avec **7. Sur le clavier, touchez le premier chiffre et appuyez longuement sur le second, ou saisissez **7 suivi du numéro.</string>
+    <string name="speed_dial_box_failed">Les numéros abrégés de la FritzBox n’ont pas pu être chargés. Touchez Recharger pour réessayer.</string>
+    <string name="speed_dial_box_none">Aucun numéro abrégé n’est configuré dans les répertoires de cette FritzBox.</string>
+    <string name="speed_dial_free">Libre</string>
+    <string name="speed_dial_change_or_remove">Modifier ou supprimer</string>
+    <string name="speed_dial_set_up">Configurer</string>
+    <string name="speed_dial_change">Modifier</string>
+    <string name="speed_dial_remove">Supprimer</string>
+    <string name="speed_dial_choose_number">Touchez le numéro pour le numéro abrégé %1$s.</string>
+    <string name="speed_dial_for">Numéro abrégé pour %1$s</string>
+    <string name="speed_dial_make">Définir comme numéro abrégé</string>
+    <string name="dialer_speed_dial_label">Numéro abrégé %1$s : %2$s</string>
+    <string name="settings_phone_speed_dials">Numéros abrégés de ce téléphone</string>
+    <string name="settings_phone_speed_dials_hint">Numéros abrégés 1 à 9, choisis dans les répertoires et enregistrés sur ce téléphone ; ils fonctionnent donc avec toutes les FritzBox. Pour en utiliser un, appuyez longuement sur son chiffre sur le clavier.</string>
+    <string name="connection_speed_dials">Numéros abrégés</string>
+    <string name="connection_speed_dials_hint">Les numéros abrégés configurés dans les répertoires de cette FritzBox (00 à 99, tels qu’ils se composent sur ses combinés avec **7). Pour en utiliser un, touchez le premier chiffre sur le clavier et appuyez longuement sur le second. Fonctionne aussi avec les répertoires désactivés.</string>
 </resources>

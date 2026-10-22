@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import info.christianreiner.fritzdial.R
+import info.christianreiner.fritzdial.data.SpeedDial
 import info.christianreiner.fritzdial.tr064.FritzDialer
 
 /**
@@ -69,6 +70,8 @@ fun DialerScreen(
     state: UiState,
     onNumberChange: (String) -> Unit,
     onDigit: (Char) -> Unit,
+    /** Long press on a digit: speed dial, else like a tap ("0": "+"). */
+    onLongDigit: (Char) -> Unit,
     onBackspace: () -> Unit,
     onDial: () -> Unit,
     onHangup: () -> Unit,
@@ -138,9 +141,10 @@ fun DialerScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     // Never on two lines (long translation, large font): rather cut off with "…".
+                    // After a speed dial it says which one, and whose number it is.
                     label = {
                         Text(
-                            stringResource(R.string.dialer_number_label),
+                            state.numberLabel?.asString() ?: stringResource(R.string.dialer_number_label),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -173,6 +177,8 @@ fun DialerScreen(
                 // Takes all remaining height; keys shrink on small screens / in landscape.
                 DialPad(
                     onDigit = onDigit,
+                    onLongDigit = onLongDigit,
+                    speedDials = state.usablePhoneSpeedDials,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
@@ -307,18 +313,26 @@ private fun PhoneSelector(
     }
 }
 
-private data class Key(val main: Char, val sub: String = "", val longPress: Char? = null)
+private data class Key(val main: Char, val sub: String = "")
 
 private val KEYS = listOf(
     listOf(Key('1'), Key('2', "ABC"), Key('3', "DEF")),
     listOf(Key('4', "GHI"), Key('5', "JKL"), Key('6', "MNO")),
     listOf(Key('7', "PQRS"), Key('8', "TUV"), Key('9', "WXYZ")),
-    listOf(Key('*'), Key('0', "+", longPress = '+'), Key('#')),
+    listOf(Key('*'), Key('0', "+"), Key('#')),
 )
 
-/** 4×3 keypad whose keys are sized to fit the available width *and* height. */
+/**
+ * 4×3 keypad whose keys are sized to fit the available width *and* height. Keys with one of this
+ * phone's [speedDials] have a small dot.
+ */
 @Composable
-private fun DialPad(onDigit: (Char) -> Unit, modifier: Modifier = Modifier) {
+private fun DialPad(
+    onDigit: (Char) -> Unit,
+    onLongDigit: (Char) -> Unit,
+    speedDials: List<SpeedDial>,
+    modifier: Modifier = Modifier,
+) {
     BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
         val gap = 10.dp
         val byWidth = (maxWidth - gap * 2) / 3
@@ -328,24 +342,35 @@ private fun DialPad(onDigit: (Char) -> Unit, modifier: Modifier = Modifier) {
         Column(verticalArrangement = Arrangement.spacedBy(gap)) {
             KEYS.forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
-                    row.forEach { key -> DialKey(key, keySize, onDigit) }
+                    row.forEach { key ->
+                        DialKey(key, keySize, speedDials.firstOrNull { it.slot == key.main.toString() }, onDigit, onLongDigit)
+                    }
                 }
             }
         }
     }
 }
 
-/** Round key; "0" inserts "+" on long press, like a regular phone keypad. */
+/**
+ * Round key. A long press on a digit is for speed dials; without one it acts like a tap, except
+ * "0", which inserts "+" like on a regular phone keypad.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun DialKey(key: Key, size: Dp, onDigit: (Char) -> Unit) {
+private fun DialKey(
+    key: Key,
+    size: Dp,
+    speedDial: SpeedDial?,
+    onDigit: (Char) -> Unit,
+    onLongDigit: (Char) -> Unit,
+) {
     val haptics = LocalHapticFeedback.current
-    val longPress: (() -> Unit)? = key.longPress?.let { c ->
+    val longPress: (() -> Unit)? = if (key.main.isDigit()) {
         {
             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-            onDigit(c)
+            onLongDigit(key.main)
         }
-    }
+    } else null
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -355,9 +380,23 @@ private fun DialKey(key: Key, size: Dp, onDigit: (Char) -> Unit) {
             .combinedClickable(
                 role = Role.Button,
                 onClick = { onDigit(key.main) },
+                onLongClickLabel = speedDial?.let {
+                    stringResource(R.string.dialer_speed_dial_label, it.slot, it.name)
+                },
                 onLongClick = longPress,
             ),
     ) {
+        if (speedDial != null) {
+            // Marks a key with a speed dial, at the top of the round key.
+            Box(
+                Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = size * 0.1f)
+                    .size((size * 0.08f).coerceAtLeast(4.dp))
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+            )
+        }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 key.main.toString(),

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import info.christianreiner.fritzdial.R
 
@@ -30,10 +31,15 @@ import info.christianreiner.fritzdial.R
  * paragraph per entry) in a dialog – so the explanations do not take up room in the layout.
  */
 @Composable
-internal fun OptionTitle(title: String, help: List<String>, modifier: Modifier = Modifier) {
+internal fun OptionTitle(
+    title: String,
+    help: List<String>,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.bodyLarge,
+) {
     var open by rememberSaveable { mutableStateOf(false) }
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        Text(title, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f, fill = false))
+        Text(title, style = style, modifier = Modifier.weight(1f, fill = false))
         IconButton(onClick = { open = true }) {
             Icon(
                 HelpOutlineIcon,

@@ -14,6 +14,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import info.christianreiner.fritzdial.data.AppLanguage
+import info.christianreiner.fritzdial.data.SpeedDials
 import info.christianreiner.fritzdial.tr064.CertificateInfo
 import info.christianreiner.fritzdial.ui.ConnectionSettingsScreen
 import info.christianreiner.fritzdial.ui.DialerScreen
@@ -29,6 +30,7 @@ import info.christianreiner.fritzdial.ui.PhonebookTab
 import info.christianreiner.fritzdial.ui.RecentsTab
 import info.christianreiner.fritzdial.ui.SettingsScreen
 import info.christianreiner.fritzdial.ui.SecondFactorDialog
+import info.christianreiner.fritzdial.ui.SpeedDialTab
 import info.christianreiner.fritzdial.ui.theme.FritzDialTheme
 
 class MainActivity : ComponentActivity() {
@@ -55,8 +57,14 @@ class MainActivity : ComponentActivity() {
                     BackHandler { viewModel.closeLanguage() }
                     LanguageScreen(onBack = viewModel::closeLanguage)
                 } else if (state.showPicker && !state.showSettings) {
-                    BackHandler { viewModel.closePicker() }
+                    val routerBooksEnabled = state.activeProfile?.phonebooksEnabled ?: true
+                    // While setting up a speed dial, "back" only cancels that.
+                    BackHandler {
+                        if (state.assigningSpeedDial != null) viewModel.cancelAssigningSpeedDial() else viewModel.closePicker()
+                    }
                     NumberPickerScreen(
+                        tab = state.pickerTab,
+                        onTabChange = viewModel::selectPickerTab,
                         busy = state.busy,
                         onReload = viewModel::reloadPicker,
                         onBack = viewModel::closePicker,
@@ -77,17 +85,35 @@ class MainActivity : ComponentActivity() {
                         },
                         phonebooks = {
                             PhonebookTab(
-                                routerBooks = state.phonebooks,
-                                routerBooksEnabled = state.activeProfile?.phonebooksEnabled ?: true,
+                                // Possibly read only for the box' speed dials: then not shown here.
+                                routerBooks = if (routerBooksEnabled) state.phonebooks else emptyList(),
+                                routerBooksEnabled = routerBooksEnabled,
                                 deviceContacts = state.deviceContacts,
                                 deviceContactsEnabled = state.deviceContactsEnabled,
                                 loaded = state.phonebooksLoaded,
                                 busy = state.busy,
-                                onPick = viewModel::pickNumber,
+                                onPick = viewModel::pickContactNumber,
+                                phoneSpeedDials = state.phoneSpeedDials.takeIf { state.phoneSpeedDialsEnabled },
+                                onSetSpeedDial = viewModel::setPhoneSpeedDial,
+                                assigningSpeedDial = state.assigningSpeedDial,
+                                onCancelAssigning = viewModel::cancelAssigningSpeedDial,
                                 onDeviceContactsAllowed = viewModel::loadDeviceContacts,
                                 onDisableDeviceContacts = { viewModel.setDeviceContactsEnabled(false) },
                                 askForDeviceContacts = state.askForDeviceContacts,
                                 onDeviceContactsAnswer = viewModel::answerDeviceContactsQuestion,
+                            )
+                        },
+                        speedDials = {
+                            val boxSpeedDials = remember(state.phonebooks) { SpeedDials.fromPhonebooks(state.phonebooks) }
+                            SpeedDialTab(
+                                phoneSpeedDials = state.phoneSpeedDials.takeIf { state.phoneSpeedDialsEnabled },
+                                boxSpeedDials = boxSpeedDials.takeIf { state.activeProfile?.speedDialsEnabled ?: true },
+                                boxName = state.activeProfile?.name,
+                                boxLoaded = state.phonebooksLoaded,
+                                busy = state.busy,
+                                onPick = viewModel::useSpeedDial,
+                                onAssign = viewModel::startAssigningSpeedDial,
+                                onRemove = viewModel::removePhoneSpeedDial,
                             )
                         },
                     )
@@ -107,6 +133,7 @@ class MainActivity : ComponentActivity() {
                             isNew = state.editingProfileId == null,
                             initialPhonebooksEnabled = edited?.phonebooksEnabled ?: true,
                             initialCallListEnabled = edited?.callListEnabled ?: true,
+                            initialSpeedDialsEnabled = edited?.speedDialsEnabled ?: true,
                             onSave = viewModel::saveSettings,
                             onBack = viewModel::closeConnectionSettings,
                             onDelete = state.editingProfileId?.let { id -> { viewModel.deleteProfile(id) } },
@@ -132,12 +159,15 @@ class MainActivity : ComponentActivity() {
                         callLogProblem = state.callLogProblem,
                         onEnableCallLog = viewModel::enableCallLog,
                         onDisableCallLog = viewModel::disableCallLog,
+                        phoneSpeedDialsEnabled = state.phoneSpeedDialsEnabled,
+                        onPhoneSpeedDialsChange = viewModel::setPhoneSpeedDialsEnabled,
                     )
                 } else {
                     DialerScreen(
                         state = state,
                         onNumberChange = viewModel::onNumberChange,
                         onDigit = viewModel::appendDigit,
+                        onLongDigit = viewModel::longPressDigit,
                         onBackspace = viewModel::backspace,
                         onDial = viewModel::dial,
                         onHangup = viewModel::hangup,

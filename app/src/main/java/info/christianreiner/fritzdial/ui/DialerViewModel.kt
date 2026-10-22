@@ -11,6 +11,8 @@ import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.data.SettingsRepository
+import info.christianreiner.fritzdial.data.SpeedDial
+import info.christianreiner.fritzdial.data.SpeedDials
 import info.christianreiner.fritzdial.tr064.BoxDiscovery
 import info.christianreiner.fritzdial.tr064.BoxIdentity
 import info.christianreiner.fritzdial.tr064.CertificateInfo
@@ -40,8 +42,13 @@ data class CertificatePrompt(
     val changed: Boolean,
 )
 
+/** The tabs of the number picker, in their order. */
+enum class PickerTab { RECENT, SPEED_DIALS, PHONEBOOKS }
+
 data class UiState(
     val number: String = "",
+    /** Who the number is, when it came from a speed dial ("Speed dial 2: Office"); shown as the field's label. */
+    val numberLabel: UiText? = null,
     val phones: List<String> = emptyList(),
     val selectedPhone: String? = null,
     /** Progress / success information (not an error). */
@@ -84,8 +91,11 @@ data class UiState(
     val viewedCertificate: CertificateInfo? = null,
     /** The language screen is open. */
     val showLanguage: Boolean = false,
-    /** The number picker (tabs "Recent" and "Phone books") is open. */
+    /** The number picker (tabs "Recent", "Speed dial" and "Phone books") is open. */
     val showPicker: Boolean = false,
+    val pickerTab: PickerTab = PickerTab.RECENT,
+    /** Choosing the number for this phone speed dial slot in the phone books tab. */
+    val assigningSpeedDial: String? = null,
     /** Phone books of the box, loaded on first use of the number picker (cached). */
     val phonebooks: List<Phonebook> = emptyList(),
     val phonebooksLoaded: Boolean = false,
@@ -109,11 +119,22 @@ data class UiState(
     val phoneCalls: List<RecentCall>? = null,
     /** Why the phone's call log could not be read (on enabling the feature, or later). */
     val callLogProblem: UiText? = null,
+    /** Optional feature, switched in the settings: this phone's own speed dials 1–9. */
+    val phoneSpeedDialsEnabled: Boolean = true,
+    val phoneSpeedDials: List<SpeedDial> = emptyList(),
 )
 
 /** The FritzBox in use, if any. */
 val UiState.activeProfile: BoxProfile?
     get() = profiles.firstOrNull { it.id == activeProfileId }
+
+/** This phone's speed dials, if switched on. */
+val UiState.usablePhoneSpeedDials: List<SpeedDial>
+    get() = if (phoneSpeedDialsEnabled) phoneSpeedDials else emptyList()
+
+/** The speed dials of the box in use (from its phone books, once loaded), if switched on for it. */
+val UiState.usableBoxSpeedDials: List<SpeedDial>
+    get() = if (activeProfile?.speedDialsEnabled != false) SpeedDials.fromPhonebooks(phonebooks) else emptyList()
 
 /** Why the box in use does not meet the expectations, if it does not; a failed request weighs more. */
 val UiState.activeBoxIssue: ActiveBoxIssue?
@@ -153,6 +174,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             settingsSaved = settings.isConfigured(),
             deviceContactsEnabled = settings.deviceContactsEnabled,
             callLogEnabled = settings.callLogEnabled,
+            phoneSpeedDialsEnabled = settings.phoneSpeedDialsEnabled,
+            phoneSpeedDials = settings.phoneSpeedDials,
         )
     )
     val state: StateFlow<UiState> = _state.asStateFlow()
@@ -174,14 +197,35 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     // --- number input ---------------------------------------------------------------
 
-    fun onNumberChange(value: String) = _state.update { it.copy(number = value) }
+    fun onNumberChange(value: String) = _state.update { it.copy(number = value, numberLabel = null) }
 
-    fun appendDigit(c: Char) = _state.update { it.copy(number = it.number + c) }
+    fun appendDigit(c: Char) = _state.update { it.copy(number = it.number + c, numberLabel = null) }
 
-    fun backspace() = _state.update { it.copy(number = it.number.dropLast(1)) }
+    fun backspace() = _state.update { it.copy(number = it.number.dropLast(1), numberLabel = null) }
 
     /** Called with the number from a tel: link (ACTION_DIAL / ACTION_VIEW). */
-    fun prefill(number: String) = _state.update { it.copy(number = number) }
+    fun prefill(number: String) = _state.update { it.copy(number = number, numberLabel = null) }
+
+    /**
+     * Long press on a digit of the dial pad: a speed dial if there is one for it (see
+     * [SpeedDials.forLongPress]); otherwise like a tap – except "0", which gives "+".
+     */
+    fun longPressDigit(digit: Char) {
+        val state = _state.value
+        val speedDial = SpeedDials.forLongPress(
+            state.number, digit, state.usablePhoneSpeedDials, state.usableBoxSpeedDials,
+        )
+        if (speedDial != null) useSpeedDial(speedDial) else appendDigit(if (digit == '0') '+' else digit)
+    }
+
+    /** Puts a speed dial's number into the field, with its slot and name as the field's label. */
+    fun useSpeedDial(speedDial: SpeedDial) = _state.update {
+        it.copy(
+            number = speedDial.number,
+            numberLabel = uiText(R.string.dialer_speed_dial_label, speedDial.slot, speedDial.name),
+            showPicker = false,
+        )
+    }
 
     fun dismissError() {
         failedAction = null
@@ -268,9 +312,16 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     /**
      * Tries the edited connection against the router. Only if that works it is saved – and made
      * the active one, since the box evidently is reachable from here; otherwise the error is shown.
-     * [phonebooksEnabled] and [callListEnabled]: whether this box' phone books and call list are used.
+     * [phonebooksEnabled], [callListEnabled], [speedDialsEnabled]: whether this box' phone books, call
+     * list and speed dials are used.
      */
-    fun saveSettings(edited: FritzConfig, name: String, phonebooksEnabled: Boolean, callListEnabled: Boolean) {
+    fun saveSettings(
+        edited: FritzConfig,
+        name: String,
+        phonebooksEnabled: Boolean,
+        callListEnabled: Boolean,
+        speedDialsEnabled: Boolean,
+    ) {
         val config = edited.copy(trustedCertDer = _state.value.config.trustedCertDer)
         val editingId = _state.value.editingProfileId
         verifyingSettings = true
@@ -288,6 +339,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 model = identity?.modelName ?: previous?.model,
                 phonebooksEnabled = phonebooksEnabled,
                 callListEnabled = callListEnabled,
+                speedDialsEnabled = speedDialsEnabled,
             )
             settings.saveProfile(profile)
             settings.activeProfileId = profile.id
@@ -312,6 +364,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             }
             message
         }
+        preloadBoxSpeedDials()
     }
 
     /** Switches to another configured FritzBox (manually, or after automatic recognition). */
@@ -502,6 +555,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         _state.update {
             it.copy(
                 showPicker = true,
+                pickerTab = PickerTab.RECENT,
+                assigningSpeedDial = null,
                 askForDeviceContacts = !it.deviceContactsEnabled &&
                     !settings.deviceContactsNeverAsk,
             )
@@ -511,7 +566,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         if (_state.value.deviceContacts == null) loadDeviceContacts()
     }
 
-    fun closePicker() = _state.update { it.copy(showPicker = false) }
+    fun closePicker() = _state.update { it.copy(showPicker = false, assigningSpeedDial = null) }
+
+    fun selectPickerTab(tab: PickerTab) = _state.update { it.copy(pickerTab = tab, assigningSpeedDial = null) }
 
     fun openLanguage() = _state.update { it.copy(showLanguage = true) }
 
@@ -557,7 +614,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private fun reloadRouterPhonebooks() {
-        if (settings.activeProfile()?.phonebooksEnabled == false) return
+        // Also read for the box' speed dials, which come from its phone books.
+        val profile = settings.activeProfile()
+        if (profile != null && !profile.phonebooksEnabled && !profile.speedDialsEnabled) return
         if (_state.value.busy) return runWhenIdle("phonebooks", ::reloadRouterPhonebooks)
         runOnBox(uiText(R.string.phonebook_loading)) { dialer ->
             val books = dialer.loadPhonebooks()
@@ -579,7 +638,52 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     /** A number was tapped in the picker (recent calls or phone books): put it into the dialer and go back. */
     fun pickNumber(number: String) =
-        _state.update { it.copy(number = number, showPicker = false) }
+        _state.update { it.copy(number = number, numberLabel = null, showPicker = false) }
+
+    /** A contact's number was tapped in the phone books: for the dialer, or for the speed dial being set up. */
+    fun pickContactNumber(name: String, number: String) {
+        val slot = _state.value.assigningSpeedDial
+        if (slot == null) return pickNumber(number)
+        setPhoneSpeedDial(slot, name, number)
+        _state.update { it.copy(assigningSpeedDial = null, pickerTab = PickerTab.SPEED_DIALS) }
+    }
+
+    // --- speed dials ------------------------------------------------------------------
+
+    /** Opens the phone books to choose the number for this phone's speed dial [slot]. */
+    fun startAssigningSpeedDial(slot: String) =
+        _state.update { it.copy(assigningSpeedDial = slot, pickerTab = PickerTab.PHONEBOOKS) }
+
+    fun cancelAssigningSpeedDial() =
+        _state.update { it.copy(assigningSpeedDial = null, pickerTab = PickerTab.SPEED_DIALS) }
+
+    /** Sets (or replaces) this phone's speed dial [slot]. */
+    fun setPhoneSpeedDial(slot: String, name: String, number: String) {
+        settings.phoneSpeedDials = settings.phoneSpeedDials.filterNot { it.slot == slot } + SpeedDial(slot, name, number)
+        _state.update { it.copy(phoneSpeedDials = settings.phoneSpeedDials) }
+    }
+
+    fun removePhoneSpeedDial(slot: String) {
+        settings.phoneSpeedDials = settings.phoneSpeedDials.filterNot { it.slot == slot }
+        _state.update { it.copy(phoneSpeedDials = settings.phoneSpeedDials) }
+    }
+
+    /** Switches this phone's speed dials on or off; switched off, they are kept, just not used. */
+    fun setPhoneSpeedDialsEnabled(enabled: Boolean) {
+        settings.phoneSpeedDialsEnabled = enabled
+        _state.update { it.copy(phoneSpeedDialsEnabled = enabled) }
+    }
+
+    /**
+     * Reads the phone books of the box in use in the background, so its speed dials work right
+     * away in the dialer – not only once the picker was opened. Checked when it is its turn, as
+     * the box in use may change until then.
+     */
+    private fun preloadBoxSpeedDials() = runWhenIdle("speedDials") {
+        if (settings.activeProfile()?.speedDialsEnabled == true && !_state.value.phonebooksLoaded) {
+            reloadRouterPhonebooks()
+        }
+    }
 
     // --- recent calls -----------------------------------------------------------------
 
@@ -653,6 +757,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         // Another request is running (e.g. for the previous box): reload once it is done.
         if (_state.value.busy) return runWhenIdle("phones", ::refreshPhones)
         runOnBox(uiText(R.string.status_loading_phones)) { dialer -> loadPhones(dialer) }
+        preloadBoxSpeedDials()
     }
 
     /**
@@ -694,6 +799,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun dial() {
+        // A box speed dial entered as on a handset (**712): dial – and show – the number it stands for.
+        SpeedDials.forCode(FritzDialer.sanitizeNumber(_state.value.number), _state.value.usableBoxSpeedDials)
+            ?.let(::useSpeedDial)
         val number = FritzDialer.sanitizeNumber(_state.value.number)
         if (number.isEmpty()) {
             _state.update {

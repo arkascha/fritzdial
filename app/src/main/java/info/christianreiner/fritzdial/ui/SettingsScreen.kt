@@ -92,6 +92,8 @@ fun SettingsScreen(
     /** Android's answer to the call log permission: try reading it, enable the feature if that works. */
     onEnableCallLog: (granted: Boolean) -> Unit,
     onDisableCallLog: () -> Unit,
+    phoneSpeedDialsEnabled: Boolean,
+    onPhoneSpeedDialsChange: (Boolean) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -177,6 +179,20 @@ fun SettingsScreen(
                     problem = callLogProblem,
                     onEnable = onEnableCallLog,
                     onDisable = onDisableCallLog,
+                )
+            }
+
+            HorizontalDivider()
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(stringResource(R.string.speed_dial), style = MaterialTheme.typography.titleSmall)
+                BoxFeatureSetting(
+                    title = stringResource(R.string.settings_phone_speed_dials),
+                    hint = stringResource(R.string.settings_phone_speed_dials_hint),
+                    enabled = phoneSpeedDialsEnabled,
+                    onChange = onPhoneSpeedDialsChange,
                 )
             }
         }
@@ -265,8 +281,8 @@ private fun ConfirmDeleteDialog(name: String, onConfirm: () -> Unit, onDismiss: 
 }
 
 /**
- * Router connection: host, port, HTTPS, user, password, whether the box' phone books and call list
- * are used, and the trusted certificate.
+ * Router connection: host, port, HTTPS, user, password, whether the box' phone books, call list and
+ * speed dials are used, and the trusted certificate.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -281,10 +297,17 @@ fun ConnectionSettingsScreen(
     initialName: String,
     /** Adding a new FritzBox rather than editing an existing one. */
     isNew: Boolean,
-    /** Whether this box' phone books and call list are used (both on for a new box). */
+    /** Whether this box' phone books, call list and speed dials are used (all on for a new box). */
     initialPhonebooksEnabled: Boolean,
     initialCallListEnabled: Boolean,
-    onSave: (config: FritzConfig, name: String, phonebooksEnabled: Boolean, callListEnabled: Boolean) -> Unit,
+    initialSpeedDialsEnabled: Boolean,
+    onSave: (
+        config: FritzConfig,
+        name: String,
+        phonebooksEnabled: Boolean,
+        callListEnabled: Boolean,
+        speedDialsEnabled: Boolean,
+    ) -> Unit,
     onBack: () -> Unit,
     /** Deletes the edited connection; null for a new one. */
     onDelete: (() -> Unit)?,
@@ -300,6 +323,7 @@ fun ConnectionSettingsScreen(
     var useHttps by remember { mutableStateOf(initial.useHttps) }
     var phonebooksEnabled by remember { mutableStateOf(initialPhonebooksEnabled) }
     var callListEnabled by remember { mutableStateOf(initialCallListEnabled) }
+    var speedDialsEnabled by remember { mutableStateOf(initialSpeedDialsEnabled) }
     val portValue = port.toIntOrNull()
     val keyboard = LocalSoftwareKeyboardController.current
     val valid = host.isNotBlank() && portValue != null && portValue in 1..65535
@@ -389,6 +413,12 @@ fun ConnectionSettingsScreen(
                 enabled = callListEnabled,
                 onChange = { callListEnabled = it },
             )
+            BoxFeatureSetting(
+                title = stringResource(R.string.connection_speed_dials),
+                hint = stringResource(R.string.connection_speed_dials_hint),
+                enabled = speedDialsEnabled,
+                onChange = { speedDialsEnabled = it },
+            )
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Text(
                 stringResource(R.string.connection_help),
@@ -409,6 +439,7 @@ fun ConnectionSettingsScreen(
                         name,
                         phonebooksEnabled,
                         callListEnabled,
+                        speedDialsEnabled,
                     )
                 },
                 enabled = valid && !busy,
@@ -464,7 +495,7 @@ fun ConnectionSettingsScreen(
     }
 }
 
-/** Switch for something the box offers (its phone books, its call list); [hint] behind a question mark. */
+/** Switch for an optional source (phone books, call list, speed dials); [hint] behind a question mark. */
 @Composable
 private fun BoxFeatureSetting(title: String, hint: String, enabled: Boolean, onChange: (Boolean) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {

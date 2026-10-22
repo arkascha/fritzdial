@@ -214,4 +214,23 @@
     <string name="call_log_denied">Android heeft FritzDial niet toegestaan de gesprekkenlijst te lezen.</string>
     <string name="call_log_failed">De gesprekkenlijst van de telefoon kon niet worden gelezen (%1$s). Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>
     <string name="call_log_failed_plain">De gesprekkenlijst van de telefoon kon niet worden gelezen. Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>
+    <string name="speed_dial">Snelkiezen</string>
+    <string name="speed_dial_none_enabled">Er zijn geen snelkeuzes ingeschakeld. Je kunt ze in de instellingen inschakelen.</string>
+    <string name="speed_dial_phone_help">De snelkeuzes 1 tot 9 zijn op deze telefoon opgeslagen en werken met elke FritzBox. Houd in het kiesscherm het cijfer ingedrukt. Tik op een vrije om het nummer uit de telefoonboeken te kiezen; houd een ingestelde ingedrukt om die te wijzigen of te verwijderen.</string>
+    <string name="speed_dial_box_help">De snelkeuzes die in de telefoonboeken van deze FritzBox zijn ingesteld, zoals ze op de handsets met **7 worden gekozen. Tik in het kiesscherm op het eerste cijfer en houd het tweede ingedrukt – of voer **7 en het nummer in.</string>
+    <string name="speed_dial_box_failed">De snelkeuzes van de FritzBox konden niet worden geladen. Tik op opnieuw laden om het nog eens te proberen.</string>
+    <string name="speed_dial_box_none">In de telefoonboeken van deze FritzBox zijn geen snelkeuzes ingesteld.</string>
+    <string name="speed_dial_free">Niet ingesteld</string>
+    <string name="speed_dial_change_or_remove">Wijzigen of verwijderen</string>
+    <string name="speed_dial_set_up">Instellen</string>
+    <string name="speed_dial_change">Wijzigen</string>
+    <string name="speed_dial_remove">Verwijderen</string>
+    <string name="speed_dial_choose_number">Tik op het nummer voor snelkeuze %1$s.</string>
+    <string name="speed_dial_for">Snelkeuze voor %1$s</string>
+    <string name="speed_dial_make">Als snelkeuze instellen</string>
+    <string name="dialer_speed_dial_label">Snelkeuze %1$s: %2$s</string>
+    <string name="settings_phone_speed_dials">Snelkeuzes van deze telefoon</string>
+    <string name="settings_phone_speed_dials_hint">Snelkeuzes 1 tot 9, gekozen uit de telefoonboeken en op deze telefoon opgeslagen, zodat ze met elke FritzBox werken. Houd om er een te gebruiken het cijfer in het kiesscherm ingedrukt.</string>
+    <string name="connection_speed_dials">Snelkeuzes</string>
+    <string name="connection_speed_dials_hint">De snelkeuzes die in de telefoonboeken van deze FritzBox zijn ingesteld (00 tot 99, zoals ze op de handsets met **7 worden gekozen). Tik om er een te gebruiken op het eerste cijfer in het kiesscherm en houd het tweede ingedrukt. Werkt ook als de telefoonboeken zijn uitgeschakeld.</string>
 </resources>

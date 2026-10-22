@@ -12,8 +12,8 @@ import java.util.UUID
  *
  * [deviceId] is the box' UPnP device id (UDN from its public `tr64desc.xml`). It is learned when
  * the connection is saved and used to recognise the box of the current network automatically.
- * [phonebooksEnabled] and [callListEnabled] switch, for this box, whether its phone books and its
- * call list are offered in the number picker (on by default).
+ * [phonebooksEnabled], [callListEnabled] and [speedDialsEnabled] switch, for this box, whether its
+ * phone books, its call list and the speed dials set up in its phone books are used (on by default).
  */
 data class BoxProfile(
     val id: String = UUID.randomUUID().toString(),
@@ -23,6 +23,7 @@ data class BoxProfile(
     val model: String? = null,
     val phonebooksEnabled: Boolean = true,
     val callListEnabled: Boolean = true,
+    val speedDialsEnabled: Boolean = true,
 )
 
 /** Persists the FritzBox connections (passwords encrypted) and the app options. */
@@ -99,6 +100,26 @@ class SettingsRepository(context: Context) {
         get() = prefs.getBoolean(KEY_CALL_LOG, false)
         set(value) = prefs.edit { putBoolean(KEY_CALL_LOG, value) }
 
+    /** Optional feature: this phone's own speed dials 1–9 (valid with every box). On by default. */
+    var phoneSpeedDialsEnabled: Boolean
+        get() = prefs.getBoolean(KEY_PHONE_SPEED_DIALS_ENABLED, true)
+        set(value) = prefs.edit { putBoolean(KEY_PHONE_SPEED_DIALS_ENABLED, value) }
+
+    /** This phone's speed dials: name and number are stored as copies, so they work everywhere. */
+    var phoneSpeedDials: List<SpeedDial>
+        get() = runCatching {
+            val array = JSONArray(prefs.getString(KEY_PHONE_SPEED_DIALS, null) ?: return emptyList())
+            (0 until array.length()).map { i ->
+                val o = array.getJSONObject(i)
+                SpeedDial(o.getString("slot"), o.optString("name"), o.getString("number"))
+            }.sortedBy { it.slot }
+        }.getOrDefault(emptyList())
+        set(value) {
+            val array = JSONArray()
+            value.forEach { array.put(JSONObject().put("slot", it.slot).put("name", it.name).put("number", it.number)) }
+            prefs.edit { putString(KEY_PHONE_SPEED_DIALS, array.toString()) }
+        }
+
     // --- storage ----------------------------------------------------------------------
 
     private fun writeProfiles(list: List<BoxProfile>) {
@@ -121,6 +142,7 @@ class SettingsRepository(context: Context) {
         p.model?.let { put("model", it) }
         put("phonebooks", p.phonebooksEnabled)
         put("callList", p.callListEnabled)
+        put("speedDials", p.speedDialsEnabled)
     }
 
     private fun fromJson(o: JSONObject) = BoxProfile(
@@ -140,6 +162,7 @@ class SettingsRepository(context: Context) {
         // Connections saved before these options existed keep using both.
         phonebooksEnabled = o.optBoolean("phonebooks", true),
         callListEnabled = o.optBoolean("callList", true),
+        speedDialsEnabled = o.optBoolean("speedDials", true),
     )
 
     /** Earlier versions stored a single connection in separate keys: turn it into the first entry. */
@@ -168,6 +191,8 @@ class SettingsRepository(context: Context) {
         const val KEY_DEVICE_CONTACTS = "device_contacts_enabled"
         const val KEY_DEVICE_CONTACTS_NEVER_ASK = "device_contacts_never_ask"
         const val KEY_CALL_LOG = "call_log_enabled"
+        const val KEY_PHONE_SPEED_DIALS_ENABLED = "phone_speed_dials_enabled"
+        const val KEY_PHONE_SPEED_DIALS = "phone_speed_dials"
 
         // single-connection keys of earlier versions (migrated)
         const val LEGACY_HOST = "host"

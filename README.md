@@ -97,6 +97,25 @@ reload button), from two sources:
   either fails, the switch stays off and the settings show why. If reading fails later (e.g. the
   permission was revoked), the **Recent** tab shows a note with **Turn off** and **App settings**.
 
+### Speed dial
+
+Speed dials come from two sources that never collide, each of which can be switched off:
+
+- **This phone** – speed dials **1 to 9**, stored on the phone and valid with every FritzBox (name
+  and number are kept as a copy). Long-press the digit in the dialer to use one; digits with a speed
+  dial have a small dot. Set them up in the picker's **Speed dial** tab (tap a free slot, then the
+  number in the phone books; long-press a set one to change or remove it), or long-press a number in
+  the **Phone books** tab. Switch: **Settings › Speed dial › This phone's speed dials** (on by default).
+- **FritzBox** – the two-digit speed dials (**00 to 99**) set up in the phone books of the box in use
+  (the `quickdial` attribute of its phone book export), the same ones its handsets dial with `**7`.
+  So they depend on where you are. Tap the first digit and long-press the second, or enter `**7` and
+  the number – FritzDial dials the number it stands for. Switch: on each box' connection page,
+  **Speed dials** (on by default, independent of **Phone books**). The box' phone books are read in
+  the background after connecting, so these work right away.
+
+After a speed dial the number field's label says which one it is and whose number. The **Speed
+dial** tab lists both kinds, so you can pick one without knowing its number.
+
 ### Language
 
 FritzDial is available in English, German, Dutch, French, Italian, Spanish and Polish.

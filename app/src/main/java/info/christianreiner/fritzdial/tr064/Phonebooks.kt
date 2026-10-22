@@ -7,9 +7,10 @@ import java.io.StringReader
 
 /**
  * One number of a contact, with the box' type tag ("home", "mobile", "work", …) – or, for the
- * phone's own contacts, Android's label for it. The UI turns it into a label.
+ * phone's own contacts, Android's label for it. The UI turns it into a label. [speedDial] is the
+ * box' speed dial for it ("00"–"99", dialled on a handset as `**7` and this), if one is set up.
  */
-data class PhonebookNumber(val number: String, val type: String)
+data class PhonebookNumber(val number: String, val type: String, val speedDial: String? = null)
 
 data class PhonebookContact(
     val name: String,
@@ -58,7 +59,7 @@ class FritzPhonebooks(config: FritzConfig, authToken: String? = null) {
         /**
          * Parses the box' phone book export:
          * `<phonebooks><phonebook name="…"><contact><person><realName>…</realName></person>
-         *  <telephony><number type="home" …>030123</number>…</telephony></contact>…`
+         *  <telephony><number type="home" quickdial="12" …>030123</number>…</telephony></contact>…`
          */
         fun parseContacts(xml: String, bookName: String): List<PhonebookContact> {
             val parser = XmlPullParserFactory.newInstance().newPullParser()
@@ -69,6 +70,7 @@ class FritzPhonebooks(config: FritzConfig, authToken: String? = null) {
             var name = ""
             var numbers = mutableListOf<PhonebookNumber>()
             var numberType = ""
+            var speedDial: String? = null
             val text = StringBuilder()
 
             while (parser.eventType != XmlPullParser.END_DOCUMENT) {
@@ -80,7 +82,10 @@ class FritzPhonebooks(config: FritzConfig, authToken: String? = null) {
                                 name = ""
                                 numbers = mutableListOf()
                             }
-                            "number" -> numberType = parser.getAttributeValue(null, "type").orEmpty()
+                            "number" -> {
+                                numberType = parser.getAttributeValue(null, "type").orEmpty()
+                                speedDial = speedDialSlot(parser.getAttributeValue(null, "quickdial"))
+                            }
                         }
                         text.setLength(0)
                     }
@@ -90,7 +95,7 @@ class FritzPhonebooks(config: FritzConfig, authToken: String? = null) {
                             "realName" -> name = text.toString().trim()
                             "number" -> {
                                 val n = text.toString().trim()
-                                if (n.isNotEmpty()) numbers += PhonebookNumber(n, numberType)
+                                if (n.isNotEmpty()) numbers += PhonebookNumber(n, numberType, speedDial)
                             }
                             "contact" -> {
                                 inContact = false
@@ -106,5 +111,9 @@ class FritzPhonebooks(config: FritzConfig, authToken: String? = null) {
             }
             return contacts.sortedBy { it.name.lowercase() }
         }
+
+        /** The `quickdial` attribute as a two-digit speed dial ("5" → "05"); null if none is set. */
+        fun speedDialSlot(raw: String?): String? =
+            raw?.trim()?.takeIf { it.matches(Regex("\\d{1,2}")) }?.padStart(2, '0')
     }
 }
