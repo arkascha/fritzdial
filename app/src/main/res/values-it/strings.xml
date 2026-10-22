@@ -46,6 +46,7 @@
     <string name="phonebook_load_failed">Impossibile caricare le rubriche. Tocca Ricarica per riprovare.</string>
     <string name="phonebook_empty">Le rubriche sono vuote.</string>
     <string name="phonebook_no_match">Nessun contatto corrispondente.</string>
+    <string name="phonebook_none_enabled">Nessuna rubrica attivata. Puoi attivarle nelle impostazioni.</string>
     <string name="device_contacts_question_title">Includere i contatti di questo telefono?</string>
     <string name="device_contacts_question_text">FritzDial può mostrare anche i contatti salvati su questo telefono accanto alle rubriche della FRITZ!Box. Per farlo, Android chiede l’accesso ai tuoi contatti – non lasciano mai il telefono. Puoi cambiare questa scelta più tardi nelle impostazioni.</string>
     <string name="device_contacts_revoked">I contatti di questo telefono sono attivati, ma Android non consente più a FritzDial di leggerli.</string>
@@ -61,6 +62,7 @@
     <string name="recents_loading">Caricamento elenco chiamate…</string>
     <string name="recents_load_failed">Impossibile caricare l’elenco chiamate. Tocca Ricarica per riprovare.</string>
     <string name="recents_empty">Ancora nessuna chiamata recente.</string>
+    <string name="recents_none_enabled">Nessun elenco chiamate attivato. Puoi attivarlo nelle impostazioni.</string>
     <string name="recents_box_load_failed">Impossibile caricare l’elenco chiamate della FritzBox. Tocca Ricarica per riprovare.</string>
     <string name="recents_recorded_by_box">Registrata da %1$s</string>
     <string name="recents_recorded_by_phone">Registrata da questo telefono</string>
@@ -83,7 +85,6 @@
     <string name="settings_device_contacts_hint">Mostra i contatti salvati su questo telefono accanto alle rubriche della FRITZ!Box. Richiede l’accesso ai tuoi contatti; non lasciano mai il telefono.</string>
     <string name="settings_device_contacts_denied">Android non consente a FritzDial di leggere i tuoi contatti. Puoi consentirlo nelle impostazioni dell’app.</string>
     <string name="settings_recents">Numeri recenti</string>
-    <string name="settings_recents_hint">I numeri chiamati, ricevuti e persi di recente vengono letti dall’elenco chiamate della FritzBox.</string>
     <string name="settings_call_log">Includi le chiamate di questo telefono</string>
     <string name="settings_call_log_hint">Offre anche i numeri chiamati, ricevuti e persi con l’app Telefono di questo telefono. Richiede l’accesso al registro chiamate; non lascia mai il telefono.</string>
     <string name="settings_call_log_play">Funziona solo se FritzDial non è stato installato da Google Play (APK o F-Droid): Google Play consente la lettura del registro chiamate solo all’app Telefono predefinita.</string>
@@ -101,6 +102,10 @@
     <string name="connection_port">Porta TR-064</string>
     <string name="connection_user">Nome utente FRITZ!Box</string>
     <string name="connection_password">Password</string>
+    <string name="connection_phonebooks">Rubriche</string>
+    <string name="connection_phonebooks_hint">Le rubriche salvate su questa FritzBox.</string>
+    <string name="connection_call_list">Elenco chiamate</string>
+    <string name="connection_call_list_hint">I numeri chiamati, ricevuti e persi di recente, dall’elenco chiamate di questa FritzBox.</string>
     <string name="connection_help">Sulla box, attiva «Consenti l’accesso alle applicazioni» (Rete domestica › Rete › Impostazioni di rete) e l’«Aiuto alla selezione» (Telefonia › Chiamate › Aiuto alla selezione). L’utente ha bisogno dell’autorizzazione per la telefonia. Se accedi solo con la password, usa il nome utente generato automaticamente indicato in Sistema › Utenti FRITZ!Box.</string>
     <string name="connection_connecting">Connessione…</string>
     <string name="connection_save">Salva e connetti</string>

@@ -59,11 +59,14 @@ import java.text.Collator
 
 /**
  * The number picker's "Phone books" tab: searchable list of all contacts from the box' phone
- * books (and optionally the phone's own). Tapping a number puts it into the dialer.
+ * books (if used for the box in use) and optionally the phone's own. Tapping a number puts it into
+ * the dialer.
  */
 @Composable
 fun PhonebookTab(
     routerBooks: List<Phonebook>,
+    /** The phone books of the box in use are switched on in the settings. */
+    routerBooksEnabled: Boolean,
     deviceContacts: Phonebook?,
     /** The optional "this phone's contacts" feature is switched on in the settings. */
     deviceContactsEnabled: Boolean,
@@ -177,8 +180,9 @@ fun PhonebookTab(
         }
 
         when {
+            !routerBooksEnabled && !deviceContactsEnabled -> Message(stringResource(R.string.phonebook_none_enabled))
             phonebooks.isEmpty() && busy -> Message(stringResource(R.string.phonebook_loading))
-            phonebooks.isEmpty() && !loaded ->
+            phonebooks.isEmpty() && routerBooksEnabled && !loaded ->
                 Message(stringResource(R.string.phonebook_load_failed))
             phonebooks.all { it.contacts.isEmpty() } -> Message(stringResource(R.string.phonebook_empty))
             filtered.isEmpty() -> Message(stringResource(R.string.phonebook_no_match))

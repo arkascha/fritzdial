@@ -111,6 +111,10 @@ data class UiState(
     val callLogProblem: UiText? = null,
 )
 
+/** The FritzBox in use, if any. */
+val UiState.activeProfile: BoxProfile?
+    get() = profiles.firstOrNull { it.id == activeProfileId }
+
 /** Why the box in use does not meet the expectations, if it does not; a failed request weighs more. */
 val UiState.activeBoxIssue: ActiveBoxIssue?
     get() = when {
@@ -263,8 +267,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     /**
      * Tries the edited connection against the router. Only if that works it is saved – and made
      * the active one, since the box evidently is reachable from here; otherwise the error is shown.
+     * [phonebooksEnabled] and [callListEnabled]: whether this box' phone books and call list are used.
      */
-    fun saveSettings(edited: FritzConfig, name: String) {
+    fun saveSettings(edited: FritzConfig, name: String, phonebooksEnabled: Boolean, callListEnabled: Boolean) {
         val config = edited.copy(trustedCertDer = _state.value.config.trustedCertDer)
         val editingId = _state.value.editingProfileId
         verifyingSettings = true
@@ -280,6 +285,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 config = _state.value.config,
                 deviceId = identity?.udn ?: previous?.deviceId,
                 model = identity?.modelName ?: previous?.model,
+                phonebooksEnabled = phonebooksEnabled,
+                callListEnabled = callListEnabled,
             )
             settings.saveProfile(profile)
             settings.activeProfileId = profile.id
@@ -549,6 +556,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private fun reloadRouterPhonebooks() {
+        if (settings.activeProfile()?.phonebooksEnabled == false) return
         if (_state.value.busy) return runWhenIdle("phonebooks", ::reloadRouterPhonebooks)
         runOnBox(uiText(R.string.phonebook_loading)) { dialer ->
             val books = dialer.loadPhonebooks()
@@ -576,6 +584,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     private fun reloadRecents() {
         loadCallLog()
+        if (settings.activeProfile()?.callListEnabled == false) return
         if (_state.value.busy) return runWhenIdle("recents") { if (_state.value.showPicker) reloadRecents() }
         runOnBox(uiText(R.string.recents_loading)) { dialer ->
             val calls = dialer.loadRecentCalls()

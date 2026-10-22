@@ -39,11 +39,11 @@ with **Retry** and, when the cause is likely in the settings, **Open settings**.
 ### Several FritzBoxes
 
 **Settings › FritzBox connections** holds any number of boxes (e.g. home and office), each with its
-own name, host, port, HTTPS, user, password and trusted certificate. **Add FritzBox** adds one; tap an
-entry to edit it, its menu offers **Use now** and **Delete**. The box in use is marked with a check
-mark and shown under the app name on the dialer. The mark turns into a red warning triangle when that
-box was not found by the last detection (see below), or when the last request to it failed; a network
-change clears the latter until the next request.
+own name, host, port, HTTPS, user, password, use of its phone books and call list, and trusted
+certificate. **Add FritzBox** adds one; tap an entry to edit it, its menu offers **Use now** and
+**Delete**. The box in use is marked with a check mark and shown under the app name on the dialer. The
+mark turns into a red warning triangle when that box was not found by the last detection (see below),
+or when the last request to it failed; a network change clears the latter until the next request.
 
 The box of the current network is selected automatically – at start and whenever the phone's network
 changes. Every FritzBox publishes a public device description (`http://<box>:49000/tr64desc.xml`) with a
@@ -63,6 +63,8 @@ FRITZ!Box (TR-064 `X_AVM-DE_OnTel`: `GetPhonebookList`, `GetPhonebook`, then the
 Online phone books configured on the box (e.g. CardDAV) are synced into it and should appear as well.
 Search by name or number, filter by phone book, and tap a number to put it into the dialer.
 The books are loaded once per app start; the reload button at the top fetches them again.
+Whether a box' phone books are used is set per FritzBox, on its connection page
+(**Settings › FritzBox connections › <box> › Phone books**, on by default).
 
 Optionally, the contacts stored on the phone itself appear as an additional book **This phone**
 (all Android accounts, e.g. Google or CardDAV via DAVx⁵). This is off by default. When the **Phone books**
@@ -83,6 +85,8 @@ reload button), from two sources:
 - **FritzBox** (router icon with the box' name from the settings) – the dialled, received and missed calls in the box' call list (TR-064 `X_AVM-DE_OnTel` `GetCallList`),
   i.e. FritzDial's dial-help calls as well as the calls of the handsets themselves. The FRITZ!Box user
   needs the permission *Voice messages, fax messages, FRITZ!App Fon and call list* for this.
+  Whether it is used is set per FritzBox, on its connection page (**Settings › FritzBox connections ›
+  <box> › Call list**, on by default) – e.g. for a box whose user lacks that permission.
 - **This phone** (phone icon; optional, off by default) – the dialled, received and missed calls of the phone's own telephony app,
   read from the Android call log (`READ_CALL_LOG`, used for nothing else). FritzDial's calls run on
   the FRITZ!Box and never appear there. Switch it on in **Settings › Recent numbers › Include this

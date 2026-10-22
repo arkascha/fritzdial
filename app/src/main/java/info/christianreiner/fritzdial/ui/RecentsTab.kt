@@ -49,7 +49,7 @@ import java.util.Locale
 
 /**
  * The number picker's "Recent" tab: the numbers dialled, received or missed last, from the
- * FRITZ!Box' call list and – optionally, switched on in the settings – from the phone's own call
+ * FRITZ!Box' call list (if used for the box in use) and – optionally, switched on in the settings – from the phone's own call
  * log. Each number appears once, at its latest call. Tapping one puts it into the dialer.
  */
 @Composable
@@ -58,6 +58,8 @@ fun RecentsTab(
     boxCallsLoaded: Boolean,
     /** Name of the FritzBox in use (as in the settings), shown as the source of its calls. */
     boxName: String?,
+    /** The call list of the box in use is switched on in the settings. */
+    boxCallsEnabled: Boolean,
     phoneCalls: List<RecentCall>?,
     /** The optional "this phone's calls" feature is switched on in the settings. */
     callLogEnabled: Boolean,
@@ -73,9 +75,10 @@ fun RecentsTab(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { onReloadCallLog() }
 
     val countryIso = remember { deviceCountryIso(context) }
-    val calls = remember(boxCalls, phoneCalls, callLogEnabled) {
+    val calls = remember(boxCalls, boxCallsEnabled, phoneCalls, callLogEnabled) {
+        val box = if (boxCallsEnabled) boxCalls else emptyList()
         val phone = if (callLogEnabled) phoneCalls.orEmpty() else emptyList()
-        mergeRecents(boxCalls + phone) { numberKey(it, countryIso) }
+        mergeRecents(box + phone) { numberKey(it, countryIso) }
     }
 
     Column(Modifier.fillMaxSize()) {
@@ -88,13 +91,14 @@ fun RecentsTab(
         }
 
         when {
+            !boxCallsEnabled && !callLogEnabled -> Message(stringResource(R.string.recents_none_enabled))
             calls.isEmpty() && busy -> Message(stringResource(R.string.recents_loading))
-            calls.isEmpty() && !boxCallsLoaded ->
+            calls.isEmpty() && boxCallsEnabled && !boxCallsLoaded ->
                 Message(stringResource(R.string.recents_load_failed))
             calls.isEmpty() -> Message(stringResource(R.string.recents_empty))
             else -> {
                 // Only the phone's calls are shown: say so, rather than silently leave the box' out.
-                if (!boxCallsLoaded && !busy) {
+                if (boxCallsEnabled && !boxCallsLoaded && !busy) {
                     Text(
                         stringResource(R.string.recents_box_load_failed),
                         style = MaterialTheme.typography.bodySmall,

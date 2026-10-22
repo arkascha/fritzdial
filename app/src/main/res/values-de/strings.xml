@@ -46,6 +46,7 @@
     <string name="phonebook_load_failed">Die Telefonbücher konnten nicht geladen werden. Zum Wiederholen auf Neu laden tippen.</string>
     <string name="phonebook_empty">Die Telefonbücher sind leer.</string>
     <string name="phonebook_no_match">Keine passenden Kontakte.</string>
+    <string name="phonebook_none_enabled">Keine Telefonbücher eingeschaltet. Du kannst sie in den Einstellungen einschalten.</string>
     <string name="device_contacts_question_title">Kontakte dieses Telefons einbeziehen?</string>
     <string name="device_contacts_question_text">FritzDial kann zusätzlich zu den Telefonbüchern der FRITZ!Box auch die auf diesem Telefon gespeicherten Kontakte anzeigen. Dafür fragt Android nach dem Zugriff auf deine Kontakte – sie verlassen das Telefon nie. Du kannst das später in den Einstellungen ändern.</string>
     <string name="device_contacts_revoked">Die Kontakte dieses Telefons sind eingeschaltet, aber Android erlaubt FritzDial nicht mehr, sie zu lesen.</string>
@@ -61,6 +62,7 @@
     <string name="recents_loading">Anrufliste wird geladen …</string>
     <string name="recents_load_failed">Die Anrufliste konnte nicht geladen werden. Zum Wiederholen auf Neu laden tippen.</string>
     <string name="recents_empty">Noch keine Anrufe.</string>
+    <string name="recents_none_enabled">Keine Anrufliste eingeschaltet. Du kannst sie in den Einstellungen einschalten.</string>
     <string name="recents_box_load_failed">Die Anrufliste der FritzBox konnte nicht geladen werden. Zum Wiederholen auf Neu laden tippen.</string>
     <string name="recents_recorded_by_box">Aufgezeichnet von %1$s</string>
     <string name="recents_recorded_by_phone">Aufgezeichnet von diesem Telefon</string>
@@ -83,7 +85,6 @@
     <string name="settings_device_contacts_hint">Zeigt die auf diesem Telefon gespeicherten Kontakte zusätzlich zu den Telefonbüchern der FRITZ!Box. Benötigt Zugriff auf deine Kontakte; sie verlassen das Telefon nie.</string>
     <string name="settings_device_contacts_denied">Android erlaubt FritzDial nicht, deine Kontakte zu lesen. Du kannst es in den App-Einstellungen erlauben.</string>
     <string name="settings_recents">Letzte Nummern</string>
-    <string name="settings_recents_hint">Die zuletzt gewählten, angenommenen und verpassten Nummern werden aus der Anrufliste der FritzBox gelesen.</string>
     <string name="settings_call_log">Anrufe dieses Telefons einbeziehen</string>
     <string name="settings_call_log_hint">Bietet auch die Nummern an, die mit der Telefon-App dieses Telefons gewählt, angenommen oder verpasst wurden. Benötigt Zugriff auf deine Anrufliste; sie verlässt das Telefon nie.</string>
     <string name="settings_call_log_play">Funktioniert nur, wenn FritzDial nicht aus Google Play installiert wurde (APK oder F-Droid): Google Play erlaubt das Lesen der Anrufliste nur der Standard-Telefon-App.</string>
@@ -101,6 +102,10 @@
     <string name="connection_port">TR-064-Port</string>
     <string name="connection_user">FRITZ!Box-Benutzername</string>
     <string name="connection_password">Kennwort</string>
+    <string name="connection_phonebooks">Telefonbücher</string>
+    <string name="connection_phonebooks_hint">Die auf dieser FritzBox gespeicherten Telefonbücher.</string>
+    <string name="connection_call_list">Anrufliste</string>
+    <string name="connection_call_list_hint">Die zuletzt gewählten, angenommenen und verpassten Nummern aus der Anrufliste dieser FritzBox. Benötigt die Berechtigung „Sprachnachrichten, Faxnachrichten, FRITZ!App Fon und Anrufliste“.</string>
     <string name="connection_help">Auf der Box „Zugriff für Anwendungen zulassen“ (Heimnetz › Netzwerk › Netzwerkeinstellungen) und die „Wählhilfe“ (Telefonie › Anrufe › Wählhilfe) aktivieren. Der Benutzer braucht die Berechtigung für Telefonie. Wenn du dich nur mit Kennwort anmeldest, verwende den automatisch erzeugten Benutzernamen unter System › FRITZ!Box-Benutzer.</string>
     <string name="connection_connecting">Verbinde …</string>
     <string name="connection_save">Speichern &amp; verbinden</string>

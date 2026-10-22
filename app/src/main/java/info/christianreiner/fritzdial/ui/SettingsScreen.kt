@@ -151,6 +151,7 @@ fun SettingsScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                Text(stringResource(R.string.phone_books), style = MaterialTheme.typography.titleSmall)
                 DeviceContactsSetting(enabled = deviceContactsEnabled, onChange = onDeviceContactsChange)
             }
 
@@ -159,6 +160,7 @@ fun SettingsScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                Text(stringResource(R.string.settings_recents), style = MaterialTheme.typography.titleSmall)
                 CallLogSetting(
                     enabled = callLogEnabled,
                     problem = callLogProblem,
@@ -269,7 +271,10 @@ private fun ConfirmDeleteDialog(name: String, onConfirm: () -> Unit, onDismiss: 
     )
 }
 
-/** Router connection: host, port, HTTPS, user, password and the trusted certificate. */
+/**
+ * Router connection: host, port, HTTPS, user, password, whether the box' phone books and call list
+ * are used, and the trusted certificate.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectionSettingsScreen(
@@ -283,7 +288,10 @@ fun ConnectionSettingsScreen(
     initialName: String,
     /** Adding a new FritzBox rather than editing an existing one. */
     isNew: Boolean,
-    onSave: (FritzConfig, String) -> Unit,
+    /** Whether this box' phone books and call list are used (both on for a new box). */
+    initialPhonebooksEnabled: Boolean,
+    initialCallListEnabled: Boolean,
+    onSave: (config: FritzConfig, name: String, phonebooksEnabled: Boolean, callListEnabled: Boolean) -> Unit,
     onBack: () -> Unit,
     /** Deletes the edited connection; null for a new one. */
     onDelete: (() -> Unit)?,
@@ -297,6 +305,8 @@ fun ConnectionSettingsScreen(
     var user by remember { mutableStateOf(initial.username) }
     var password by remember { mutableStateOf(initial.password) }
     var useHttps by remember { mutableStateOf(initial.useHttps) }
+    var phonebooksEnabled by remember { mutableStateOf(initialPhonebooksEnabled) }
+    var callListEnabled by remember { mutableStateOf(initialCallListEnabled) }
     val portValue = port.toIntOrNull()
     val keyboard = LocalSoftwareKeyboardController.current
     val valid = host.isNotBlank() && portValue != null && portValue in 1..65535
@@ -374,6 +384,19 @@ fun ConnectionSettingsScreen(
                 label = stringResource(R.string.connection_password),
                 modifier = Modifier.fillMaxWidth(),
             )
+            BoxFeatureSetting(
+                title = stringResource(R.string.connection_phonebooks),
+                hint = stringResource(R.string.connection_phonebooks_hint),
+                enabled = phonebooksEnabled,
+                onChange = { phonebooksEnabled = it },
+            )
+            BoxFeatureSetting(
+                title = stringResource(R.string.connection_call_list),
+                hint = stringResource(R.string.connection_call_list_hint),
+                enabled = callListEnabled,
+                onChange = { callListEnabled = it },
+            )
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Text(
                 stringResource(R.string.connection_help),
                 style = MaterialTheme.typography.bodySmall,
@@ -391,6 +414,8 @@ fun ConnectionSettingsScreen(
                             useHttps = useHttps,
                         ),
                         name,
+                        phonebooksEnabled,
+                        callListEnabled,
                     )
                 },
                 enabled = valid && !busy,
@@ -446,6 +471,22 @@ fun ConnectionSettingsScreen(
     }
 }
 
+/** Switch for something the box offers (its phone books, its call list). */
+@Composable
+private fun BoxFeatureSetting(title: String, hint: String, enabled: Boolean, onChange: (Boolean) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                hint,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(checked = enabled, onCheckedChange = onChange)
+    }
+}
+
 /**
  * Switch for the optional "this phone's contacts" feature. Turning it on asks Android for the
  * contacts permission; the feature is only enabled once that is granted.
@@ -466,7 +507,6 @@ private fun DeviceContactsSetting(enabled: Boolean, onChange: (Boolean) -> Unit)
         if (allowed) denied = false
     }
 
-    Text(stringResource(R.string.phone_books), style = MaterialTheme.typography.titleSmall)
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Text(stringResource(R.string.settings_device_contacts), style = MaterialTheme.typography.bodyLarge)
@@ -514,12 +554,6 @@ private fun CallLogSetting(
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), onEnable)
 
-    Text(stringResource(R.string.settings_recents), style = MaterialTheme.typography.titleSmall)
-    Text(
-        stringResource(R.string.settings_recents_hint),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Text(stringResource(R.string.settings_call_log), style = MaterialTheme.typography.bodyLarge)

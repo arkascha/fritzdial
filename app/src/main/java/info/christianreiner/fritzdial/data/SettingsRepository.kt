@@ -12,6 +12,8 @@ import java.util.UUID
  *
  * [deviceId] is the box' UPnP device id (UDN from its public `tr64desc.xml`). It is learned when
  * the connection is saved and used to recognise the box of the current network automatically.
+ * [phonebooksEnabled] and [callListEnabled] switch, for this box, whether its phone books and its
+ * call list are offered in the number picker (on by default).
  */
 data class BoxProfile(
     val id: String = UUID.randomUUID().toString(),
@@ -19,6 +21,8 @@ data class BoxProfile(
     val config: FritzConfig,
     val deviceId: String? = null,
     val model: String? = null,
+    val phonebooksEnabled: Boolean = true,
+    val callListEnabled: Boolean = true,
 )
 
 /** Persists the FritzBox connections (passwords encrypted) and the app options. */
@@ -115,6 +119,8 @@ class SettingsRepository(context: Context) {
         p.config.trustedCertDer?.let { put("cert", it) }
         p.deviceId?.let { put("deviceId", it) }
         p.model?.let { put("model", it) }
+        put("phonebooks", p.phonebooksEnabled)
+        put("callList", p.callListEnabled)
     }
 
     private fun fromJson(o: JSONObject) = BoxProfile(
@@ -131,6 +137,9 @@ class SettingsRepository(context: Context) {
         ),
         deviceId = o.optString("deviceId").takeIf { it.isNotEmpty() },
         model = o.optString("model").takeIf { it.isNotEmpty() },
+        // Connections saved before these options existed keep using both.
+        phonebooksEnabled = o.optBoolean("phonebooks", true),
+        callListEnabled = o.optBoolean("callList", true),
     )
 
     /** Earlier versions stored a single connection in separate keys: turn it into the first entry. */

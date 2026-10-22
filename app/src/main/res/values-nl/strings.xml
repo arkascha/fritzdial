@@ -46,6 +46,7 @@
     <string name="phonebook_load_failed">De telefoonboeken konden niet worden geladen. Tik op opnieuw laden om het nog eens te proberen.</string>
     <string name="phonebook_empty">De telefoonboeken zijn leeg.</string>
     <string name="phonebook_no_match">Geen passende contacten.</string>
+    <string name="phonebook_none_enabled">Er zijn geen telefoonboeken ingeschakeld. Je kunt ze in de instellingen inschakelen.</string>
     <string name="device_contacts_question_title">Contacten van deze telefoon opnemen?</string>
     <string name="device_contacts_question_text">FritzDial kan naast de telefoonboeken van de FRITZ!Box ook de contacten tonen die op deze telefoon zijn opgeslagen. Daarvoor vraagt Android toegang tot je contacten – ze verlaten de telefoon nooit. Je kunt dit later in de instellingen wijzigen.</string>
     <string name="device_contacts_revoked">De contacten van deze telefoon zijn ingeschakeld, maar Android staat FritzDial niet meer toe ze te lezen.</string>
@@ -61,6 +62,7 @@
     <string name="recents_loading">Gesprekkenlijst laden…</string>
     <string name="recents_load_failed">De gesprekkenlijst kon niet worden geladen. Tik op opnieuw laden om het nog eens te proberen.</string>
     <string name="recents_empty">Nog geen recente gesprekken.</string>
+    <string name="recents_none_enabled">Er is geen gesprekkenlijst ingeschakeld. Je kunt deze in de instellingen inschakelen.</string>
     <string name="recents_box_load_failed">De gesprekkenlijst van de FritzBox kon niet worden geladen. Tik op opnieuw laden om het nog eens te proberen.</string>
     <string name="recents_recorded_by_box">Vastgelegd door %1$s</string>
     <string name="recents_recorded_by_phone">Vastgelegd door deze telefoon</string>
@@ -83,7 +85,6 @@
     <string name="settings_device_contacts_hint">Toont de op deze telefoon opgeslagen contacten naast de telefoonboeken van de FRITZ!Box. Vereist toegang tot je contacten; ze verlaten de telefoon nooit.</string>
     <string name="settings_device_contacts_denied">Android staat FritzDial niet toe je contacten te lezen. Je kunt het toestaan in de app-instellingen.</string>
     <string name="settings_recents">Recente nummers</string>
-    <string name="settings_recents_hint">De recent gebelde, aangenomen en gemiste nummers worden uit de gesprekkenlijst van de FritzBox gelezen.</string>
     <string name="settings_call_log">Gesprekken van deze telefoon opnemen</string>
     <string name="settings_call_log_hint">Biedt ook de nummers aan die met de telefoon-app van deze telefoon zijn gebeld, aangenomen of gemist. Vereist toegang tot je gesprekkenlijst; die verlaat de telefoon nooit.</string>
     <string name="settings_call_log_play">Werkt alleen als FritzDial niet via Google Play is geïnstalleerd (APK of F-Droid): Google Play staat het lezen van de gesprekkenlijst alleen toe voor de standaard telefoon-app.</string>
@@ -101,6 +102,10 @@
     <string name="connection_port">TR-064-poort</string>
     <string name="connection_user">FRITZ!Box-gebruikersnaam</string>
     <string name="connection_password">Wachtwoord</string>
+    <string name="connection_phonebooks">Telefoonboeken</string>
+    <string name="connection_phonebooks_hint">De telefoonboeken die op deze FritzBox zijn opgeslagen.</string>
+    <string name="connection_call_list">Gesprekkenlijst</string>
+    <string name="connection_call_list_hint">De recent gebelde, aangenomen en gemiste nummers uit de gesprekkenlijst van deze FritzBox.</string>
     <string name="connection_help">Schakel op de box “Toegang voor toepassingen toestaan” in (Thuisnetwerk › Netwerk › Netwerkinstellingen) en de “Kieshulp” (Telefonie › Gesprekken › Kieshulp). De gebruiker heeft het recht voor telefonie nodig. Als je alleen met een wachtwoord inlogt, gebruik dan de automatisch aangemaakte gebruikersnaam onder Systeem › FRITZ!Box-gebruikers.</string>
     <string name="connection_connecting">Verbinden…</string>
     <string name="connection_save">Opslaan &amp; verbinden</string>

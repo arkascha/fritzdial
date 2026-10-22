@@ -48,6 +48,7 @@
     <string name="phonebook_load_failed">Phone books could not be loaded. Tap reload to try again.</string>
     <string name="phonebook_empty">The phone books are empty.</string>
     <string name="phonebook_no_match">No matching contacts.</string>
+    <string name="phonebook_none_enabled">No phone books are switched on. You can switch them on in the settings.</string>
     <string name="device_contacts_question_title">Include this phone’s contacts?</string>
     <string name="device_contacts_question_text">FritzDial can also show the contacts stored on this phone next to the FRITZ!Box phone books. For that, Android asks for access to your contacts – they never leave the phone. You can change this later in the settings.</string>
     <string name="device_contacts_revoked">This phone’s contacts are switched on, but Android no longer allows FritzDial to read them.</string>
@@ -63,6 +64,7 @@
     <string name="recents_loading">Loading call list…</string>
     <string name="recents_load_failed">The call list could not be loaded. Tap reload to try again.</string>
     <string name="recents_empty">No recent calls yet.</string>
+    <string name="recents_none_enabled">No call list is switched on. You can switch one on in the settings.</string>
     <string name="recents_box_load_failed">The FritzBox call list could not be loaded. Tap reload to try again.</string>
     <string name="recents_recorded_by_box">Recorded by %1$s</string>
     <string name="recents_recorded_by_phone">Recorded by this phone</string>
@@ -85,7 +87,6 @@
     <string name="settings_device_contacts_hint">Shows the contacts stored on this phone next to the FRITZ!Box phone books. Needs access to your contacts; they never leave the phone.</string>
     <string name="settings_device_contacts_denied">Android does not allow FritzDial to read your contacts. You can allow it in the app settings.</string>
     <string name="settings_recents">Recent numbers</string>
-    <string name="settings_recents_hint">The recently dialled, received and missed numbers are read from the FritzBox’s call list.</string>
     <string name="settings_call_log">Include this phone’s calls</string>
     <string name="settings_call_log_hint">Also offers the numbers dialled, received and missed with the phone’s own telephony app. Needs access to your call log; it never leaves the phone.</string>
     <string name="settings_call_log_play">Only works if FritzDial was installed from outside Google Play (APK or F-Droid): Google Play allows reading the call log only for the phone’s default phone app.</string>
@@ -103,6 +104,10 @@
     <string name="connection_port">TR-064 port</string>
     <string name="connection_user">FRITZ!Box user name</string>
     <string name="connection_password">Password</string>
+    <string name="connection_phonebooks">Phone books</string>
+    <string name="connection_phonebooks_hint">The phone books stored on this FritzBox.</string>
+    <string name="connection_call_list">Call list</string>
+    <string name="connection_call_list_hint">The numbers recently dialled, received and missed, from this FritzBox’s call list. Needs the permission “Voice messages, fax messages, FRITZ!App Fon and call list”.</string>
     <string name="connection_help">On the box, enable “Allow access for applications” (Home Network › Network › Network Settings) and “Dial help” (Telephony › Calls › Dial Help). The user needs telephony permission. If you log in with password only, use the auto-generated user name shown under System › FRITZ!Box Users.</string>
     <string name="connection_connecting">Connecting…</string>
     <string name="connection_save">Save &amp; connect</string>

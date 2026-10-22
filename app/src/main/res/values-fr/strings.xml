@@ -46,6 +46,7 @@
     <string name="phonebook_load_failed">Impossible de charger les répertoires. Touchez Recharger pour réessayer.</string>
     <string name="phonebook_empty">Les répertoires sont vides.</string>
     <string name="phonebook_no_match">Aucun contact correspondant.</string>
+    <string name="phonebook_none_enabled">Aucun répertoire n’est activé. Vous pouvez les activer dans les paramètres.</string>
     <string name="device_contacts_question_title">Inclure les contacts de ce téléphone ?</string>
     <string name="device_contacts_question_text">FritzDial peut aussi afficher les contacts enregistrés sur ce téléphone à côté des répertoires de la FRITZ!Box. Pour cela, Android demande l’accès à vos contacts – ils ne quittent jamais le téléphone. Vous pourrez modifier ce choix plus tard dans les paramètres.</string>
     <string name="device_contacts_revoked">Les contacts de ce téléphone sont activés, mais Android n’autorise plus FritzDial à les lire.</string>
@@ -61,6 +62,7 @@
     <string name="recents_loading">Chargement de la liste d’appels…</string>
     <string name="recents_load_failed">Impossible de charger la liste d’appels. Touchez Recharger pour réessayer.</string>
     <string name="recents_empty">Aucun appel récent pour l’instant.</string>
+    <string name="recents_none_enabled">Aucune liste d’appels n’est activée. Vous pouvez l’activer dans les paramètres.</string>
     <string name="recents_box_load_failed">Impossible de charger la liste d’appels de la FritzBox. Touchez Recharger pour réessayer.</string>
     <string name="recents_recorded_by_box">Enregistré par %1$s</string>
     <string name="recents_recorded_by_phone">Enregistré par ce téléphone</string>
@@ -83,7 +85,6 @@
     <string name="settings_device_contacts_hint">Affiche les contacts enregistrés sur ce téléphone à côté des répertoires de la FRITZ!Box. Nécessite l’accès à vos contacts ; ils ne quittent jamais le téléphone.</string>
     <string name="settings_device_contacts_denied">Android n’autorise pas FritzDial à lire vos contacts. Vous pouvez l’autoriser dans les paramètres de l’appli.</string>
     <string name="settings_recents">Numéros récents</string>
-    <string name="settings_recents_hint">Les numéros récemment composés, reçus et manqués sont lus dans la liste d’appels de la FritzBox.</string>
     <string name="settings_call_log">Inclure les appels de ce téléphone</string>
     <string name="settings_call_log_hint">Propose aussi les numéros composés, reçus et manqués avec l’appli Téléphone de ce téléphone. Nécessite l’accès à votre journal d’appels ; il ne quitte jamais le téléphone.</string>
     <string name="settings_call_log_play">Ne fonctionne que si FritzDial n’a pas été installé depuis Google Play (APK ou F-Droid) : Google Play n’autorise la lecture du journal d’appels que pour l’appli Téléphone par défaut.</string>
@@ -101,6 +102,10 @@
     <string name="connection_port">Port TR-064</string>
     <string name="connection_user">Nom d’utilisateur FRITZ!Box</string>
     <string name="connection_password">Mot de passe</string>
+    <string name="connection_phonebooks">Répertoires</string>
+    <string name="connection_phonebooks_hint">Les répertoires enregistrés sur cette FritzBox.</string>
+    <string name="connection_call_list">Liste d’appels</string>
+    <string name="connection_call_list_hint">Les numéros récemment composés, reçus et manqués, de la liste d’appels de cette FritzBox.</string>
     <string name="connection_help">Sur la box, activez « Autoriser l’accès aux applications » (Réseau domestique › Réseau › Paramètres réseau) et l’« Aide à la numérotation » (Téléphonie › Appels › Aide à la numérotation). L’utilisateur a besoin du droit Téléphonie. Si vous vous connectez uniquement avec un mot de passe, utilisez le nom d’utilisateur généré automatiquement, indiqué sous Système › Utilisateurs FRITZ!Box.</string>
     <string name="connection_connecting">Connexion…</string>
     <string name="connection_save">Enregistrer et connecter</string>
