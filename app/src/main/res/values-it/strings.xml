@@ -4,6 +4,7 @@
     <string name="back">Indietro</string>
     <string name="cancel">Annulla</string>
     <string name="close">Chiudi</string>
+    <string name="help_for">Guida: %1$s</string>
     <string name="delete">Elimina</string>
     <string name="edit">Modifica</string>
     <string name="forget">Dimentica</string>
@@ -103,7 +104,7 @@
     <string name="connection_user">Nome utente FRITZ!Box</string>
     <string name="connection_password">Password</string>
     <string name="connection_phonebooks">Rubriche</string>
-    <string name="connection_phonebooks_hint">Le rubriche salvate su questa FritzBox.</string>
+    <string name="connection_phonebooks_hint">Mostra i contatti salvati nelle rubriche di questa FritzBox, incluse le rubriche online sincronizzate su di essa (ad es. CardDAV). Vengono letti dalla FritzBox quando serve e non vengono salvati sul telefono.</string>
     <string name="connection_call_list">Elenco chiamate</string>
     <string name="connection_call_list_hint">I numeri chiamati, ricevuti e persi di recente, dall’elenco chiamate di questa FritzBox.</string>
     <string name="connection_help">Sulla box, attiva «Consenti l’accesso alle applicazioni» (Rete domestica › Rete › Impostazioni di rete) e l’«Aiuto alla selezione» (Telefonia › Chiamate › Aiuto alla selezione). L’utente ha bisogno dell’autorizzazione per la telefonia. Se accedi solo con la password, usa il nome utente generato automaticamente indicato in Sistema › Utenti FRITZ!Box.</string>

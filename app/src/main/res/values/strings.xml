@@ -6,6 +6,7 @@
     <string name="back">Back</string>
     <string name="cancel">Cancel</string>
     <string name="close">Close</string>
+    <string name="help_for">Help: %1$s</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="forget">Forget</string>
@@ -105,7 +106,7 @@
     <string name="connection_user">FRITZ!Box user name</string>
     <string name="connection_password">Password</string>
     <string name="connection_phonebooks">Phone books</string>
-    <string name="connection_phonebooks_hint">The phone books stored on this FritzBox.</string>
+    <string name="connection_phonebooks_hint">Shows the contacts stored in this FritzBox’s phone books, including online phone books synced into it (e.g. CardDAV). They are read from the box when needed and not stored on the phone.</string>
     <string name="connection_call_list">Call list</string>
     <string name="connection_call_list_hint">The numbers recently dialled, received and missed, from this FritzBox’s call list. Needs the permission “Voice messages, fax messages, FRITZ!App Fon and call list”.</string>
     <string name="connection_help">On the box, enable “Allow access for applications” (Home Network › Network › Network Settings) and “Dial help” (Telephony › Calls › Dial Help). The user needs telephony permission. If you log in with password only, use the auto-generated user name shown under System › FRITZ!Box Users.</string>

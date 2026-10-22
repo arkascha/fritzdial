@@ -489,18 +489,11 @@ fun ConnectionSettingsScreen(
     }
 }
 
-/** Switch for something the box offers (its phone books, its call list). */
+/** Switch for something the box offers (its phone books, its call list); [hint] behind a question mark. */
 @Composable
 private fun BoxFeatureSetting(title: String, hint: String, enabled: Boolean, onChange: (Boolean) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                hint,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        OptionTitle(title, listOf(hint), Modifier.weight(1f))
         Switch(checked = enabled, onCheckedChange = onChange)
     }
 }
@@ -526,14 +519,11 @@ private fun DeviceContactsSetting(enabled: Boolean, onChange: (Boolean) -> Unit)
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(stringResource(R.string.settings_device_contacts), style = MaterialTheme.typography.bodyLarge)
-            Text(
-                stringResource(R.string.settings_device_contacts_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        OptionTitle(
+            stringResource(R.string.settings_device_contacts),
+            listOf(stringResource(R.string.settings_device_contacts_hint)),
+            Modifier.weight(1f),
+        )
         Switch(
             checked = enabled && allowed,
             onCheckedChange = { on ->
@@ -573,19 +563,11 @@ private fun CallLogSetting(
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission(), onEnable)
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(stringResource(R.string.settings_call_log), style = MaterialTheme.typography.bodyLarge)
-            Text(
-                stringResource(R.string.settings_call_log_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                stringResource(R.string.settings_call_log_play),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        OptionTitle(
+            stringResource(R.string.settings_call_log),
+            listOf(stringResource(R.string.settings_call_log_hint), stringResource(R.string.settings_call_log_play)),
+            Modifier.weight(1f),
+        )
         Switch(
             checked = enabled,
             onCheckedChange = { on ->

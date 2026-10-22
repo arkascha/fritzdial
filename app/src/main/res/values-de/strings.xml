@@ -4,6 +4,7 @@
     <string name="back">Zurück</string>
     <string name="cancel">Abbrechen</string>
     <string name="close">Schließen</string>
+    <string name="help_for">Hilfe: %1$s</string>
     <string name="delete">Löschen</string>
     <string name="edit">Bearbeiten</string>
     <string name="forget">Vergessen</string>
@@ -103,7 +104,7 @@
     <string name="connection_user">FRITZ!Box-Benutzername</string>
     <string name="connection_password">Kennwort</string>
     <string name="connection_phonebooks">Telefonbücher</string>
-    <string name="connection_phonebooks_hint">Die auf dieser FritzBox gespeicherten Telefonbücher.</string>
+    <string name="connection_phonebooks_hint">Zeigt die in den Telefonbüchern dieser FritzBox gespeicherten Kontakte, einschließlich dort eingebundener Online-Telefonbücher (z. B. CardDAV). Sie werden bei Bedarf von der Box gelesen und nicht auf dem Telefon gespeichert.</string>
     <string name="connection_call_list">Anrufliste</string>
     <string name="connection_call_list_hint">Die zuletzt gewählten, angenommenen und verpassten Nummern aus der Anrufliste dieser FritzBox. Benötigt die Berechtigung „Sprachnachrichten, Faxnachrichten, FRITZ!App Fon und Anrufliste“.</string>
     <string name="connection_help">Auf der Box „Zugriff für Anwendungen zulassen“ (Heimnetz › Netzwerk › Netzwerkeinstellungen) und die „Wählhilfe“ (Telefonie › Anrufe › Wählhilfe) aktivieren. Der Benutzer braucht die Berechtigung für Telefonie. Wenn du dich nur mit Kennwort anmeldest, verwende den automatisch erzeugten Benutzernamen unter System › FRITZ!Box-Benutzer.</string>

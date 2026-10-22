@@ -4,6 +4,7 @@
     <string name="back">Atrás</string>
     <string name="cancel">Cancelar</string>
     <string name="close">Cerrar</string>
+    <string name="help_for">Ayuda: %1$s</string>
     <string name="delete">Eliminar</string>
     <string name="edit">Editar</string>
     <string name="forget">Olvidar</string>
@@ -103,7 +104,7 @@
     <string name="connection_user">Nombre de usuario de la FRITZ!Box</string>
     <string name="connection_password">Contraseña</string>
     <string name="connection_phonebooks">Agendas</string>
-    <string name="connection_phonebooks_hint">Las agendas guardadas en esta FritzBox.</string>
+    <string name="connection_phonebooks_hint">Muestra los contactos guardados en las agendas de esta FritzBox, incluidas las agendas en línea sincronizadas con ella (p. ej., CardDAV). Se leen de la FritzBox cuando hace falta y no se guardan en el teléfono.</string>
     <string name="connection_call_list">Lista de llamadas</string>
     <string name="connection_call_list_hint">Los números marcados, recibidos y perdidos recientemente, de la lista de llamadas de esta FritzBox.</string>
     <string name="connection_help">En la box, activa «Permitir el acceso a aplicaciones» (Red doméstica › Red › Ajustes de red) y la «Ayuda de marcación» (Telefonía › Llamadas › Ayuda de marcación). El usuario necesita el permiso de telefonía. Si inicias sesión solo con contraseña, usa el nombre de usuario generado automáticamente que aparece en Sistema › Usuarios de FRITZ!Box.</string>

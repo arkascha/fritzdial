@@ -4,6 +4,7 @@
     <string name="back">Terug</string>
     <string name="cancel">Annuleren</string>
     <string name="close">Sluiten</string>
+    <string name="help_for">Hulp: %1$s</string>
     <string name="delete">Verwijderen</string>
     <string name="edit">Bewerken</string>
     <string name="forget">Vergeten</string>
@@ -103,7 +104,7 @@
     <string name="connection_user">FRITZ!Box-gebruikersnaam</string>
     <string name="connection_password">Wachtwoord</string>
     <string name="connection_phonebooks">Telefoonboeken</string>
-    <string name="connection_phonebooks_hint">De telefoonboeken die op deze FritzBox zijn opgeslagen.</string>
+    <string name="connection_phonebooks_hint">Toont de contacten uit de telefoonboeken van deze FritzBox, inclusief online telefoonboeken die ermee gesynchroniseerd worden (bijv. CardDAV). Ze worden indien nodig van de FritzBox gelezen en niet op de telefoon opgeslagen.</string>
     <string name="connection_call_list">Gesprekkenlijst</string>
     <string name="connection_call_list_hint">De recent gebelde, aangenomen en gemiste nummers uit de gesprekkenlijst van deze FritzBox.</string>
     <string name="connection_help">Schakel op de box “Toegang voor toepassingen toestaan” in (Thuisnetwerk › Netwerk › Netwerkinstellingen) en de “Kieshulp” (Telefonie › Gesprekken › Kieshulp). De gebruiker heeft het recht voor telefonie nodig. Als je alleen met een wachtwoord inlogt, gebruik dan de automatisch aangemaakte gebruikersnaam onder Systeem › FRITZ!Box-gebruikers.</string>

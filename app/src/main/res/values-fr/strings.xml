@@ -4,6 +4,7 @@
     <string name="back">Retour</string>
     <string name="cancel">Annuler</string>
     <string name="close">Fermer</string>
+    <string name="help_for">Aide : %1$s</string>
     <string name="delete">Supprimer</string>
     <string name="edit">Modifier</string>
     <string name="forget">Oublier</string>
@@ -103,7 +104,7 @@
     <string name="connection_user">Nom d’utilisateur FRITZ!Box</string>
     <string name="connection_password">Mot de passe</string>
     <string name="connection_phonebooks">Répertoires</string>
-    <string name="connection_phonebooks_hint">Les répertoires enregistrés sur cette FritzBox.</string>
+    <string name="connection_phonebooks_hint">Affiche les contacts enregistrés dans les répertoires de cette FritzBox, y compris les répertoires en ligne qui y sont synchronisés (p. ex. CardDAV). Ils sont lus sur la FritzBox au besoin et ne sont pas enregistrés sur le téléphone.</string>
     <string name="connection_call_list">Liste d’appels</string>
     <string name="connection_call_list_hint">Les numéros récemment composés, reçus et manqués, de la liste d’appels de cette FritzBox.</string>
     <string name="connection_help">Sur la box, activez « Autoriser l’accès aux applications » (Réseau domestique › Réseau › Paramètres réseau) et l’« Aide à la numérotation » (Téléphonie › Appels › Aide à la numérotation). L’utilisateur a besoin du droit Téléphonie. Si vous vous connectez uniquement avec un mot de passe, utilisez le nom d’utilisateur généré automatiquement, indiqué sous Système › Utilisateurs FRITZ!Box.</string>

@@ -4,6 +4,7 @@
     <string name="back">Wstecz</string>
     <string name="cancel">Anuluj</string>
     <string name="close">Zamknij</string>
+    <string name="help_for">Pomoc: %1$s</string>
     <string name="delete">Usuń</string>
     <string name="edit">Edytuj</string>
     <string name="forget">Zapomnij</string>
@@ -103,7 +104,7 @@
     <string name="connection_user">Nazwa użytkownika FRITZ!Box</string>
     <string name="connection_password">Hasło</string>
     <string name="connection_phonebooks">Książki telefoniczne</string>
-    <string name="connection_phonebooks_hint">Książki telefoniczne zapisane na tym FritzBox.</string>
+    <string name="connection_phonebooks_hint">Pokazuje kontakty zapisane w książkach telefonicznych tego FritzBox, w tym zsynchronizowane z nim książki online (np. CardDAV). Są odczytywane z FritzBox w razie potrzeby i nie są zapisywane na telefonie.</string>
     <string name="connection_call_list">Lista połączeń</string>
     <string name="connection_call_list_hint">Ostatnio wybierane, odebrane i nieodebrane numery z listy połączeń tego FritzBox.</string>
     <string name="connection_help">Na urządzeniu włącz „Zezwalaj na dostęp aplikacji” (Sieć domowa › Sieć › Ustawienia sieci) oraz „Pomoc przy wybieraniu” (Telefonia › Połączenia › Pomoc przy wybieraniu). Użytkownik potrzebuje uprawnienia do telefonii. Jeśli logujesz się tylko hasłem, użyj automatycznie utworzonej nazwy użytkownika podanej w System › Użytkownicy FRITZ!Box.</string>
