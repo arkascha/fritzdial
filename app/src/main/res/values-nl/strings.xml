@@ -6,7 +6,6 @@
     <string name="close">Sluiten</string>
     <string name="help_for">Hulp: %1$s</string>
     <string name="delete">Verwijderen</string>
-    <string name="edit">Bewerken</string>
     <string name="forget">Vergeten</string>
     <string name="show">Tonen</string>
     <string name="allow">Toestaan</string>
@@ -78,8 +77,7 @@
     <string name="settings_in_use">In gebruik</string>
     <string name="settings_in_use_not_found">In gebruik, maar niet gevonden in het huidige netwerk</string>
     <string name="settings_in_use_not_working">In gebruik, maar werkt niet: het laatste verzoek is mislukt</string>
-    <string name="settings_more_options">Meer opties voor %1$s</string>
-    <string name="settings_use_now">Nu gebruiken</string>
+    <string name="settings_use_box_now">%1$s nu gebruiken</string>
     <string name="settings_delete_title">‘%1$s’ verwijderen?</string>
     <string name="settings_delete_text">De verbinding, het wachtwoord en het vertrouwde certificaat worden van deze telefoon verwijderd.</string>
     <string name="settings_device_contacts">Contacten van deze telefoon opnemen</string>

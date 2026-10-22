@@ -6,7 +6,6 @@
     <string name="close">Zamknij</string>
     <string name="help_for">Pomoc: %1$s</string>
     <string name="delete">Usuń</string>
-    <string name="edit">Edytuj</string>
     <string name="forget">Zapomnij</string>
     <string name="show">Pokaż</string>
     <string name="allow">Zezwól</string>
@@ -78,8 +77,7 @@
     <string name="settings_in_use">W użyciu</string>
     <string name="settings_in_use_not_found">W użyciu, ale nie znaleziono go w bieżącej sieci</string>
     <string name="settings_in_use_not_working">W użyciu, ale nie działa: ostatnie żądanie się nie powiodło</string>
-    <string name="settings_more_options">Więcej opcji dla %1$s</string>
-    <string name="settings_use_now">Użyj teraz</string>
+    <string name="settings_use_box_now">Użyj teraz: %1$s</string>
     <string name="settings_delete_title">Usunąć „%1$s”?</string>
     <string name="settings_delete_text">Połączenie, jego hasło i zaufany certyfikat zostaną usunięte z tego telefonu.</string>
     <string name="settings_device_contacts">Uwzględniaj kontakty z tego telefonu</string>

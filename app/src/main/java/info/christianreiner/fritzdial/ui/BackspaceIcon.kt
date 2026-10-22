@@ -134,6 +134,23 @@ internal val RouterIcon: ImageVector by lazy {
     ).build()
 }
 
+/** Material "radio_button_unchecked" glyph (an empty circle, Apache 2.0): tap to use this box. */
+internal val CircleOutlineIcon: ImageVector by lazy {
+    ImageVector.Builder(
+        name = "CircleOutline",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f,
+    ).addPath(
+        pathData = addPathNodes(
+            "M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z" +
+                "M12,20c-4.42,0 -8,-3.58 -8,-8s3.58,-8 8,-8 8,3.58 8,8 -3.58,8 -8,8z"
+        ),
+        fill = SolidColor(Color.Black),
+    ).build()
+}
+
 /** Material "smartphone" glyph (Apache 2.0): calls from the phone's own call log. */
 internal val SmartphoneIcon: ImageVector by lazy {
     ImageVector.Builder(

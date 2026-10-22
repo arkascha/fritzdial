@@ -123,7 +123,6 @@ class MainActivity : ComponentActivity() {
                         networkNotice = state.networkNotice,
                         onEditProfile = viewModel::editProfile,
                         onActivateProfile = viewModel::activateProfile,
-                        onDeleteProfile = viewModel::deleteProfile,
                         onAddProfile = viewModel::addProfile,
                         onBack = viewModel::closeSettings,
                         onOpenLanguage = viewModel::openLanguage,

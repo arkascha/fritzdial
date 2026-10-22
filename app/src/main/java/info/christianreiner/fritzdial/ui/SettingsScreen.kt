@@ -23,11 +23,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Button
@@ -71,8 +68,8 @@ import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.tr064.FritzConfig
 
 /**
- * Settings overview: the configured FritzBoxes (the active one marked; tap to edit, menu to switch
- * or delete), "Add FritzBox", the phone book and the recent numbers options. The flag in the top
+ * Settings overview: the configured FritzBoxes (the active one marked; tap to edit, tap the circle
+ * of another one to switch to it), "Add FritzBox", the phone book and the recent numbers options. The flag in the top
  * bar opens the language screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +82,6 @@ fun SettingsScreen(
     networkNotice: UiText?,
     onEditProfile: (String) -> Unit,
     onActivateProfile: (String) -> Unit,
-    onDeleteProfile: (String) -> Unit,
     onAddProfile: () -> Unit,
     onBack: () -> Unit,
     onOpenLanguage: () -> Unit,
@@ -97,8 +93,6 @@ fun SettingsScreen(
     onEnableCallLog: (granted: Boolean) -> Unit,
     onDisableCallLog: () -> Unit,
 ) {
-    var confirmDelete by remember { mutableStateOf<BoxProfile?>(null) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -155,12 +149,11 @@ fun SettingsScreen(
                     issue = activeIssue,
                     onEdit = { onEditProfile(profile.id) },
                     onActivate = { onActivateProfile(profile.id) },
-                    onDelete = { confirmDelete = profile },
                 )
             }
             ListItem(
                 headlineContent = { Text(stringResource(R.string.settings_add_box)) },
-                leadingContent = { Icon(Icons.Default.Add, contentDescription = null) },
+                leadingContent = { MarkSlot { Icon(Icons.Default.Add, contentDescription = null) } },
                 modifier = Modifier.clickable(onClick = onAddProfile),
             )
 
@@ -188,20 +181,21 @@ fun SettingsScreen(
             }
         }
     }
-
-    confirmDelete?.let { profile ->
-        ConfirmDeleteDialog(
-            name = profile.name,
-            onConfirm = {
-                confirmDelete = null
-                onDeleteProfile(profile.id)
-            },
-            onDismiss = { confirmDelete = null },
-        )
-    }
 }
 
-/** One configured box on a single line: check mark when in use, its name, and a menu. */
+/**
+ * The column in front of the boxes: as wide as a touch target, so the check mark, the circle to tap
+ * and the "Add" icon line up.
+ */
+@Composable
+private fun MarkSlot(content: @Composable () -> Unit) {
+    Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { content() }
+}
+
+/**
+ * One configured box on a single line: check mark when in use, else a circle to tap to switch to
+ * it; then its name. Tapping the line opens its connection page (also to delete it).
+ */
 @Composable
 private fun ProfileRow(
     profile: BoxProfile,
@@ -209,37 +203,41 @@ private fun ProfileRow(
     issue: ActiveBoxIssue?,
     onEdit: () -> Unit,
     onActivate: () -> Unit,
-    onDelete: () -> Unit,
 ) {
-    var menu by remember { mutableStateOf(false) }
     ListItem(
         // Just the name, on one line; the details are on the connection page.
         headlineContent = { Text(profile.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         leadingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (active && issue != null) {
-                    // In use, but not as expected: a warning instead of the check mark.
-                    Icon(
-                        Icons.Default.Warning,
-                        contentDescription = stringResource(
-                            when (issue) {
-                                ActiveBoxIssue.NOT_FOUND -> R.string.settings_in_use_not_found
-                                ActiveBoxIssue.NOT_WORKING -> R.string.settings_in_use_not_working
-                            }
-                        ),
-                        tint = MaterialTheme.colorScheme.error,
-                    )
-                } else if (active) {
-                    Icon(
-                        Icons.Default.CheckCircle,
-                        contentDescription = stringResource(R.string.settings_in_use),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                } else {
-                    // keeps the router icons and names aligned with the active entry
-                    Box(Modifier.size(24.dp))
+                MarkSlot {
+                    if (active && issue != null) {
+                        // In use, but not as expected: a warning instead of the check mark.
+                        Icon(
+                            Icons.Default.Warning,
+                            contentDescription = stringResource(
+                                when (issue) {
+                                    ActiveBoxIssue.NOT_FOUND -> R.string.settings_in_use_not_found
+                                    ActiveBoxIssue.NOT_WORKING -> R.string.settings_in_use_not_working
+                                }
+                            ),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    } else if (active) {
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = stringResource(R.string.settings_in_use),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    } else {
+                        IconButton(onClick = onActivate) {
+                            Icon(
+                                CircleOutlineIcon,
+                                contentDescription = stringResource(R.string.settings_use_box_now, profile.name),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
                 }
-                Spacer(Modifier.width(12.dp))
                 Icon(
                     RouterIcon,
                     contentDescription = null,
@@ -247,29 +245,6 @@ private fun ProfileRow(
                     // The glyph's weight (the box) sits low, under thin antenna arcs: lift it to look centred.
                     modifier = Modifier.offset(y = (-2).dp),
                 )
-            }
-        },
-        trailingContent = {
-            Box {
-                IconButton(onClick = { menu = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.settings_more_options, profile.name))
-                }
-                DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                    if (!active) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.settings_use_now)) },
-                            onClick = { menu = false; onActivate() },
-                        )
-                    }
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.edit)) },
-                        onClick = { menu = false; onEdit() },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) },
-                        onClick = { menu = false; onDelete() },
-                    )
-                }
             }
         },
         modifier = Modifier.clickable(onClick = onEdit),

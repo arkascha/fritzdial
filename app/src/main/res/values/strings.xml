@@ -8,7 +8,6 @@
     <string name="close">Close</string>
     <string name="help_for">Help: %1$s</string>
     <string name="delete">Delete</string>
-    <string name="edit">Edit</string>
     <string name="forget">Forget</string>
     <string name="show">Show</string>
     <string name="allow">Allow</string>
@@ -80,8 +79,7 @@
     <string name="settings_in_use">In use</string>
     <string name="settings_in_use_not_found">In use, but not found in the current network</string>
     <string name="settings_in_use_not_working">In use, but not working: the last request to it failed</string>
-    <string name="settings_more_options">More options for %1$s</string>
-    <string name="settings_use_now">Use now</string>
+    <string name="settings_use_box_now">Use %1$s now</string>
     <string name="settings_delete_title">Delete “%1$s”?</string>
     <string name="settings_delete_text">The connection, its password and its trusted certificate are removed from this phone.</string>
     <string name="settings_device_contacts">Include this phone’s contacts</string>

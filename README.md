@@ -40,10 +40,11 @@ with **Retry** and, when the cause is likely in the settings, **Open settings**.
 
 **Settings › FritzBox connections** holds any number of boxes (e.g. home and office), each with its
 own name, host, port, HTTPS, user, password, use of its phone books and call list, and trusted
-certificate. **Add FritzBox** adds one; tap an entry to edit it, its menu offers **Use now** and
-**Delete**. The box in use is marked with a check mark and shown under the app name on the dialer. The
-mark turns into a red warning triangle when that box was not found by the last detection (see below),
-or when the last request to it failed; a network change clears the latter until the next request.
+certificate. **Add FritzBox** adds one; tap an entry to edit (or delete) it, tap the empty circle in
+front of another box to use it right away. The box in use is marked with a check mark and shown under
+the app name on the dialer. The mark turns into a red warning triangle when that box was not found by
+the last detection (see below), or when the last request to it failed; a network change clears the
+latter until the next request.
 
 The box of the current network is selected automatically – at start and whenever the phone's network
 changes. Every FritzBox publishes a public device description (`http://<box>:49000/tr64desc.xml`) with a
