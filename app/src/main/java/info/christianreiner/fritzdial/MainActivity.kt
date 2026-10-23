@@ -74,6 +74,12 @@ class MainActivity : ComponentActivity() {
                                 boxCalls = state.boxCalls,
                                 boxCallsLoaded = state.boxCallsLoaded,
                                 boxName = state.activeProfile?.name,
+                                dialingCodes = state.activeProfile?.dialingCodes,
+                                contacts = remember(state.phonebooks, routerBooksEnabled, state.deviceContacts, state.deviceContactsEnabled) {
+                                    val books = (if (routerBooksEnabled) state.phonebooks else emptyList()) +
+                                        listOfNotNull(state.deviceContacts?.takeIf { state.deviceContactsEnabled })
+                                    books.flatMap { it.contacts }
+                                },
                                 boxCallsEnabled = state.activeProfile?.callListEnabled ?: true,
                                 phoneCalls = state.phoneCalls,
                                 callLogEnabled = state.callLogEnabled,
@@ -91,6 +97,7 @@ class MainActivity : ComponentActivity() {
                                 routerBooksEnabled = routerBooksEnabled,
                                 deviceContacts = state.deviceContacts,
                                 deviceContactsEnabled = state.deviceContactsEnabled,
+                                dialingCodes = state.activeProfile?.dialingCodes,
                                 loaded = state.phonebooksLoaded,
                                 busy = state.busy,
                                 onPick = viewModel::pickContactNumber,
@@ -136,6 +143,7 @@ class MainActivity : ComponentActivity() {
                             initialCallListEnabled = edited?.callListEnabled ?: true,
                             initialSpeedDialsEnabled = edited?.speedDialsEnabled ?: true,
                             boxInfo = edited?.info,
+                            dialingCodes = edited?.dialingCodes,
                             boxUsers = state.boxUsers,
                             onLookUpUsers = viewModel::lookUpBoxUsers,
                             onSave = viewModel::saveSettings,

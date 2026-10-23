@@ -118,6 +118,8 @@
     <string name="connection_box_model">Model: %1$s</string>
     <string name="connection_box_fritzos">FRITZ!OS: %1$s</string>
     <string name="connection_box_serial">Serial number: %1$s</string>
+    <string name="connection_box_country_code">Country code: %1$s</string>
+    <string name="connection_box_area_code">Area code: %1$s</string>
     <string name="connection_box_info_unknown">Not known yet. Read from the box on the next connection – unless its user lacks the rights for it.</string>
     <string name="connection_trusted_cert">Trusted certificate</string>
     <string name="connection_no_cert">None. When connecting via HTTPS you will be asked to confirm the router’s certificate.</string>

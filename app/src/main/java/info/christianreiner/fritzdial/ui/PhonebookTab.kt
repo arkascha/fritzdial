@@ -59,6 +59,7 @@ import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.data.SpeedDial
 import info.christianreiner.fritzdial.data.SpeedDials
+import info.christianreiner.fritzdial.tr064.DialingCodes
 import info.christianreiner.fritzdial.tr064.Phonebook
 import info.christianreiner.fritzdial.tr064.PhonebookContact
 import kotlinx.coroutines.launch
@@ -78,6 +79,8 @@ fun PhonebookTab(
     deviceContacts: Phonebook?,
     /** The optional "this phone's contacts" feature is switched on in the settings. */
     deviceContactsEnabled: Boolean,
+    /** Country and area code of the box in use, for recognising a number written differently. */
+    dialingCodes: DialingCodes?,
     loaded: Boolean,
     busy: Boolean,
     /** A number was tapped: contact name and number. */
@@ -149,11 +152,12 @@ fun PhonebookTab(
     val phonebooks = routerBooks + listOfNotNull(deviceContacts?.takeIf { useDeviceContacts })
 
     val countryIso = remember { deviceCountryIso(context) }
-    val filtered = remember(phonebooks, query, hidden) {
+    val filtered = remember(phonebooks, query, hidden, dialingCodes) {
+        val key = { number: String -> numberKey(number, countryIso, dialingCodes) }
         // FRITZ!Box books come first, so their entries win over duplicates from "This phone".
         val visible = phonebooks.filter { it.name !in hidden }.flatMap { it.contacts }
-        dedupeNumbers(visible) { numberKey(it, countryIso) }
-            .filter { it.matches(query) }
+        dedupeNumbers(visible, key)
+            .filter { it.matches(query, key) }
             // Locale-aware: "Ärzte" sorts with A, not after Z.
             .sortedWith(compareBy(Collator.getInstance()) { it.name })
     }
@@ -464,10 +468,9 @@ private fun numberTypeLabel(type: String): String = when (type.lowercase()) {
 }
 
 /** Case-insensitive name match; number match ignores spaces, dashes and the like. */
-private fun PhonebookContact.matches(query: String): Boolean {
+private fun PhonebookContact.matches(query: String, key: (String) -> String): Boolean {
     val q = query.trim()
     if (q.isEmpty()) return true
     if (name.contains(q, ignoreCase = true)) return true
-    val digits = q.filter { it.isDigit() }
-    return digits.isNotEmpty() && numbers.any { it.number.filter(Char::isDigit).contains(digits) }
+    return numbers.any { numberMatches(it.number, q, key) }
 }

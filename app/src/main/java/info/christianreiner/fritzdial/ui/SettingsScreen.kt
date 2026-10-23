@@ -74,6 +74,7 @@ import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.tr064.BoxInfo
+import info.christianreiner.fritzdial.tr064.DialingCodes
 import info.christianreiner.fritzdial.tr064.BoxUser
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import kotlinx.coroutines.delay
@@ -346,6 +347,8 @@ fun ConnectionSettingsScreen(
     initialSpeedDialsEnabled: Boolean,
     /** Model, FRITZ!OS version and serial number as last read from the box; null for a new one. */
     boxInfo: BoxInfo?,
+    /** The box' country and area code as last read; null when not known. */
+    dialingCodes: DialingCodes?,
     /** The users of the box at the entered address, offered for the user name (empty = none known). */
     boxUsers: List<BoxUser>,
     /** Asks the box at the entered host, port and HTTPS setting for its users. */
@@ -505,7 +508,7 @@ fun ConnectionSettingsScreen(
 
             if (boxInfo != null) {
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
-                BoxInfoSection(boxInfo)
+                BoxInfoSection(boxInfo, dialingCodes)
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
@@ -603,14 +606,17 @@ private fun UserField(value: String, onValueChange: (String) -> Unit, users: Lis
     }
 }
 
-/** What the box reported about itself, to tell it apart from others; selectable for copying. */
+/** What the box reported about itself – to tell it apart from others, and its dialling codes; selectable for copying. */
 @Composable
-private fun BoxInfoSection(info: BoxInfo) {
+private fun BoxInfoSection(info: BoxInfo, codes: DialingCodes?) {
     Text(stringResource(R.string.connection_box_info), style = MaterialTheme.typography.titleSmall)
     val lines = listOfNotNull(
         info.model?.let { stringResource(R.string.connection_box_model, it) },
         info.fritzOsVersion?.let { stringResource(R.string.connection_box_fritzos, it) },
         info.serialNumber?.let { stringResource(R.string.connection_box_serial, it) },
+        // As dialled: "+49", "030".
+        codes?.let { stringResource(R.string.connection_box_country_code, "+" + it.countryCode) },
+        codes?.areaCode?.let { stringResource(R.string.connection_box_area_code, codes.nationalPrefix + it) },
     )
     if (lines.isEmpty()) {
         Text(

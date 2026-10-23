@@ -39,6 +39,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.data.DeviceContacts
+import info.christianreiner.fritzdial.tr064.DialingCodes
+import info.christianreiner.fritzdial.tr064.PhonebookContact
 import info.christianreiner.fritzdial.tr064.RecentCall
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -58,6 +60,10 @@ fun RecentsTab(
     boxCallsLoaded: Boolean,
     /** Name of the FritzBox in use (as in the settings), shown as the source of its calls. */
     boxName: String?,
+    /** Country and area code of the box in use, for recognising a number written differently. */
+    dialingCodes: DialingCodes?,
+    /** The contacts of the phone books in use, for the names of calls that come without one. */
+    contacts: List<PhonebookContact>,
     /** The call list of the box in use is switched on in the settings. */
     boxCallsEnabled: Boolean,
     phoneCalls: List<RecentCall>?,
@@ -75,10 +81,11 @@ fun RecentsTab(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { onReloadCallLog() }
 
     val countryIso = remember { deviceCountryIso(context) }
-    val calls = remember(boxCalls, boxCallsEnabled, phoneCalls, callLogEnabled) {
+    val calls = remember(boxCalls, boxCallsEnabled, phoneCalls, callLogEnabled, dialingCodes, contacts) {
         val box = if (boxCallsEnabled) boxCalls else emptyList()
         val phone = if (callLogEnabled) phoneCalls.orEmpty() else emptyList()
-        mergeRecents(box + phone) { numberKey(it, countryIso) }
+        val key = { number: String -> numberKey(number, countryIso, dialingCodes) }
+        nameRecents(mergeRecents(box + phone, key), contacts, key)
     }
 
     Column(Modifier.fillMaxSize()) {

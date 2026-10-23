@@ -116,6 +116,8 @@
     <string name="connection_box_model">Model: %1$s</string>
     <string name="connection_box_fritzos">FRITZ!OS: %1$s</string>
     <string name="connection_box_serial">Numer seryjny: %1$s</string>
+    <string name="connection_box_country_code">Numer kierunkowy kraju: %1$s</string>
+    <string name="connection_box_area_code">Numer kierunkowy: %1$s</string>
     <string name="connection_box_info_unknown">Jeszcze nieznane. Zostaną odczytane z routera przy następnym połączeniu – o ile jego użytkownik ma do tego uprawnienia.</string>
     <string name="connection_trusted_cert">Zaufany certyfikat</string>
     <string name="connection_no_cert">Brak. Przy połączeniu przez HTTPS zostaniesz poproszony o potwierdzenie certyfikatu routera.</string>

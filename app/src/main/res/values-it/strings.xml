@@ -116,6 +116,8 @@
     <string name="connection_box_model">Modello: %1$s</string>
     <string name="connection_box_fritzos">FRITZ!OS: %1$s</string>
     <string name="connection_box_serial">Numero di serie: %1$s</string>
+    <string name="connection_box_country_code">Prefisso internazionale: %1$s</string>
+    <string name="connection_box_area_code">Prefisso locale: %1$s</string>
     <string name="connection_box_info_unknown">Non ancora noto. Viene letto dal box alla prossima connessione, se il suo utente ne ha i diritti.</string>
     <string name="connection_trusted_cert">Certificato attendibile</string>
     <string name="connection_no_cert">Nessuno. Con una connessione HTTPS ti verrà chiesto di confermare il certificato del router.</string>

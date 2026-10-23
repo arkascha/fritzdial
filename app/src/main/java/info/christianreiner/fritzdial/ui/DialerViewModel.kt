@@ -20,6 +20,7 @@ import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.BoxUser
 import info.christianreiner.fritzdial.tr064.BoxUsers
 import info.christianreiner.fritzdial.tr064.CertificateInfo
+import info.christianreiner.fritzdial.tr064.DialingCodes
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import info.christianreiner.fritzdial.tr064.FritzDialer
 import info.christianreiner.fritzdial.tr064.Phonebook
@@ -385,6 +386,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             // Learn the box' device id, so it can be recognised automatically later.
             val identity = BoxDiscovery.identify(config.host)
             val info = readBoxInfo(dialer)
+            val codes = readDialingCodes(dialer)
             val previous = settings.profiles().firstOrNull { it.id == editingId }
             val profile = BoxProfile(
                 id = editingId ?: java.util.UUID.randomUUID().toString(),
@@ -394,6 +396,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 model = info?.model ?: identity?.modelName ?: previous?.model,
                 softwareVersion = info?.softwareVersion ?: previous?.softwareVersion,
                 serialNumber = info?.serialNumber ?: previous?.serialNumber,
+                dialingCodes = codes ?: previous?.dialingCodes,
                 phonebooksEnabled = phonebooksEnabled,
                 callListEnabled = callListEnabled,
                 speedDialsEnabled = speedDialsEnabled,
@@ -867,6 +870,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             throw OtherBoxException(profile.config.host, profile.name)
         }
         info?.let { settings.updateBoxInfo(profile.id, it) }
+        readDialingCodes(dialer)?.let { settings.updateDialingCodes(profile.id, it) }
         if (profile.deviceId == null) {
             BoxDiscovery.identify(profile.config.host)?.let { settings.updateDeviceId(profile.id, it.udn, it.modelName) }
         }
@@ -875,6 +879,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     /** Model, FRITZ!OS version and serial number: optional, so a failure (e.g. missing rights) is ignored. */
     private fun readBoxInfo(dialer: FritzDialer): BoxInfo? = runCatching { dialer.deviceInfo() }.getOrNull()
+
+    /** Country and area code: only for comparing numbers, so a failure is ignored as well. */
+    private fun readDialingCodes(dialer: FritzDialer): DialingCodes? = runCatching { dialer.dialingCodes() }.getOrNull()
 
     /**
      * Box requests that came in while another one was running (one per [runWhenIdle] key, so

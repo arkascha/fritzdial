@@ -3,6 +3,7 @@ package info.christianreiner.fritzdial.data
 import android.content.Context
 import androidx.core.content.edit
 import info.christianreiner.fritzdial.tr064.BoxInfo
+import info.christianreiner.fritzdial.tr064.DialingCodes
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import org.json.JSONArray
 import org.json.JSONObject
@@ -15,7 +16,8 @@ import java.util.UUID
  * the connection is saved and used to recognise the box of the current network automatically.
  * [phonebooksEnabled], [callListEnabled] and [speedDialsEnabled] switch, for this box, whether its
  * phone books, its call list and the speed dials set up in its phone books are used (on by default).
- * [model], [softwareVersion] and [serialNumber] are what the box last said about itself (see [BoxInfo]).
+ * [model], [softwareVersion] and [serialNumber] are what the box last said about itself (see [BoxInfo]);
+ * [dialingCodes] its country and area code, for comparing numbers.
  */
 data class BoxProfile(
     val id: String = UUID.randomUUID().toString(),
@@ -25,6 +27,7 @@ data class BoxProfile(
     val model: String? = null,
     val softwareVersion: String? = null,
     val serialNumber: String? = null,
+    val dialingCodes: DialingCodes? = null,
     val phonebooksEnabled: Boolean = true,
     val callListEnabled: Boolean = true,
     val speedDialsEnabled: Boolean = true,
@@ -86,6 +89,12 @@ class SettingsRepository(context: Context) {
             serialNumber = info.serialNumber ?: profile.serialNumber,
         )
         if (updated != profile) saveProfile(updated)
+    }
+
+    /** Stores the country and area code of a connection's box. */
+    fun updateDialingCodes(id: String, codes: DialingCodes) {
+        val profile = profiles().firstOrNull { it.id == id } ?: return
+        if (profile.dialingCodes != codes) saveProfile(profile.copy(dialingCodes = codes))
     }
 
     var activeProfileId: String?
@@ -159,6 +168,13 @@ class SettingsRepository(context: Context) {
         p.model?.let { put("model", it) }
         p.softwareVersion?.let { put("softwareVersion", it) }
         p.serialNumber?.let { put("serialNumber", it) }
+        p.dialingCodes?.let { c ->
+            put(
+                "dialingCodes",
+                JSONObject().put("country", c.countryCode).put("international", c.internationalPrefix)
+                    .put("national", c.nationalPrefix).apply { c.areaCode?.let { put("area", it) } },
+            )
+        }
         put("phonebooks", p.phonebooksEnabled)
         put("callList", p.callListEnabled)
         put("speedDials", p.speedDialsEnabled)
@@ -180,6 +196,14 @@ class SettingsRepository(context: Context) {
         model = o.optString("model").takeIf { it.isNotEmpty() },
         softwareVersion = o.optString("softwareVersion").takeIf { it.isNotEmpty() },
         serialNumber = o.optString("serialNumber").takeIf { it.isNotEmpty() },
+        dialingCodes = o.optJSONObject("dialingCodes")?.let { c ->
+            DialingCodes(
+                countryCode = c.getString("country"),
+                internationalPrefix = c.optString("international", "00"),
+                areaCode = c.optString("area").takeIf { it.isNotEmpty() },
+                nationalPrefix = c.optString("national", "0"),
+            )
+        },
         // Connections saved before these options existed keep using both.
         phonebooksEnabled = o.optBoolean("phonebooks", true),
         callListEnabled = o.optBoolean("callList", true),

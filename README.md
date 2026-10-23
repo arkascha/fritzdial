@@ -123,6 +123,18 @@ reload button), from two sources:
   either fails, the switch stays off and the settings show why. If reading fails later (e.g. the
   permission was revoked), the **Recent** tab shows a note with **Turn off** and **App settings**.
 
+### Numbers written differently
+
+The same number is often written in different ways: `+49 30 123456`, `0049 30 123456`, `030 123456`
+or – dialled locally – just `123456`. FritzDial reads the country and area code set on the box in use
+(TR-064 `X_VoIP` `GetVoIPCommonCountryCode` and `GetVoIPCommonAreaCode`, shown with the device details on
+its connection page) and compares numbers in their international form by the box' rules, so a local
+number counts as one in the box' area. This is used to list each number only once (in **Recent** and
+across the phone books), to give calls without a name the name from the phone books in use, and when
+searching the phone books by number (`030 12` also finds `+49 30 123456`). The number dialled is always
+exactly the one entered. Until the codes are known (or when the box' user may not read them), the
+phone's country is used instead, without area code.
+
 ### Speed dial
 
 Speed dials come from two sources that never collide, each of which can be switched off:
@@ -201,7 +213,7 @@ Contacts or a web page; the number is pre-filled.
 | `res/values*/strings.xml` | All UI texts: English (`values/`) and the translations (`values-de/`, …) |
 
 Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising,
-the call list's date format, the device details, the user list, merging of the recent numbers and certificate pinning.
+the call list's date format, the device details, the user list, the comparison of numbers, merging of the recent numbers and certificate pinning.
 
 ## Notes / ideas
 

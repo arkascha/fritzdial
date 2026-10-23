@@ -116,6 +116,8 @@
     <string name="connection_box_model">Model: %1$s</string>
     <string name="connection_box_fritzos">FRITZ!OS: %1$s</string>
     <string name="connection_box_serial">Serienummer: %1$s</string>
+    <string name="connection_box_country_code">Landnummer: %1$s</string>
+    <string name="connection_box_area_code">Netnummer: %1$s</string>
     <string name="connection_box_info_unknown">Nog niet bekend. Wordt bij de volgende verbinding van de box gelezen – als de gebruiker daarvoor de rechten heeft.</string>
     <string name="connection_trusted_cert">Vertrouwd certificaat</string>
     <string name="connection_no_cert">Geen. Bij een verbinding via HTTPS word je gevraagd het certificaat van de router te bevestigen.</string>

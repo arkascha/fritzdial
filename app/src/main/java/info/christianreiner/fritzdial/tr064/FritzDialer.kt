@@ -81,6 +81,14 @@ class FritzDialer(
     fun deviceInfo(): BoxInfo =
         BoxInfo.from(client.call(DEVICE_INFO_SERVICE_TYPE, DEVICE_INFO_CONTROL_URL, "GetInfo"))
 
+    /**
+     * The box' country and area code (`GetVoIPCommonCountryCode`, `GetVoIPCommonAreaCode`), for
+     * comparing numbers written in different ways; null if the box has no country code set.
+     */
+    @Throws(IOException::class)
+    fun dialingCodes(): DialingCodes? =
+        DialingCodes.from(call("GetVoIPCommonCountryCode"), call("GetVoIPCommonAreaCode"))
+
     /** All phone books of the box with their contacts (see [FritzPhonebooks]). */
     @Throws(IOException::class)
     fun loadPhonebooks(): List<Phonebook> = FritzPhonebooks(config, authToken).loadAll()
@@ -147,6 +155,35 @@ class FritzDialer(
         /** Keeps digits and the characters the box understands (+ * #); drops spaces, dashes, brackets. */
         fun sanitizeNumber(raw: String): String =
             raw.filter { it.isDigit() || it == '+' || it == '*' || it == '#' }
+    }
+}
+
+/**
+ * The box' country and area code with their prefixes, as set on the box (Telephony › Own Numbers ›
+ * Line Settings): e.g. "49" with the international prefix "00", and "30" with the national
+ * prefix "0" for Berlin. An empty [nationalPrefix]: the country has none (numbers are always
+ * dialled in full).
+ */
+data class DialingCodes(
+    val countryCode: String,
+    val internationalPrefix: String = "00",
+    val areaCode: String? = null,
+    val nationalPrefix: String = "0",
+) {
+    companion object {
+        /** From the answers of `GetVoIPCommonCountryCode` and `GetVoIPCommonAreaCode`; null without country code. */
+        fun from(country: Map<String, String>, area: Map<String, String>): DialingCodes? {
+            val countryCode = country["NewX_AVM-DE_LKZ"].digitsOrNull() ?: return null
+            return DialingCodes(
+                countryCode = countryCode,
+                internationalPrefix = country["NewX_AVM-DE_LKZPrefix"].digitsOrNull() ?: "00",
+                areaCode = area["NewX_AVM-DE_OKZ"].digitsOrNull(),
+                // Present but empty is meaningful (no national prefix); missing means the usual "0".
+                nationalPrefix = area["NewX_AVM-DE_OKZPrefix"]?.filter(Char::isDigit) ?: "0",
+            )
+        }
+
+        private fun String?.digitsOrNull() = this?.filter(Char::isDigit)?.takeIf { it.isNotEmpty() }
     }
 }
 
