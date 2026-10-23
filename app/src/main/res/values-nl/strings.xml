@@ -103,6 +103,7 @@
     <string name="connection_https_hint">Versleutelde verbinding (poort %1$d). Het zelfondertekende certificaat van de box moet één keer worden bevestigd.</string>
     <string name="connection_port">TR-064-poort</string>
     <string name="connection_user">FRITZ!Box-gebruikersnaam</string>
+    <string name="connection_user_last">Laatst aangemeld</string>
     <string name="connection_password">Wachtwoord</string>
     <string name="connection_phonebooks">Telefoonboeken</string>
     <string name="connection_phonebooks_hint">Toont de contacten uit de telefoonboeken van deze FritzBox, inclusief online telefoonboeken die ermee gesynchroniseerd worden (bijv. CardDAV). Ze worden indien nodig van de FritzBox gelezen en niet op de telefoon opgeslagen.</string>
@@ -208,6 +209,10 @@
     <plurals name="status_connected">
         <item quantity="one">Verbonden – %d telefoon gevonden</item>
         <item quantity="other">Verbonden – %d telefoons gevonden</item>
+    </plurals>
+    <plurals name="connection_users_found">
+        <item quantity="one">%d gebruiker op deze box – tik om te kiezen</item>
+        <item quantity="other">%d gebruikers op deze box – tik om te kiezen</item>
     </plurals>
     <plurals name="status_contacts_loaded">
         <item quantity="one">%d contact geladen</item>

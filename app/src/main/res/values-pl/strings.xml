@@ -103,6 +103,7 @@
     <string name="connection_https_hint">Połączenie szyfrowane (port %1$d). Certyfikat urządzenia z podpisem własnym trzeba raz potwierdzić.</string>
     <string name="connection_port">Port TR-064</string>
     <string name="connection_user">Nazwa użytkownika FRITZ!Box</string>
+    <string name="connection_user_last">Ostatnio zalogowany</string>
     <string name="connection_password">Hasło</string>
     <string name="connection_phonebooks">Książki telefoniczne</string>
     <string name="connection_phonebooks_hint">Pokazuje kontakty zapisane w książkach telefonicznych tego FritzBox, w tym zsynchronizowane z nim książki online (np. CardDAV). Są odczytywane z FritzBox w razie potrzeby i nie są zapisywane na telefonie.</string>
@@ -210,6 +211,12 @@
         <item quantity="few">Połączono – znaleziono %d telefony</item>
         <item quantity="many">Połączono – znaleziono %d telefonów</item>
         <item quantity="other">Połączono – znaleziono %d telefonu</item>
+    </plurals>
+    <plurals name="connection_users_found">
+        <item quantity="one">%d użytkownik na tym routerze – dotknij, aby wybrać</item>
+        <item quantity="few">%d użytkownicy na tym routerze – dotknij, aby wybrać</item>
+        <item quantity="many">%d użytkowników na tym routerze – dotknij, aby wybrać</item>
+        <item quantity="other">%d użytkownika na tym routerze – dotknij, aby wybrać</item>
     </plurals>
     <plurals name="status_contacts_loaded">
         <item quantity="one">Wczytano %d kontakt</item>

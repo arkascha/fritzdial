@@ -105,6 +105,7 @@
     <string name="connection_https_hint">Encrypted connection (port %1$d). The box’s self-signed certificate must be confirmed once.</string>
     <string name="connection_port">TR-064 port</string>
     <string name="connection_user">FRITZ!Box user name</string>
+    <string name="connection_user_last">Logged in last</string>
     <string name="connection_password">Password</string>
     <string name="connection_phonebooks">Phone books</string>
     <string name="connection_phonebooks_hint">Shows the contacts stored in this FritzBox’s phone books, including online phone books synced into it (e.g. CardDAV). They are read from the box when needed and not stored on the phone.</string>
@@ -210,6 +211,10 @@
     <plurals name="status_connected">
         <item quantity="one">Connected – %d phone found</item>
         <item quantity="other">Connected – %d phones found</item>
+    </plurals>
+    <plurals name="connection_users_found">
+        <item quantity="one">%d user on this box – tap to choose</item>
+        <item quantity="other">%d users on this box – tap to choose</item>
     </plurals>
     <plurals name="status_contacts_loaded">
         <item quantity="one">%d contact loaded</item>

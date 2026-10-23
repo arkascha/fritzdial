@@ -25,6 +25,11 @@ dependencies on first sync. If it offers an AGP / dependency upgrade, accepting 
 
 1. On first start, enter host (`fritz.box` or `192.168.178.1`), user and password. Optionally switch on
    **Use HTTPS** (port changes from `49000` to `49443` automatically).
+   The **user name** field offers the users of the box once host, port and HTTPS are entered
+   (TR-064 `LANConfigSecurity` `X_AVM-DE_GetUserList`), the one who logged in last marked – handy for the
+   auto-generated name. The box is asked without credentials, so no failed login is counted; with HTTPS
+   whose certificate is not trusted yet, over plain HTTP. If the box does not tell (older FRITZ!OS), the
+   field is simply typed in.
 2. The app reads the phones the box knows (FON / DECT / IP) and the one currently configured
    for dial help. Choose your DECT handset in **Ring phone**.
 3. Enter a number (long-press **0** for **+**) and tap the green button → the handset rings → pick it up → the call is placed.
@@ -184,6 +189,7 @@ Contacts or a web page; the number is pre-filled.
 | `tr064/Tr064Client.kt` | Generic SOAP call over HTTP/HTTPS + response / UPnP fault parsing |
 | `tr064/CertificateTrust.kt` | Pinning trust manager, certificate details, "untrusted certificate" exception |
 | `tr064/FritzDialer.kt` | `X_VoIP` actions: `X_AVM-DE_GetPhonePort`, `X_AVM-DE_DialGetConfig`, `X_AVM-DE_DialSetConfig`, `X_AVM-DE_DialNumber`, `X_AVM-DE_DialHangup`; device details (`DeviceInfo` `GetInfo`) |
+| `tr064/BoxUsers.kt` | The box' users, offered for the user name (`LANConfigSecurity` `X_AVM-DE_GetUserList`) |
 | `tr064/BoxDiscovery.kt` | Recognises the FritzBox of the current network (gateway, `tr64desc.xml` device id) |
 | `tr064/Phonebooks.kt` | Phone book list / download / XML parsing (`X_AVM-DE_OnTel`) |
 | `data/DeviceContacts.kt` | The phone's own contacts as an extra phone book (`READ_CONTACTS`) |
@@ -195,7 +201,7 @@ Contacts or a web page; the number is pre-filled.
 | `res/values*/strings.xml` | All UI texts: English (`values/`) and the translations (`values-de/`, …) |
 
 Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising,
-the call list's date format, the device details, merging of the recent numbers and certificate pinning.
+the call list's date format, the device details, the user list, merging of the recent numbers and certificate pinning.
 
 ## Notes / ideas
 

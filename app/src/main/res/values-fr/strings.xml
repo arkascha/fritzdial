@@ -103,6 +103,7 @@
     <string name="connection_https_hint">Connexion chiffrée (port %1$d). Le certificat auto-signé de la box doit être confirmé une fois.</string>
     <string name="connection_port">Port TR-064</string>
     <string name="connection_user">Nom d’utilisateur FRITZ!Box</string>
+    <string name="connection_user_last">Dernière connexion</string>
     <string name="connection_password">Mot de passe</string>
     <string name="connection_phonebooks">Répertoires</string>
     <string name="connection_phonebooks_hint">Affiche les contacts enregistrés dans les répertoires de cette FritzBox, y compris les répertoires en ligne qui y sont synchronisés (p. ex. CardDAV). Ils sont lus sur la FritzBox au besoin et ne sont pas enregistrés sur le téléphone.</string>
@@ -209,6 +210,11 @@
         <item quantity="one">Connecté – %d téléphone trouvé</item>
         <item quantity="many">Connecté – %d téléphones trouvés</item>
         <item quantity="other">Connecté – %d téléphones trouvés</item>
+    </plurals>
+    <plurals name="connection_users_found">
+        <item quantity="one">%d utilisateur sur cette box – touchez pour choisir</item>
+        <item quantity="many">%d utilisateurs sur cette box – touchez pour choisir</item>
+        <item quantity="other">%d utilisateurs sur cette box – touchez pour choisir</item>
     </plurals>
     <plurals name="status_contacts_loaded">
         <item quantity="one">%d contact chargé</item>

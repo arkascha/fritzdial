@@ -103,6 +103,7 @@
     <string name="connection_https_hint">Verschlüsselte Verbindung (Port %1$d). Das selbstsignierte Zertifikat der Box muss einmal bestätigt werden.</string>
     <string name="connection_port">TR-064-Port</string>
     <string name="connection_user">FRITZ!Box-Benutzername</string>
+    <string name="connection_user_last">Zuletzt angemeldet</string>
     <string name="connection_password">Kennwort</string>
     <string name="connection_phonebooks">Telefonbücher</string>
     <string name="connection_phonebooks_hint">Zeigt die in den Telefonbüchern dieser FritzBox gespeicherten Kontakte, einschließlich dort eingebundener Online-Telefonbücher (z. B. CardDAV). Sie werden bei Bedarf von der Box gelesen und nicht auf dem Telefon gespeichert.</string>
@@ -208,6 +209,10 @@
     <plurals name="status_connected">
         <item quantity="one">Verbunden – %d Telefon gefunden</item>
         <item quantity="other">Verbunden – %d Telefone gefunden</item>
+    </plurals>
+    <plurals name="connection_users_found">
+        <item quantity="one">%d Benutzer auf dieser Box – zum Auswählen tippen</item>
+        <item quantity="other">%d Benutzer auf dieser Box – zum Auswählen tippen</item>
     </plurals>
     <plurals name="status_contacts_loaded">
         <item quantity="one">%d Kontakt geladen</item>

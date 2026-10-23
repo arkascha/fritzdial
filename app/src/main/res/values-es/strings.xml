@@ -103,6 +103,7 @@
     <string name="connection_https_hint">Conexión cifrada (puerto %1$d). El certificado autofirmado de la box debe confirmarse una vez.</string>
     <string name="connection_port">Puerto TR-064</string>
     <string name="connection_user">Nombre de usuario de la FRITZ!Box</string>
+    <string name="connection_user_last">Último inicio de sesión</string>
     <string name="connection_password">Contraseña</string>
     <string name="connection_phonebooks">Agendas</string>
     <string name="connection_phonebooks_hint">Muestra los contactos guardados en las agendas de esta FritzBox, incluidas las agendas en línea sincronizadas con ella (p. ej., CardDAV). Se leen de la FritzBox cuando hace falta y no se guardan en el teléfono.</string>
@@ -209,6 +210,11 @@
         <item quantity="one">Conectado: %d teléfono encontrado</item>
         <item quantity="many">Conectado: %d teléfonos encontrados</item>
         <item quantity="other">Conectado: %d teléfonos encontrados</item>
+    </plurals>
+    <plurals name="connection_users_found">
+        <item quantity="one">%d usuario en este router – toca para elegir</item>
+        <item quantity="many">%d usuarios en este router – toca para elegir</item>
+        <item quantity="other">%d usuarios en este router – toca para elegir</item>
     </plurals>
     <plurals name="status_contacts_loaded">
         <item quantity="one">%d contacto cargado</item>

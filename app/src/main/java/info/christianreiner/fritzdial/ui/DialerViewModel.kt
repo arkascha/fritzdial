@@ -17,6 +17,8 @@ import info.christianreiner.fritzdial.data.SpeedDials
 import info.christianreiner.fritzdial.tr064.BoxDiscovery
 import info.christianreiner.fritzdial.tr064.BoxIdentity
 import info.christianreiner.fritzdial.tr064.BoxInfo
+import info.christianreiner.fritzdial.tr064.BoxUser
+import info.christianreiner.fritzdial.tr064.BoxUsers
 import info.christianreiner.fritzdial.tr064.CertificateInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import info.christianreiner.fritzdial.tr064.FritzDialer
@@ -74,6 +76,8 @@ data class UiState(
     /** Connection page: the box being edited, or null when adding a new one. */
     val editingProfileId: String? = null,
     val editingName: String = "",
+    /** Connection page: the users of the box at the entered address, to choose from (empty = none known). */
+    val boxUsers: List<BoxUser> = emptyList(),
     /**
      * Whether the box in use answered the last detection in the current network (null = not
      * detected yet), and whether the last request to it worked (null = none since it became active).
@@ -296,6 +300,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             editingProfileId = null,
             editingName = "",
             config = FritzConfig(),
+            boxUsers = emptyList(),
         )
     }
 
@@ -308,7 +313,25 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 editingProfileId = id,
                 editingName = profile.name,
                 config = profile.config,
+                boxUsers = emptyList(),
             )
+        }
+    }
+
+    private var usersJob: Job? = null
+
+    /**
+     * Asks the box at the address entered on the connection page ([edited]: host, port, HTTPS) for
+     * its users. Only a suggestion, so a failure – e.g. an older FRITZ!OS, or no box there – just
+     * leaves the list empty.
+     */
+    fun lookUpBoxUsers(edited: FritzConfig) {
+        usersJob?.cancel()
+        _state.update { it.copy(boxUsers = emptyList()) }
+        val config = edited.copy(trustedCertDer = _state.value.config.trustedCertDer)
+        usersJob = viewModelScope.launch {
+            val users = withContext(Dispatchers.IO) { runCatching { BoxUsers.list(config) }.getOrNull() }
+            if (users != null && _state.value.showConnectionSettings) _state.update { it.copy(boxUsers = users) }
         }
     }
 

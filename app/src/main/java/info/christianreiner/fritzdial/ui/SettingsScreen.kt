@@ -30,7 +30,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.HorizontalDivider
@@ -43,6 +47,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -68,7 +74,9 @@ import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.tr064.BoxInfo
+import info.christianreiner.fritzdial.tr064.BoxUser
 import info.christianreiner.fritzdial.tr064.FritzConfig
+import kotlinx.coroutines.delay
 
 /**
  * Settings overview: the configured FritzBoxes (the one in use marked, each with whether it is in
@@ -338,6 +346,10 @@ fun ConnectionSettingsScreen(
     initialSpeedDialsEnabled: Boolean,
     /** Model, FRITZ!OS version and serial number as last read from the box; null for a new one. */
     boxInfo: BoxInfo?,
+    /** The users of the box at the entered address, offered for the user name (empty = none known). */
+    boxUsers: List<BoxUser>,
+    /** Asks the box at the entered host, port and HTTPS setting for its users. */
+    onLookUpUsers: (FritzConfig) -> Unit,
     onSave: (
         config: FritzConfig,
         name: String,
@@ -364,6 +376,13 @@ fun ConnectionSettingsScreen(
     val portValue = port.toIntOrNull()
     val keyboard = LocalSoftwareKeyboardController.current
     val valid = host.isNotBlank() && portValue != null && portValue in 1..65535
+
+    // Once the address has stopped changing for a moment, ask the box there for its users.
+    LaunchedEffect(host, portValue, useHttps) {
+        if (!valid) return@LaunchedEffect
+        delay(USER_LOOKUP_DELAY_MILLIS)
+        onLookUpUsers(initial.copy(host = host.trim(), port = portValue ?: FritzConfig.HTTP_PORT, useHttps = useHttps))
+    }
 
     Scaffold(
         topBar = {
@@ -427,11 +446,7 @@ fun ConnectionSettingsScreen(
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
-            OutlinedTextField(
-                value = user, onValueChange = { user = it },
-                label = { Text(stringResource(R.string.connection_user)) },
-                singleLine = true, modifier = Modifier.fillMaxWidth(),
-            )
+            UserField(value = user, onValueChange = { user = it }, users = boxUsers)
             PasswordField(
                 value = password,
                 onValueChange = { password = it },
@@ -534,6 +549,57 @@ fun ConnectionSettingsScreen(
             },
             onDismiss = { confirmDelete = false },
         )
+    }
+}
+
+private const val USER_LOOKUP_DELAY_MILLIS = 800L
+
+/**
+ * The user name: typed, or chosen from the [users] of the box (when it told them), the one who
+ * logged in last marked.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun UserField(value: String, onValueChange: (String) -> Unit, users: List<BoxUser>) {
+    var expanded by remember { mutableStateOf(false) }
+    val canOpen = users.isNotEmpty()
+    ExposedDropdownMenuBox(expanded = expanded && canOpen, onExpandedChange = { if (canOpen) expanded = it }) {
+        OutlinedTextField(
+            value = value, onValueChange = onValueChange,
+            label = { Text(stringResource(R.string.connection_user)) },
+            supportingText = if (canOpen) {
+                { Text(pluralStringResource(R.plurals.connection_users_found, users.size, users.size)) }
+            } else null,
+            trailingIcon = if (canOpen) {
+                { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+            } else null,
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(MenuAnchorType.PrimaryEditable, canOpen),
+        )
+        ExposedDropdownMenu(expanded = expanded && canOpen, onDismissRequest = { expanded = false }) {
+            users.forEach { candidate ->
+                DropdownMenuItem(
+                    text = {
+                        Column {
+                            Text(candidate.name)
+                            if (candidate.lastUsed) {
+                                Text(
+                                    stringResource(R.string.connection_user_last),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    },
+                    onClick = {
+                        expanded = false
+                        onValueChange(candidate.name)
+                    },
+                )
+            }
+        }
     }
 }
 

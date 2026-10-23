@@ -136,6 +136,8 @@ class MainActivity : ComponentActivity() {
                             initialCallListEnabled = edited?.callListEnabled ?: true,
                             initialSpeedDialsEnabled = edited?.speedDialsEnabled ?: true,
                             boxInfo = edited?.info,
+                            boxUsers = state.boxUsers,
+                            onLookUpUsers = viewModel::lookUpBoxUsers,
                             onSave = viewModel::saveSettings,
                             onBack = viewModel::closeConnectionSettings,
                             onDelete = state.editingProfileId?.let { id -> { viewModel.deleteProfile(id) } },

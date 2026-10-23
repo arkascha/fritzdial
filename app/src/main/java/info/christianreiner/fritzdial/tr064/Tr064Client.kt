@@ -80,7 +80,12 @@ class Tr064Client(
         if (config.useHttps) PinningTrustManager(pinnedDer) else null
 
     private val http: OkHttpClient = OkHttpClient.Builder()
-        .authenticator(DigestAuthenticator(config.username, config.password))
+        .apply {
+            // Without credentials a 401 is final: answering it would only count as a failed login.
+            if (config.username.isNotEmpty() || config.password.isNotEmpty()) {
+                authenticator(DigestAuthenticator(config.username, config.password))
+            }
+        }
         .connectTimeout(5, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .apply {
