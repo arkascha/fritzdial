@@ -89,7 +89,7 @@ fun DialerScreen(
                     Column {
                         Text(stringResource(R.string.app_name))
                         val notice = state.networkNotice?.asString()
-                            ?: box?.takeIf { state.noKnownBoxFound }?.let { stringResource(R.string.notice_no_known_box, it) }
+                            ?: if (state.noBoxReachable) stringResource(R.string.notice_no_known_box) else null
                         val subtitle = notice ?: box
                         if (subtitle != null) {
                             Text(

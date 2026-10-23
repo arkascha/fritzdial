@@ -227,7 +227,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s w tej sieci nie jest skonfigurowany</string>
     <string name="notice_unknown_box_generic">FritzBox w tej sieci nie jest skonfigurowany</string>
-    <string name="notice_no_known_box">Żadnego z twoich FritzBoxów tutaj – próba z %1$s</string>
+    <string name="notice_no_known_box">Żaden z twoich FritzBoxów nie jest osiągalny</string>
     <string name="call_log_denied">Android nie pozwolił FritzDial odczytać rejestru połączeń.</string>
     <string name="call_log_failed">Nie udało się odczytać rejestru połączeń telefonu (%1$s). Działa to tylko wtedy, gdy FritzDial nie został zainstalowany z Google Play.</string>
     <string name="call_log_failed_plain">Nie udało się odczytać rejestru połączeń telefonu. Działa to tylko wtedy, gdy FritzDial nie został zainstalowany z Google Play.</string>

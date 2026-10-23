@@ -224,7 +224,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s dans ce réseau n’est pas configurée</string>
     <string name="notice_unknown_box_generic">Une FritzBox de ce réseau n’est pas configurée</string>
-    <string name="notice_no_known_box">Aucune de vos FritzBox ici – essai avec %1$s</string>
+    <string name="notice_no_known_box">Aucune de vos FritzBox accessible</string>
     <string name="call_log_denied">Android n’a pas autorisé FritzDial à lire le journal d’appels.</string>
     <string name="call_log_failed">Impossible de lire le journal d’appels du téléphone (%1$s). Cela ne fonctionne que si FritzDial n’a pas été installé depuis Google Play.</string>
     <string name="call_log_failed_plain">Impossible de lire le journal d’appels du téléphone. Cela ne fonctionne que si FritzDial n’a pas été installé depuis Google Play.</string>

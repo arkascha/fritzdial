@@ -221,7 +221,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s in dit netwerk is niet ingesteld</string>
     <string name="notice_unknown_box_generic">Een FritzBox in dit netwerk is niet ingesteld</string>
-    <string name="notice_no_known_box">Geen van je FritzBoxen hier – probeer %1$s</string>
+    <string name="notice_no_known_box">Geen van je FritzBoxen bereikbaar</string>
     <string name="call_log_denied">Android heeft FritzDial niet toegestaan de gesprekkenlijst te lezen.</string>
     <string name="call_log_failed">De gesprekkenlijst van de telefoon kon niet worden gelezen (%1$s). Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>
     <string name="call_log_failed_plain">De gesprekkenlijst van de telefoon kon niet worden gelezen. Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>

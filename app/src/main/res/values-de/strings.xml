@@ -221,7 +221,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s in diesem Netzwerk ist nicht eingerichtet</string>
     <string name="notice_unknown_box_generic">Eine FritzBox in diesem Netzwerk ist nicht eingerichtet</string>
-    <string name="notice_no_known_box">Keine deiner FritzBoxen hier – versuche %1$s</string>
+    <string name="notice_no_known_box">Keine deiner FritzBoxen erreichbar</string>
     <string name="call_log_denied">Android hat FritzDial nicht erlaubt, die Anrufliste zu lesen.</string>
     <string name="call_log_failed">Die Anrufliste des Telefons konnte nicht gelesen werden (%1$s). Das funktioniert nur, wenn FritzDial nicht aus Google Play installiert wurde.</string>
     <string name="call_log_failed_plain">Die Anrufliste des Telefons konnte nicht gelesen werden. Das funktioniert nur, wenn FritzDial nicht aus Google Play installiert wurde.</string>

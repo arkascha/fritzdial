@@ -223,7 +223,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s in this network is not configured</string>
     <string name="notice_unknown_box_generic">A FritzBox in this network is not configured</string>
-    <string name="notice_no_known_box">None of your FritzBoxes here – trying %1$s</string>
+    <string name="notice_no_known_box">None of your FritzBoxes reachable</string>
     <string name="call_log_denied">Android did not allow FritzDial to read the call log.</string>
     <string name="call_log_failed">The phone’s call log could not be read (%1$s). This only works when FritzDial was not installed from Google Play.</string>
     <string name="call_log_failed_plain">The phone’s call log could not be read. This only works when FritzDial was not installed from Google Play.</string>

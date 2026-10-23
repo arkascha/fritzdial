@@ -157,6 +157,13 @@ enum class ActiveBoxIssue { NOT_FOUND, NOT_WORKING }
 val UiState.noKnownBoxFound: Boolean
     get() = boxesSeen?.isEmpty() == true
 
+/**
+ * Not even the box in use answered at its configured host: nothing is loaded from it on its own
+ * (each request would only run into a timeout); dialling still tries it.
+ */
+val UiState.noBoxReachable: Boolean
+    get() = noKnownBoxFound && activeBoxSeen != true
+
 /** The box answering at the configured address is not the stored one: its serial number differs. */
 class OtherBoxException(val host: String, val boxName: String) :
     IOException("The FRITZ!Box at $host is not $boxName")
@@ -1048,7 +1055,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             // Pick the box of the current network first; if that did not switch (and load), load now.
             viewModelScope.launch {
                 val detection = detectBox()
-                if (!detection.switched) refreshPhones()
+                if (!detection.switched && !_state.value.noBoxReachable) refreshPhones()
                 detectAgainIfNotFound(detection)
             }
         }
