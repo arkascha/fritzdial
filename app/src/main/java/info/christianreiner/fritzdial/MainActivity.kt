@@ -22,6 +22,7 @@ import info.christianreiner.fritzdial.ui.TrustCertificateDialog
 import info.christianreiner.fritzdial.ui.ViewCertificateDialog
 import info.christianreiner.fritzdial.ui.activeBoxIssue
 import info.christianreiner.fritzdial.ui.activeProfile
+import info.christianreiner.fritzdial.ui.noBoxReachable
 import info.christianreiner.fritzdial.ui.DialerViewModel
 import info.christianreiner.fritzdial.ui.ErrorDialog
 import info.christianreiner.fritzdial.ui.LanguageScreen
@@ -149,6 +150,7 @@ class MainActivity : ComponentActivity() {
                         activeProfileId = state.activeProfileId,
                         activeIssue = state.activeBoxIssue,
                         boxesSeen = state.boxesSeen,
+                        noBoxReachable = state.noBoxReachable,
                         networkNotice = state.networkNotice,
                         onEditProfile = viewModel::editProfile,
                         onActivateProfile = viewModel::activateProfile,

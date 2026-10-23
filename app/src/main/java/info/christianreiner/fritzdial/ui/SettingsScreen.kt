@@ -84,6 +84,8 @@ fun SettingsScreen(
     activeIssue: ActiveBoxIssue?,
     /** The boxes (ids) that answered the last detection; null before the first one. */
     boxesSeen: Set<String>?,
+    /** Not even the box in use is reachable: then none counts as in use, all can be chosen. */
+    noBoxReachable: Boolean,
     networkNotice: UiText?,
     onEditProfile: (String) -> Unit,
     onActivateProfile: (String) -> Unit,
@@ -154,7 +156,7 @@ fun SettingsScreen(
             profiles.forEach { profile ->
                 ProfileRow(
                     profile = profile,
-                    active = profile.id == activeProfileId,
+                    active = profile.id == activeProfileId && !noBoxReachable,
                     seen = boxesSeen?.contains(profile.id),
                     canChoose = canChoose,
                     issue = activeIssue,
