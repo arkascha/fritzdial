@@ -151,6 +151,7 @@ class MainActivity : ComponentActivity() {
                         activeIssue = state.activeBoxIssue,
                         boxesSeen = state.boxesSeen,
                         noBoxReachable = state.noBoxReachable,
+                        busy = state.busy,
                         networkNotice = state.networkNotice,
                         onEditProfile = viewModel::editProfile,
                         onActivateProfile = viewModel::activateProfile,

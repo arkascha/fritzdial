@@ -29,6 +29,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -86,6 +87,8 @@ fun SettingsScreen(
     boxesSeen: Set<String>?,
     /** Not even the box in use is reachable: then none counts as in use, all can be chosen. */
     noBoxReachable: Boolean,
+    /** A request to the box is running – e.g. trying the one just chosen by hand. */
+    busy: Boolean,
     networkNotice: UiText?,
     onEditProfile: (String) -> Unit,
     onActivateProfile: (String) -> Unit,
@@ -157,8 +160,11 @@ fun SettingsScreen(
                 ProfileRow(
                     profile = profile,
                     active = profile.id == activeProfileId && !noBoxReachable,
+                    // Chosen by hand while none is reachable: being tried right now.
+                    trying = busy && noBoxReachable && profile.id == activeProfileId,
                     seen = boxesSeen?.contains(profile.id),
                     canChoose = canChoose,
+                    busy = busy,
                     issue = activeIssue,
                     onEdit = { onEditProfile(profile.id) },
                     onActivate = { onActivateProfile(profile.id) },
@@ -221,34 +227,40 @@ private fun MarkSlot(content: @Composable () -> Unit) {
 
 /**
  * One configured box: check mark when in use, else – only when [canChoose] – a circle to tap to
- * switch to it; then its name and whether it is in this network ([seen]; null = not detected yet).
- * Tapping the line opens its connection page (also to delete it).
+ * switch to it, and a progress indicator while it is being [trying]; then its name and whether it
+ * is reachable ([seen]; null = not detected yet). Tapping the line opens its connection page (also
+ * to delete it).
  */
 @Composable
 private fun ProfileRow(
     profile: BoxProfile,
     active: Boolean,
+    trying: Boolean,
     seen: Boolean?,
     canChoose: Boolean,
+    busy: Boolean,
     issue: ActiveBoxIssue?,
     onEdit: () -> Unit,
     onActivate: () -> Unit,
 ) {
     val presence = when {
+        trying -> stringResource(R.string.status_connecting, profile.config.host)
         // Recognised only by its device id, learned once logged in to it.
-        profile.deviceId == null -> R.string.settings_box_never_recognised
-        seen == true -> R.string.settings_box_here
-        seen == false -> R.string.settings_box_not_here
+        profile.deviceId == null -> stringResource(R.string.settings_box_never_recognised)
+        seen == true -> stringResource(R.string.settings_box_here)
+        seen == false -> stringResource(R.string.settings_box_not_here)
         else -> null
     }
     ListItem(
         // The name and where the box is; the details are on the connection page.
         headlineContent = { Text(profile.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        supportingContent = presence?.let { { Text(stringResource(it), maxLines = 1, overflow = TextOverflow.Ellipsis) } },
+        supportingContent = presence?.let { { Text(it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
         leadingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 MarkSlot {
-                    if (active && issue != null) {
+                    if (trying) {
+                        CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
+                    } else if (active && issue != null) {
                         // In use, but not as expected: a warning instead of the check mark.
                         Icon(
                             Icons.Default.Warning,
@@ -267,7 +279,8 @@ private fun ProfileRow(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     } else if (canChoose) {
-                        IconButton(onClick = onActivate) {
+                        // Only one attempt at a time (a second tap would otherwise be ignored silently).
+                        IconButton(onClick = onActivate, enabled = !busy) {
                             Icon(
                                 CircleOutlineIcon,
                                 contentDescription = stringResource(R.string.settings_use_box_now, profile.name),
