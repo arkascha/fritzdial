@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.DialingCodes
 import info.christianreiner.fritzdial.tr064.FritzConfig
+import info.christianreiner.fritzdial.tr064.UserRights
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
@@ -17,7 +18,8 @@ import java.util.UUID
  * [phonebooksEnabled], [callListEnabled] and [speedDialsEnabled] switch, for this box, whether its
  * phone books, its call list and the speed dials set up in its phone books are used (on by default).
  * [model], [softwareVersion] and [serialNumber] are what the box last said about itself (see [BoxInfo]);
- * [dialingCodes] its country and area code, for comparing numbers.
+ * [dialingCodes] its country and area code, for comparing numbers; [userRights] what the box said
+ * the configured user may do.
  */
 data class BoxProfile(
     val id: String = UUID.randomUUID().toString(),
@@ -28,6 +30,7 @@ data class BoxProfile(
     val softwareVersion: String? = null,
     val serialNumber: String? = null,
     val dialingCodes: DialingCodes? = null,
+    val userRights: UserRights? = null,
     val phonebooksEnabled: Boolean = true,
     val callListEnabled: Boolean = true,
     val speedDialsEnabled: Boolean = true,
@@ -95,6 +98,12 @@ class SettingsRepository(context: Context) {
     fun updateDialingCodes(id: String, codes: DialingCodes) {
         val profile = profiles().firstOrNull { it.id == id } ?: return
         if (profile.dialingCodes != codes) saveProfile(profile.copy(dialingCodes = codes))
+    }
+
+    /** Stores the rights of a connection's user. */
+    fun updateUserRights(id: String, rights: UserRights) {
+        val profile = profiles().firstOrNull { it.id == id } ?: return
+        if (profile.userRights != rights) saveProfile(profile.copy(userRights = rights))
     }
 
     var activeProfileId: String?
@@ -168,6 +177,15 @@ class SettingsRepository(context: Context) {
         p.model?.let { put("model", it) }
         p.softwareVersion?.let { put("softwareVersion", it) }
         p.serialNumber?.let { put("serialNumber", it) }
+        p.userRights?.let { r ->
+            put(
+                "userRights",
+                JSONObject().apply {
+                    r.username?.let { put("user", it) }
+                    put("access", JSONObject(r.access))
+                },
+            )
+        }
         p.dialingCodes?.let { c ->
             put(
                 "dialingCodes",
@@ -196,6 +214,13 @@ class SettingsRepository(context: Context) {
         model = o.optString("model").takeIf { it.isNotEmpty() },
         softwareVersion = o.optString("softwareVersion").takeIf { it.isNotEmpty() },
         serialNumber = o.optString("serialNumber").takeIf { it.isNotEmpty() },
+        userRights = o.optJSONObject("userRights")?.let { r ->
+            val access = r.optJSONObject("access")
+            UserRights(
+                username = r.optString("user").takeIf { it.isNotEmpty() },
+                access = access?.keys()?.asSequence()?.associateWith { access.getString(it) }.orEmpty(),
+            )
+        },
         dialingCodes = o.optJSONObject("dialingCodes")?.let { c ->
             DialingCodes(
                 countryCode = c.getString("country"),

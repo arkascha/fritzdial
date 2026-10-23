@@ -28,6 +28,7 @@ import info.christianreiner.fritzdial.tr064.RecentCall
 import info.christianreiner.fritzdial.tr064.SecondFactorChallenge
 import info.christianreiner.fritzdial.tr064.Tr064Exception
 import info.christianreiner.fritzdial.tr064.UntrustedCertificateException
+import info.christianreiner.fritzdial.tr064.UserRights
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -387,6 +388,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             val identity = BoxDiscovery.identify(config.host)
             val info = readBoxInfo(dialer)
             val codes = readDialingCodes(dialer)
+            val rights = readUserRights(dialer)
             val previous = settings.profiles().firstOrNull { it.id == editingId }
             val profile = BoxProfile(
                 id = editingId ?: java.util.UUID.randomUUID().toString(),
@@ -397,8 +399,11 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 softwareVersion = info?.softwareVersion ?: previous?.softwareVersion,
                 serialNumber = info?.serialNumber ?: previous?.serialNumber,
                 dialingCodes = codes ?: previous?.dialingCodes,
+                // Rights read before belong to the user of then.
+                userRights = rights ?: previous?.userRights?.takeIf { previous.config.username == config.username },
                 phonebooksEnabled = phonebooksEnabled,
-                callListEnabled = callListEnabled,
+                // Without the right the call list could only fail: off, the connection page says why.
+                callListEnabled = callListEnabled && rights?.phone != false,
                 speedDialsEnabled = speedDialsEnabled,
             )
             settings.saveProfile(profile)
@@ -871,6 +876,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         }
         info?.let { settings.updateBoxInfo(profile.id, it) }
         readDialingCodes(dialer)?.let { settings.updateDialingCodes(profile.id, it) }
+        readUserRights(dialer)?.let { settings.updateUserRights(profile.id, it) }
         if (profile.deviceId == null) {
             BoxDiscovery.identify(profile.config.host)?.let { settings.updateDeviceId(profile.id, it.udn, it.modelName) }
         }
@@ -882,6 +888,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     /** Country and area code: only for comparing numbers, so a failure is ignored as well. */
     private fun readDialingCodes(dialer: FritzDialer): DialingCodes? = runCatching { dialer.dialingCodes() }.getOrNull()
+
+    /** The user's rights: for explaining refusals, so a failure is ignored as well. */
+    private fun readUserRights(dialer: FritzDialer): UserRights? = runCatching { dialer.userRights() }.getOrNull()
 
     /**
      * Box requests that came in while another one was running (one per [runWhenIdle] key, so
@@ -1001,11 +1010,15 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
                 else -> {
                     failedAction = progress to block
+                    // Refused: ask the box what the user may do, to name the missing right.
+                    val rights = if (error is Tr064Exception && error.errorCode == Tr064Exception.NOT_AUTHORIZED) {
+                        withContext(Dispatchers.IO) { readUserRights(FritzDialer(config)) }
+                    } else null
                     _state.update {
                         it.copy(
                             busy = false,
                             status = null,
-                            error = describeError(error, config),
+                            error = describeError(error, config, rights),
                             canRetry = true,
                             // A failed check of edited settings says nothing about the box in use.
                             activeBoxWorking = if (verifyingSettings) it.activeBoxWorking else false,

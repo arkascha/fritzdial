@@ -89,6 +89,13 @@ class FritzDialer(
     fun dialingCodes(): DialingCodes? =
         DialingCodes.from(call("GetVoIPCommonCountryCode"), call("GetVoIPCommonAreaCode"))
 
+    /** The logged-in user's rights (`LANConfigSecurity` `X_AVM-DE_GetCurrentUser`). */
+    @Throws(IOException::class)
+    fun userRights(): UserRights {
+        val result = client.call(BoxUsers.SERVICE_TYPE, BoxUsers.CONTROL_URL, "X_AVM-DE_GetCurrentUser")
+        return UserRights.parse(result["NewX_AVM-DE_CurrentUsername"], result["NewX_AVM-DE_CurrentUserRights"].orEmpty())
+    }
+
     /** All phone books of the box with their contacts (see [FritzPhonebooks]). */
     @Throws(IOException::class)
     fun loadPhonebooks(): List<Phonebook> = FritzPhonebooks(config, authToken).loadAll()

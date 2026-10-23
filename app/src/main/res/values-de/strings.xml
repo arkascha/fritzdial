@@ -109,6 +109,7 @@
     <string name="connection_phonebooks_hint">Zeigt die in den Telefonbüchern dieser FritzBox gespeicherten Kontakte, einschließlich dort eingebundener Online-Telefonbücher (z. B. CardDAV). Sie werden bei Bedarf von der Box gelesen und nicht auf dem Telefon gespeichert.</string>
     <string name="connection_call_list">Anrufliste</string>
     <string name="connection_call_list_hint">Die zuletzt gewählten, angenommenen und verpassten Nummern aus der Anrufliste dieser FritzBox. Benötigt die Berechtigung „Sprachnachrichten, Faxnachrichten, FRITZ!App Fon und Anrufliste“.</string>
+    <string name="connection_call_list_no_right">%1$s hat diese Berechtigung auf der Box nicht, die Anrufliste kann daher nicht gelesen werden.</string>
     <string name="connection_help">Auf der Box „Zugriff für Anwendungen zulassen“ (Heimnetz › Netzwerk › Netzwerkeinstellungen) und die „Wählhilfe“ (Telefonie › Anrufe › Wählhilfe) aktivieren. Der Benutzer braucht die Berechtigung für Telefonie. Wenn du dich nur mit Kennwort anmeldest, verwende den automatisch erzeugten Benutzernamen unter System › FRITZ!Box-Benutzer.</string>
     <string name="connection_connecting">Verbinde …</string>
     <string name="connection_save">Speichern &amp; verbinden</string>
@@ -118,6 +119,15 @@
     <string name="connection_box_serial">Seriennummer: %1$s</string>
     <string name="connection_box_country_code">Landesvorwahl: %1$s</string>
     <string name="connection_box_area_code">Ortsvorwahl: %1$s</string>
+    <string name="connection_rights_title">Rechte von %1$s</string>
+    <string name="connection_right">%1$s: %2$s</string>
+    <string name="right_box_admin">FRITZ!Box Einstellungen</string>
+    <string name="right_phone">Sprachnachrichten, Faxnachrichten, FRITZ!App Fon und Anrufliste</string>
+    <string name="right_home_auto">Smart Home</string>
+    <string name="right_nas">Zugang zu NAS-Inhalten</string>
+    <string name="access_none">nein</string>
+    <string name="access_read">nur lesen</string>
+    <string name="access_read_write">lesen und ändern</string>
     <string name="connection_box_info_unknown">Noch nicht bekannt. Wird bei der nächsten Verbindung von der Box gelesen – sofern ihr Benutzer die Rechte dafür hat.</string>
     <string name="connection_trusted_cert">Vertrautes Zertifikat</string>
     <string name="connection_no_cert">Keines. Bei einer Verbindung über HTTPS wirst du gebeten, das Zertifikat des Routers zu bestätigen.</string>
@@ -172,7 +182,8 @@
     <string name="error_confirmation_busy_title">Bestätigung läuft bereits</string>
     <string name="error_confirmation_busy">Auf der FRITZ!Box läuft bereits eine andere Bestätigung. Schließe sie ab oder warte darauf, dann wiederhole.</string>
     <string name="error_not_authorized_title">Nicht berechtigt</string>
-    <string name="error_not_authorized">Der Benutzer „%1$s“ ist angemeldet, darf aber die Wählhilfe nicht verwenden. Gib ihm unter System › FRITZ!Box-Benutzer die Berechtigung für Telefonie.</string>
+    <string name="error_not_authorized">Der Benutzer „%1$s“ ist angemeldet, darf diese Funktion aber nicht verwenden. Prüfe seine Berechtigungen unter System › FRITZ!Box-Benutzer.</string>
+    <string name="error_not_authorized_right">Der Benutzer „%1$s“ ist angemeldet, ihm fehlt aber die Berechtigung „%2$s“. Erteile sie unter System › FRITZ!Box-Benutzer.</string>
     <string name="error_no_dial_help_title">Wählhilfe nicht verfügbar</string>
     <string name="error_no_dial_help">Der Router bietet diese Funktion nicht über TR-064 an (veraltetes FRITZ!OS?).</string>
     <string name="error_router_title">Router-Fehler</string>

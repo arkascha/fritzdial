@@ -109,6 +109,7 @@
     <string name="connection_phonebooks_hint">Muestra los contactos guardados en las agendas de esta FritzBox, incluidas las agendas en línea sincronizadas con ella (p. ej., CardDAV). Se leen de la FritzBox cuando hace falta y no se guardan en el teléfono.</string>
     <string name="connection_call_list">Lista de llamadas</string>
     <string name="connection_call_list_hint">Los números marcados, recibidos y perdidos recientemente, de la lista de llamadas de esta FritzBox.</string>
+    <string name="connection_call_list_no_right">%1$s no tiene este permiso en el router, por lo que no se puede leer la lista de llamadas.</string>
     <string name="connection_help">En la box, activa «Permitir el acceso a aplicaciones» (Red doméstica › Red › Ajustes de red) y la «Ayuda de marcación» (Telefonía › Llamadas › Ayuda de marcación). El usuario necesita el permiso de telefonía. Si inicias sesión solo con contraseña, usa el nombre de usuario generado automáticamente que aparece en Sistema › Usuarios de FRITZ!Box.</string>
     <string name="connection_connecting">Conectando…</string>
     <string name="connection_save">Guardar y conectar</string>
@@ -118,6 +119,15 @@
     <string name="connection_box_serial">Número de serie: %1$s</string>
     <string name="connection_box_country_code">Prefijo del país: %1$s</string>
     <string name="connection_box_area_code">Prefijo local: %1$s</string>
+    <string name="connection_rights_title">Permisos de %1$s</string>
+    <string name="connection_right">%1$s: %2$s</string>
+    <string name="right_box_admin">Ajustes de la FRITZ!Box</string>
+    <string name="right_phone">Mensajes de voz, faxes, FRITZ!App Fon y lista de llamadas</string>
+    <string name="right_home_auto">Smart Home</string>
+    <string name="right_nas">Acceso a contenidos NAS</string>
+    <string name="access_none">no</string>
+    <string name="access_read">solo lectura</string>
+    <string name="access_read_write">lectura y modificación</string>
     <string name="connection_box_info_unknown">Aún no se conoce. Se lee del router en la próxima conexión, si su usuario tiene los permisos para ello.</string>
     <string name="connection_trusted_cert">Certificado de confianza</string>
     <string name="connection_no_cert">Ninguno. Al conectar por HTTPS se te pedirá que confirmes el certificado del router.</string>
@@ -172,7 +182,8 @@
     <string name="error_confirmation_busy_title">Confirmación en curso</string>
     <string name="error_confirmation_busy">Ya hay otra confirmación en curso en la FRITZ!Box. Termínala o espera a que acabe y vuelve a intentarlo.</string>
     <string name="error_not_authorized_title">Sin autorización</string>
-    <string name="error_not_authorized">El usuario «%1$s» ha iniciado sesión, pero no puede usar la ayuda de marcación. Concédele el permiso de telefonía en Sistema › Usuarios de FRITZ!Box.</string>
+    <string name="error_not_authorized">El usuario «%1$s» ha iniciado sesión, pero no puede usar esta función. Revisa sus permisos en Sistema › Usuarios de FRITZ!Box.</string>
+    <string name="error_not_authorized_right">El usuario «%1$s» ha iniciado sesión, pero le falta el permiso «%2$s». Concédeselo en Sistema › Usuarios de FRITZ!Box.</string>
     <string name="error_no_dial_help_title">Ayuda de marcación no disponible</string>
     <string name="error_no_dial_help">El router no ofrece esta función por TR-064 (¿FRITZ!OS obsoleto?).</string>
     <string name="error_router_title">Error del router</string>

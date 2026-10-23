@@ -109,6 +109,7 @@
     <string name="connection_phonebooks_hint">Affiche les contacts enregistrés dans les répertoires de cette FritzBox, y compris les répertoires en ligne qui y sont synchronisés (p. ex. CardDAV). Ils sont lus sur la FritzBox au besoin et ne sont pas enregistrés sur le téléphone.</string>
     <string name="connection_call_list">Liste d’appels</string>
     <string name="connection_call_list_hint">Les numéros récemment composés, reçus et manqués, de la liste d’appels de cette FritzBox.</string>
+    <string name="connection_call_list_no_right">%1$s n’a pas ce droit sur la box, la liste d’appels ne peut donc pas être lue.</string>
     <string name="connection_help">Sur la box, activez « Autoriser l’accès aux applications » (Réseau domestique › Réseau › Paramètres réseau) et l’« Aide à la numérotation » (Téléphonie › Appels › Aide à la numérotation). L’utilisateur a besoin du droit Téléphonie. Si vous vous connectez uniquement avec un mot de passe, utilisez le nom d’utilisateur généré automatiquement, indiqué sous Système › Utilisateurs FRITZ!Box.</string>
     <string name="connection_connecting">Connexion…</string>
     <string name="connection_save">Enregistrer et connecter</string>
@@ -118,6 +119,15 @@
     <string name="connection_box_serial">Numéro de série : %1$s</string>
     <string name="connection_box_country_code">Indicatif du pays : %1$s</string>
     <string name="connection_box_area_code">Indicatif régional : %1$s</string>
+    <string name="connection_rights_title">Droits de %1$s</string>
+    <string name="connection_right">%1$s : %2$s</string>
+    <string name="right_box_admin">Paramètres de la FRITZ!Box</string>
+    <string name="right_phone">Messages vocaux, fax, FRITZ!App Fon et liste d’appels</string>
+    <string name="right_home_auto">Smart Home</string>
+    <string name="right_nas">Accès aux contenus NAS</string>
+    <string name="access_none">non</string>
+    <string name="access_read">lecture seule</string>
+    <string name="access_read_write">lecture et modification</string>
     <string name="connection_box_info_unknown">Pas encore connu. Lu sur la box lors de la prochaine connexion – si son utilisateur en a les droits.</string>
     <string name="connection_trusted_cert">Certificat de confiance</string>
     <string name="connection_no_cert">Aucun. Lors d’une connexion HTTPS, il vous sera demandé de confirmer le certificat du routeur.</string>
@@ -172,7 +182,8 @@
     <string name="error_confirmation_busy_title">Confirmation déjà en cours</string>
     <string name="error_confirmation_busy">Une autre confirmation est déjà en cours sur la FRITZ!Box. Terminez-la ou attendez-la, puis réessayez.</string>
     <string name="error_not_authorized_title">Non autorisé</string>
-    <string name="error_not_authorized">L’utilisateur « %1$s » est connecté mais n’a pas le droit d’utiliser l’aide à la numérotation. Accordez-lui le droit Téléphonie sous Système › Utilisateurs FRITZ!Box.</string>
+    <string name="error_not_authorized">L’utilisateur « %1$s » est connecté mais n’a pas le droit d’utiliser cette fonction. Vérifiez ses droits sous Système › Utilisateurs FRITZ!Box.</string>
+    <string name="error_not_authorized_right">L’utilisateur « %1$s » est connecté mais n’a pas le droit « %2$s ». Accordez-le sous Système › Utilisateurs FRITZ!Box.</string>
     <string name="error_no_dial_help_title">Aide à la numérotation indisponible</string>
     <string name="error_no_dial_help">Le routeur ne propose pas cette fonction via TR-064 (FRITZ!OS obsolète ?).</string>
     <string name="error_router_title">Erreur du routeur</string>

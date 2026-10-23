@@ -109,6 +109,7 @@
     <string name="connection_phonebooks_hint">Toont de contacten uit de telefoonboeken van deze FritzBox, inclusief online telefoonboeken die ermee gesynchroniseerd worden (bijv. CardDAV). Ze worden indien nodig van de FritzBox gelezen en niet op de telefoon opgeslagen.</string>
     <string name="connection_call_list">Gesprekkenlijst</string>
     <string name="connection_call_list_hint">De recent gebelde, aangenomen en gemiste nummers uit de gesprekkenlijst van deze FritzBox.</string>
+    <string name="connection_call_list_no_right">%1$s heeft dit recht op de box niet, daarom kan de gesprekkenlijst niet worden gelezen.</string>
     <string name="connection_help">Schakel op de box “Toegang voor toepassingen toestaan” in (Thuisnetwerk › Netwerk › Netwerkinstellingen) en de “Kieshulp” (Telefonie › Gesprekken › Kieshulp). De gebruiker heeft het recht voor telefonie nodig. Als je alleen met een wachtwoord inlogt, gebruik dan de automatisch aangemaakte gebruikersnaam onder Systeem › FRITZ!Box-gebruikers.</string>
     <string name="connection_connecting">Verbinden…</string>
     <string name="connection_save">Opslaan &amp; verbinden</string>
@@ -118,6 +119,15 @@
     <string name="connection_box_serial">Serienummer: %1$s</string>
     <string name="connection_box_country_code">Landnummer: %1$s</string>
     <string name="connection_box_area_code">Netnummer: %1$s</string>
+    <string name="connection_rights_title">Rechten van %1$s</string>
+    <string name="connection_right">%1$s: %2$s</string>
+    <string name="right_box_admin">FRITZ!Box-instellingen</string>
+    <string name="right_phone">Spraakberichten, faxberichten, FRITZ!App Fon en gesprekkenlijst</string>
+    <string name="right_home_auto">Smart Home</string>
+    <string name="right_nas">Toegang tot NAS-inhoud</string>
+    <string name="access_none">nee</string>
+    <string name="access_read">alleen lezen</string>
+    <string name="access_read_write">lezen en wijzigen</string>
     <string name="connection_box_info_unknown">Nog niet bekend. Wordt bij de volgende verbinding van de box gelezen – als de gebruiker daarvoor de rechten heeft.</string>
     <string name="connection_trusted_cert">Vertrouwd certificaat</string>
     <string name="connection_no_cert">Geen. Bij een verbinding via HTTPS word je gevraagd het certificaat van de router te bevestigen.</string>
@@ -172,7 +182,8 @@
     <string name="error_confirmation_busy_title">Bevestiging al bezig</string>
     <string name="error_confirmation_busy">Er loopt al een andere bevestiging op de FRITZ!Box. Rond die af of wacht erop, en probeer het dan opnieuw.</string>
     <string name="error_not_authorized_title">Niet gemachtigd</string>
-    <string name="error_not_authorized">Gebruiker ‘%1$s’ is ingelogd, maar mag de kieshulp niet gebruiken. Geef hem het recht voor telefonie onder Systeem › FRITZ!Box-gebruikers.</string>
+    <string name="error_not_authorized">Gebruiker ‘%1$s’ is ingelogd, maar mag deze functie niet gebruiken. Controleer de rechten onder Systeem › FRITZ!Box-gebruikers.</string>
+    <string name="error_not_authorized_right">Gebruiker ‘%1$s’ is ingelogd, maar mist het recht ‘%2$s’. Verleen het onder Systeem › FRITZ!Box-gebruikers.</string>
     <string name="error_no_dial_help_title">Kieshulp niet beschikbaar</string>
     <string name="error_no_dial_help">De router biedt deze functie niet via TR-064 aan (verouderd FRITZ!OS?).</string>
     <string name="error_router_title">Routerfout</string>

@@ -144,6 +144,7 @@ class MainActivity : ComponentActivity() {
                             initialSpeedDialsEnabled = edited?.speedDialsEnabled ?: true,
                             boxInfo = edited?.info,
                             dialingCodes = edited?.dialingCodes,
+                            userRights = edited?.userRights,
                             boxUsers = state.boxUsers,
                             onLookUpUsers = viewModel::lookUpBoxUsers,
                             onSave = viewModel::saveSettings,

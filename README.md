@@ -63,6 +63,14 @@ again whenever the phones are loaded, so they stay current after a FRITZ!OS upda
 optional: if the box' user lacks the rights for it, they are simply missing. What AVM calls the serial
 number is in fact the box' MAC address, not the number on its label.
 
+Below them, the connection page lists the **permissions** of the configured user as the box reports
+them (TR-064 `LANConfigSecurity` `X_AVM-DE_GetCurrentUser`), area by area, read alongside the device
+details. They are used in three ways: when a connection is saved for a user without *Voice messages,
+fax messages, FRITZ!App Fon and call list*, its **Call list** switch is turned off (it could only fail),
+with a note under the switch; when the box refuses an action (TR-064 error 606), the error dialog asks
+the box for the user's permissions and names that one if it is missing; otherwise it says that the user
+may not use the function and where to check the permissions.
+
 The box of the current network is selected automatically – at start, whenever the phone's network
 changes and when the app comes back to the foreground; if none of the boxes is found, it tries once more
 a few seconds later (right after a network change the box often does not answer yet). Every FritzBox
@@ -213,7 +221,7 @@ Contacts or a web page; the number is pre-filled.
 | `res/values*/strings.xml` | All UI texts: English (`values/`) and the translations (`values-de/`, …) |
 
 Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising,
-the call list's date format, the device details, the user list, the comparison of numbers, merging of the recent numbers and certificate pinning.
+the call list's date format, the device details, the user list, the user's permissions, the comparison of numbers, merging of the recent numbers and certificate pinning.
 
 ## Notes / ideas
 

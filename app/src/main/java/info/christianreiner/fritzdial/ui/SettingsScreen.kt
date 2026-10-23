@@ -77,6 +77,7 @@ import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.DialingCodes
 import info.christianreiner.fritzdial.tr064.BoxUser
 import info.christianreiner.fritzdial.tr064.FritzConfig
+import info.christianreiner.fritzdial.tr064.UserRights
 import kotlinx.coroutines.delay
 
 /**
@@ -349,6 +350,8 @@ fun ConnectionSettingsScreen(
     boxInfo: BoxInfo?,
     /** The box' country and area code as last read; null when not known. */
     dialingCodes: DialingCodes?,
+    /** What the box last said the configured user may do; null when not known. */
+    userRights: UserRights?,
     /** The users of the box at the entered address, offered for the user name (empty = none known). */
     boxUsers: List<BoxUser>,
     /** Asks the box at the entered host, port and HTTPS setting for its users. */
@@ -468,6 +471,14 @@ fun ConnectionSettingsScreen(
                 enabled = callListEnabled,
                 onChange = { callListEnabled = it },
             )
+            // Known rights belong to the stored user, not to one just typed in.
+            if (userRights?.phone == false && user.trim() == initial.username) {
+                Text(
+                    stringResource(R.string.connection_call_list_no_right, initial.username),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
             BoxFeatureSetting(
                 title = stringResource(R.string.connection_speed_dials),
                 hint = stringResource(R.string.connection_speed_dials_hint),
@@ -509,6 +520,10 @@ fun ConnectionSettingsScreen(
             if (boxInfo != null) {
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 BoxInfoSection(boxInfo, dialingCodes)
+            }
+            if (userRights != null && userRights.access.isNotEmpty()) {
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                UserRightsSection(userRights.username ?: initial.username, userRights)
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
@@ -629,6 +644,35 @@ private fun BoxInfoSection(info: BoxInfo, codes: DialingCodes?) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 lines.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
             }
+        }
+    }
+}
+
+/** What the box said the user may do, area by area, as the box' user settings name them. */
+@Composable
+private fun UserRightsSection(username: String, rights: UserRights) {
+    Text(stringResource(R.string.connection_rights_title, username), style = MaterialTheme.typography.titleSmall)
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        rights.access.forEach { (area, access) ->
+            val name = when (area) {
+                UserRights.BOX_ADMIN -> stringResource(R.string.right_box_admin)
+                UserRights.PHONE -> stringResource(R.string.right_phone)
+                UserRights.HOME_AUTO -> stringResource(R.string.right_home_auto)
+                UserRights.NAS -> stringResource(R.string.right_nas)
+                else -> area
+            }
+            val level = when (access) {
+                UserRights.NONE -> stringResource(R.string.access_none)
+                UserRights.READ -> stringResource(R.string.access_read)
+                UserRights.READ_WRITE -> stringResource(R.string.access_read_write)
+                else -> access
+            }
+            Text(
+                stringResource(R.string.connection_right, name, level),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (access == UserRights.NONE) MaterialTheme.colorScheme.onSurfaceVariant
+                else MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }

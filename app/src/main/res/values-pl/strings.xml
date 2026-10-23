@@ -109,6 +109,7 @@
     <string name="connection_phonebooks_hint">Pokazuje kontakty zapisane w książkach telefonicznych tego FritzBox, w tym zsynchronizowane z nim książki online (np. CardDAV). Są odczytywane z FritzBox w razie potrzeby i nie są zapisywane na telefonie.</string>
     <string name="connection_call_list">Lista połączeń</string>
     <string name="connection_call_list_hint">Ostatnio wybierane, odebrane i nieodebrane numery z listy połączeń tego FritzBox.</string>
+    <string name="connection_call_list_no_right">%1$s nie ma tego uprawnienia na routerze, dlatego nie można odczytać listy połączeń.</string>
     <string name="connection_help">Na urządzeniu włącz „Zezwalaj na dostęp aplikacji” (Sieć domowa › Sieć › Ustawienia sieci) oraz „Pomoc przy wybieraniu” (Telefonia › Połączenia › Pomoc przy wybieraniu). Użytkownik potrzebuje uprawnienia do telefonii. Jeśli logujesz się tylko hasłem, użyj automatycznie utworzonej nazwy użytkownika podanej w System › Użytkownicy FRITZ!Box.</string>
     <string name="connection_connecting">Łączenie…</string>
     <string name="connection_save">Zapisz i połącz</string>
@@ -118,6 +119,15 @@
     <string name="connection_box_serial">Numer seryjny: %1$s</string>
     <string name="connection_box_country_code">Numer kierunkowy kraju: %1$s</string>
     <string name="connection_box_area_code">Numer kierunkowy: %1$s</string>
+    <string name="connection_rights_title">Uprawnienia użytkownika %1$s</string>
+    <string name="connection_right">%1$s: %2$s</string>
+    <string name="right_box_admin">Ustawienia FRITZ!Box</string>
+    <string name="right_phone">Wiadomości głosowe, faksy, FRITZ!App Fon i lista połączeń</string>
+    <string name="right_home_auto">Smart Home</string>
+    <string name="right_nas">Dostęp do zawartości NAS</string>
+    <string name="access_none">nie</string>
+    <string name="access_read">tylko odczyt</string>
+    <string name="access_read_write">odczyt i zmiana</string>
     <string name="connection_box_info_unknown">Jeszcze nieznane. Zostaną odczytane z routera przy następnym połączeniu – o ile jego użytkownik ma do tego uprawnienia.</string>
     <string name="connection_trusted_cert">Zaufany certyfikat</string>
     <string name="connection_no_cert">Brak. Przy połączeniu przez HTTPS zostaniesz poproszony o potwierdzenie certyfikatu routera.</string>
@@ -172,7 +182,8 @@
     <string name="error_confirmation_busy_title">Potwierdzanie w toku</string>
     <string name="error_confirmation_busy">Na FRITZ!Box trwa już inne potwierdzanie. Dokończ je lub poczekaj, a potem spróbuj ponownie.</string>
     <string name="error_not_authorized_title">Brak uprawnień</string>
-    <string name="error_not_authorized">Użytkownik „%1$s” jest zalogowany, ale nie może używać pomocy przy wybieraniu. Nadaj mu uprawnienie do telefonii w System › Użytkownicy FRITZ!Box.</string>
+    <string name="error_not_authorized">Użytkownik „%1$s” jest zalogowany, ale nie może używać tej funkcji. Sprawdź jego uprawnienia w System › Użytkownicy FRITZ!Box.</string>
+    <string name="error_not_authorized_right">Użytkownik „%1$s” jest zalogowany, ale brakuje mu uprawnienia „%2$s”. Nadaj je w System › Użytkownicy FRITZ!Box.</string>
     <string name="error_no_dial_help_title">Pomoc przy wybieraniu niedostępna</string>
     <string name="error_no_dial_help">Router nie oferuje tej funkcji przez TR-064 (przestarzały FRITZ!OS?).</string>
     <string name="error_router_title">Błąd routera</string>

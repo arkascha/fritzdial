@@ -50,6 +50,8 @@ class Tr064Exception(
     val secondFactorRequired: Boolean get() = errorCode == SECOND_FACTOR_REQUIRED
 
     companion object {
+        /** The user is logged in but lacks the right for the action. */
+        const val NOT_AUTHORIZED = 606
         const val SECOND_FACTOR_REQUIRED = 866
         const val SECOND_FACTOR_BLOCKED = 867
         const val SECOND_FACTOR_BUSY = 868

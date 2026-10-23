@@ -111,6 +111,7 @@
     <string name="connection_phonebooks_hint">Shows the contacts stored in this FritzBox’s phone books, including online phone books synced into it (e.g. CardDAV). They are read from the box when needed and not stored on the phone.</string>
     <string name="connection_call_list">Call list</string>
     <string name="connection_call_list_hint">The numbers recently dialled, received and missed, from this FritzBox’s call list. Needs the permission “Voice messages, fax messages, FRITZ!App Fon and call list”.</string>
+    <string name="connection_call_list_no_right">%1$s does not have this permission on the box, so the call list cannot be read.</string>
     <string name="connection_help">On the box, enable “Allow access for applications” (Home Network › Network › Network Settings) and “Dial help” (Telephony › Calls › Dial Help). The user needs telephony permission. If you log in with password only, use the auto-generated user name shown under System › FRITZ!Box Users.</string>
     <string name="connection_connecting">Connecting…</string>
     <string name="connection_save">Save &amp; connect</string>
@@ -120,6 +121,15 @@
     <string name="connection_box_serial">Serial number: %1$s</string>
     <string name="connection_box_country_code">Country code: %1$s</string>
     <string name="connection_box_area_code">Area code: %1$s</string>
+    <string name="connection_rights_title">Permissions of %1$s</string>
+    <string name="connection_right">%1$s: %2$s</string>
+    <string name="right_box_admin">FRITZ!Box settings</string>
+    <string name="right_phone">Voice messages, fax messages, FRITZ!App Fon and call list</string>
+    <string name="right_home_auto">Smart Home</string>
+    <string name="right_nas">Access to NAS contents</string>
+    <string name="access_none">no</string>
+    <string name="access_read">read only</string>
+    <string name="access_read_write">read and change</string>
     <string name="connection_box_info_unknown">Not known yet. Read from the box on the next connection – unless its user lacks the rights for it.</string>
     <string name="connection_trusted_cert">Trusted certificate</string>
     <string name="connection_no_cert">None. When connecting via HTTPS you will be asked to confirm the router’s certificate.</string>
@@ -174,7 +184,8 @@
     <string name="error_confirmation_busy_title">Confirmation busy</string>
     <string name="error_confirmation_busy">Another confirmation is already running on the FRITZ!Box. Finish or wait for it, then retry.</string>
     <string name="error_not_authorized_title">Not authorized</string>
-    <string name="error_not_authorized">User “%1$s” is logged in but may not use dial help. Grant it the telephony permission under System › FRITZ!Box Users.</string>
+    <string name="error_not_authorized">User “%1$s” is logged in but may not use this function. Check its permissions under System › FRITZ!Box Users.</string>
+    <string name="error_not_authorized_right">User “%1$s” is logged in but lacks the permission “%2$s”. Grant it under System › FRITZ!Box Users.</string>
     <string name="error_no_dial_help_title">Dial help not available</string>
     <string name="error_no_dial_help">The router does not offer this function via TR-064 (outdated firmware?).</string>
     <string name="error_router_title">Router error</string>

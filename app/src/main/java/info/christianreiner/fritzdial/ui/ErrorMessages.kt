@@ -5,6 +5,7 @@ import info.christianreiner.fritzdial.tr064.AuthenticationException
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import info.christianreiner.fritzdial.tr064.HttpStatusException
 import info.christianreiner.fritzdial.tr064.Tr064Exception
+import info.christianreiner.fritzdial.tr064.UserRights
 import java.net.ConnectException
 import java.net.NoRouteToHostException
 import java.net.SocketTimeoutException
@@ -22,8 +23,11 @@ data class BoxError(
     val settingsRelated: Boolean,
 )
 
-/** Turns technical exceptions into messages that say what is wrong and what to check. */
-fun describeError(e: Throwable, config: FritzConfig): BoxError {
+/**
+ * Turns technical exceptions into messages that say what is wrong and what to check. [rights]: what
+ * the box says the user may do, if known – to name the missing right when the box refuses.
+ */
+fun describeError(e: Throwable, config: FritzConfig, rights: UserRights? = null): BoxError {
     val target = "${config.host}:${config.port}"
     return when (e) {
         is AuthenticationException -> BoxError(
@@ -55,9 +59,13 @@ fun describeError(e: Throwable, config: FritzConfig): BoxError {
                 uiText(R.string.error_confirmation_busy),
                 settingsRelated = false,
             )
-            606 -> BoxError(
+            Tr064Exception.NOT_AUTHORIZED -> BoxError(
                 uiText(R.string.error_not_authorized_title),
-                uiText(R.string.error_not_authorized, config.username),
+                if (rights?.phone == false) {
+                    uiText(R.string.error_not_authorized_right, config.username, uiText(R.string.right_phone))
+                } else {
+                    uiText(R.string.error_not_authorized, config.username)
+                },
                 settingsRelated = true,
             )
             401 -> BoxError(
