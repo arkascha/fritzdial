@@ -188,7 +188,8 @@ class MainActivity : ComponentActivity() {
                     ErrorDialog(
                         error = error,
                         canRetry = state.canRetry,
-                        offerSettings = !(state.showSettings && state.showConnectionSettings),
+                        // Within the settings (e.g. a box chosen by hand there) the user is where they would lead.
+                        offerSettings = !state.showSettings,
                         onRetry = viewModel::retry,
                         onOpenSettings = viewModel::openSettingsFromError,
                         onDismiss = viewModel::dismissError,
