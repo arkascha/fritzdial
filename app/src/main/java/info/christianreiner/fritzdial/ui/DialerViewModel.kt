@@ -159,7 +159,7 @@ val UiState.noKnownBoxFound: Boolean
 
 /**
  * Not even the box in use answered at its configured host: nothing is loaded from it on its own
- * (each request would only run into a timeout); dialling still tries it.
+ * (each request would only run into a timeout), and dialling is not possible.
  */
 val UiState.noBoxReachable: Boolean
     get() = noKnownBoxFound && activeBoxSeen != true
@@ -624,8 +624,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                     !settings.deviceContactsNeverAsk,
             )
         }
-        reloadRecents()
-        if (!_state.value.phonebooksLoaded) reloadRouterPhonebooks()
+        // Without a reachable box only the phone's own sources; "reload" still tries the box.
+        if (_state.value.noBoxReachable) loadCallLog() else reloadRecents()
+        if (!_state.value.phonebooksLoaded && !_state.value.noBoxReachable) reloadRouterPhonebooks()
         if (_state.value.deviceContacts == null) loadDeviceContacts()
     }
 
@@ -743,7 +744,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
      * the box in use may change until then.
      */
     private fun preloadBoxSpeedDials() = runWhenIdle("speedDials") {
-        if (settings.activeProfile()?.speedDialsEnabled == true && !_state.value.phonebooksLoaded) {
+        if (settings.activeProfile()?.speedDialsEnabled == true && !_state.value.phonebooksLoaded &&
+            !_state.value.noBoxReachable
+        ) {
             reloadRouterPhonebooks()
         }
     }
@@ -889,6 +892,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun dial() {
+        if (_state.value.noBoxReachable) return
         // A box speed dial entered as on a handset (**712): dial – and show – the number it stands for.
         SpeedDials.forCode(FritzDialer.sanitizeNumber(_state.value.number), _state.value.usableBoxSpeedDials)
             ?.let(::useSpeedDial)
@@ -947,7 +951,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             val error = result.exceptionOrNull()
             when {
                 error == null -> _state.update {
-                    it.copy(busy = false, status = result.getOrNull(), activeBoxWorking = true)
+                    // It answered, so it is reachable after all (e.g. a reload while none was found).
+                    it.copy(busy = false, status = result.getOrNull(), activeBoxWorking = true, activeBoxSeen = true)
                 }
 
                 error is Tr064Exception && error.secondFactorRequired ->

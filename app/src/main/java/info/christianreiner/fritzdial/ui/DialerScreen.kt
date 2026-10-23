@@ -202,7 +202,9 @@ fun DialerScreen(
                     RoundActionButton(
                         onClick = onDial,
                         // Only when there is something dialable (same check the dial action uses).
-                        enabled = !state.busy && FritzDialer.sanitizeNumber(state.number).isNotEmpty(),
+                        // No box to dial through: entering a number still works, dialling does not.
+                        enabled = !state.busy && !state.noBoxReachable &&
+                            FritzDialer.sanitizeNumber(state.number).isNotEmpty(),
                         color = CallGreen,
                     ) {
                         Icon(Icons.Default.Call, contentDescription = stringResource(R.string.dialer_dial), modifier = Modifier.size(30.dp))

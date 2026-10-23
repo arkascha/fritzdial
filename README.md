@@ -47,8 +47,9 @@ chosen automatically and marked with a check mark, and shown under the app name 
 turns into a red warning triangle when that box was not found by the last detection, or when the last
 request to it failed; a network change clears the latter until the next request. Only when none of the
 boxes is reachable (e.g. on mobile data without VPN) does an empty circle appear in front of the others, to choose one by hand; if not even the box in use answers at
-its configured host, the dialer says that none of your boxes is reachable and loads nothing from it on
-its own – dialling still tries it.
+its configured host, the dialer says that none of your boxes is reachable, loads nothing from it on its own and
+disables the dial button (a number can still be entered); the picker then shows only the phone's own
+contacts and calls, while its reload button still tries the box.
 
 The connection page also shows the box' **device details** – model, FRITZ!OS version and serial number
 (TR-064 `DeviceInfo` `GetInfo`) – to tell boxes apart. They are read when the connection is saved and
