@@ -88,12 +88,14 @@ fun DialerScreen(
                     val box = state.profiles.firstOrNull { it.id == state.activeProfileId }?.name
                     Column {
                         Text(stringResource(R.string.app_name))
-                        val subtitle = state.networkNotice?.asString() ?: box
+                        val notice = state.networkNotice?.asString()
+                            ?: box?.takeIf { state.noKnownBoxFound }?.let { stringResource(R.string.notice_no_known_box, it) }
+                        val subtitle = notice ?: box
                         if (subtitle != null) {
                             Text(
                                 subtitle,
                                 style = MaterialTheme.typography.labelMedium,
-                                color = if (state.networkNotice != null) MaterialTheme.colorScheme.error
+                                color = if (notice != null) MaterialTheme.colorScheme.error
                                 else MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                             )

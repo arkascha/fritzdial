@@ -148,6 +148,7 @@ class MainActivity : ComponentActivity() {
                         profiles = state.profiles,
                         activeProfileId = state.activeProfileId,
                         activeIssue = state.activeBoxIssue,
+                        boxesSeen = state.boxesSeen,
                         networkNotice = state.networkNotice,
                         onEditProfile = viewModel::editProfile,
                         onActivateProfile = viewModel::activateProfile,
@@ -209,6 +210,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /** Back in the foreground: the network may have changed meanwhile. */
+    override fun onStart() {
+        super.onStart()
+        viewModel.onForeground()
     }
 
     override fun onNewIntent(intent: Intent) {

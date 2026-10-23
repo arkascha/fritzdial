@@ -72,7 +72,10 @@
 
     <!-- settings overview -->
     <string name="settings_connections">FritzBox-Verbindungen</string>
-    <string name="settings_connections_hint">Die FritzBox des Netzwerks, in dem das Telefon ist, wird automatisch ausgewählt.</string>
+    <string name="settings_connections_hint">Die FritzBox des Netzwerks, in dem das Telefon ist, wird automatisch verwendet. Nur wenn dort keine davon gefunden wird, kannst du selbst eine wählen.</string>
+    <string name="settings_box_here">Erreichbar</string>
+    <string name="settings_box_not_here">Nicht erreichbar</string>
+    <string name="settings_box_never_recognised">Noch nicht erkannt – erst nach einer Verbindung zu ihr</string>
     <string name="settings_add_box">FritzBox hinzufügen</string>
     <string name="settings_in_use">In Verwendung</string>
     <string name="settings_in_use_not_found">In Verwendung, aber im aktuellen Netzwerk nicht gefunden</string>
@@ -159,6 +162,8 @@
     <string name="error_empty_user">(leer)</string>
     <string name="error_not_confirmed_title">Nicht bestätigt</string>
     <string name="error_not_confirmed">Die FRITZ!Box hat die Bestätigung nicht rechtzeitig erhalten. Tippe auf Wiederholen und bestätige an der Box (Taste drücken oder den angezeigten Code an einem angeschlossenen Telefon wählen).</string>
+    <string name="error_other_box_title">Andere FritzBox</string>
+    <string name="error_other_box">Die FritzBox unter %1$s ist nicht „%2$s“: ihre Seriennummer weicht von der gespeicherten ab. Wurde die Box ausgetauscht, lösche diese Verbindung und lege sie neu an.</string>
     <string name="error_confirmation_blocked_title">Bestätigung gesperrt</string>
     <string name="error_confirmation_blocked">Die FRITZ!Box sperrt derzeit Bestätigungen (zu viele Versuche). Warte ein paar Minuten und versuche es erneut.</string>
     <string name="error_confirmation_busy_title">Bestätigung läuft bereits</string>
@@ -216,6 +221,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s in diesem Netzwerk ist nicht eingerichtet</string>
     <string name="notice_unknown_box_generic">Eine FritzBox in diesem Netzwerk ist nicht eingerichtet</string>
+    <string name="notice_no_known_box">Keine deiner FritzBoxen hier – versuche %1$s</string>
     <string name="call_log_denied">Android hat FritzDial nicht erlaubt, die Anrufliste zu lesen.</string>
     <string name="call_log_failed">Die Anrufliste des Telefons konnte nicht gelesen werden (%1$s). Das funktioniert nur, wenn FritzDial nicht aus Google Play installiert wurde.</string>
     <string name="call_log_failed_plain">Die Anrufliste des Telefons konnte nicht gelesen werden. Das funktioniert nur, wenn FritzDial nicht aus Google Play installiert wurde.</string>

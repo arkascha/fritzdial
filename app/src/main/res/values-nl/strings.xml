@@ -72,7 +72,10 @@
 
     <!-- settings overview -->
     <string name="settings_connections">FritzBox-verbindingen</string>
-    <string name="settings_connections_hint">De FritzBox van het netwerk waarin de telefoon zich bevindt, wordt automatisch gekozen.</string>
+    <string name="settings_connections_hint">De FritzBox van het netwerk waarin de telefoon zich bevindt, wordt automatisch gebruikt. Alleen als daar geen ervan wordt gevonden, kun je er zelf een kiezen.</string>
+    <string name="settings_box_here">Bereikbaar</string>
+    <string name="settings_box_not_here">Niet bereikbaar</string>
+    <string name="settings_box_never_recognised">Nog niet herkend – pas na een verbinding ermee</string>
     <string name="settings_add_box">FritzBox toevoegen</string>
     <string name="settings_in_use">In gebruik</string>
     <string name="settings_in_use_not_found">In gebruik, maar niet gevonden in het huidige netwerk</string>
@@ -159,6 +162,8 @@
     <string name="error_empty_user">(leeg)</string>
     <string name="error_not_confirmed_title">Niet bevestigd</string>
     <string name="error_not_confirmed">De FRITZ!Box heeft de bevestiging niet op tijd ontvangen. Tik op Opnieuw en bevestig op de box (druk op de knop, of bel de getoonde code op een aangesloten telefoon).</string>
+    <string name="error_other_box_title">Andere FritzBox</string>
+    <string name="error_other_box">De FritzBox op %1$s is niet “%2$s”: het serienummer wijkt af van het opgeslagen nummer. Is de box vervangen, verwijder deze verbinding dan en voeg hem opnieuw toe.</string>
     <string name="error_confirmation_blocked_title">Bevestiging geblokkeerd</string>
     <string name="error_confirmation_blocked">De FRITZ!Box blokkeert momenteel bevestigingen (te veel pogingen). Wacht een paar minuten en probeer het opnieuw.</string>
     <string name="error_confirmation_busy_title">Bevestiging al bezig</string>
@@ -216,6 +221,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s in dit netwerk is niet ingesteld</string>
     <string name="notice_unknown_box_generic">Een FritzBox in dit netwerk is niet ingesteld</string>
+    <string name="notice_no_known_box">Geen van je FritzBoxen hier – probeer %1$s</string>
     <string name="call_log_denied">Android heeft FritzDial niet toegestaan de gesprekkenlijst te lezen.</string>
     <string name="call_log_failed">De gesprekkenlijst van de telefoon kon niet worden gelezen (%1$s). Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>
     <string name="call_log_failed_plain">De gesprekkenlijst van de telefoon kon niet worden gelezen. Dit werkt alleen als FritzDial niet via Google Play is geïnstalleerd.</string>

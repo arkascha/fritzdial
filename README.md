@@ -40,11 +40,14 @@ with **Retry** and, when the cause is likely in the settings, **Open settings**.
 
 **Settings › FritzBox connections** holds any number of boxes (e.g. home and office), each with its
 own name, host, port, HTTPS, user, password, use of its phone books and call list, and trusted
-certificate. **Add FritzBox** adds one; tap an entry to edit (or delete) it, tap the empty circle in
-front of another box to use it right away. The box in use is marked with a check mark and shown under
-the app name on the dialer. The mark turns into a red warning triangle when that box was not found by
-the last detection (see below), or when the last request to it failed; a network change clears the
-latter until the next request.
+certificate. **Add FritzBox** adds one; tap an entry to edit (or delete) it. Each entry says whether the
+box is *reachable* (it answered the last detection: in this network, or at its configured host),
+*not reachable* or *not recognised yet* (its device id is not known yet, see below). The box in use is
+chosen automatically and marked with a check mark, and shown under the app name on the dialer. The mark
+turns into a red warning triangle when that box was not found by the last detection, or when the last
+request to it failed; a network change clears the latter until the next request. Only when none of the
+boxes is reachable (e.g. on mobile data without VPN) does an empty circle appear in front of the others, to choose one by hand; the dialer then says that none of
+your boxes is here and which one it tries.
 
 The connection page also shows the box' **device details** – model, FRITZ!OS version and serial number
 (TR-064 `DeviceInfo` `GetInfo`) – to tell boxes apart. They are read when the connection is saved and
@@ -52,10 +55,19 @@ again whenever the phones are loaded, so they stay current after a FRITZ!OS upda
 optional: if the box' user lacks the rights for it, they are simply missing. What AVM calls the serial
 number is in fact the box' MAC address, not the number on its label.
 
-The box of the current network is selected automatically – at start and whenever the phone's network
-changes. Every FritzBox publishes a public device description (`http://<box>:49000/tr64desc.xml`) with a
-unique device id; FritzDial records it when a connection is saved and asks the network's gateway (and
-the configured hosts) for it. If a FritzBox answers that is not configured, the dialer says so.
+The box of the current network is selected automatically – at start, whenever the phone's network
+changes and when the app comes back to the foreground; if none of the boxes is found, it tries once more
+a few seconds later (right after a network change the box often does not answer yet). Every FritzBox
+publishes a public device description (`http://<box>:49000/tr64desc.xml`) with a unique device id
+(UDN); FritzDial records it when a connection is saved, or – for a connection saved while away – on the
+first successful login to it, and asks the network's gateway, `fritz.box` and the configured hosts for
+it. The box of the network itself (gateway, `fritz.box`) wins; a box answering only at its configured
+host (through a VPN, or at its MyFRITZ address) is used only when the network has none of the boxes.
+If a FritzBox answers that is not configured, the dialer says so.
+
+The device description needs no login and can be imitated. So after switching, FritzDial also compares
+the box' serial number (`DeviceInfo` `GetInfo`, see above) with the stored one, and refuses a box whose
+number differs. With HTTPS, the pinned certificate protects in addition.
 
 ### Choosing a number: recent calls and phone books
 

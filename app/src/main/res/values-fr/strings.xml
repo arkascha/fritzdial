@@ -72,7 +72,10 @@
 
     <!-- settings overview -->
     <string name="settings_connections">Connexions FritzBox</string>
-    <string name="settings_connections_hint">La FritzBox du réseau dans lequel se trouve le téléphone est choisie automatiquement.</string>
+    <string name="settings_connections_hint">La FritzBox du réseau dans lequel se trouve le téléphone est utilisée automatiquement. Ce n’est que si aucune n’y est trouvée que vous pouvez en choisir une vous-même.</string>
+    <string name="settings_box_here">Accessible</string>
+    <string name="settings_box_not_here">Inaccessible</string>
+    <string name="settings_box_never_recognised">Pas encore reconnue – seulement après une connexion</string>
     <string name="settings_add_box">Ajouter une FritzBox</string>
     <string name="settings_in_use">Utilisée</string>
     <string name="settings_in_use_not_found">Utilisée, mais introuvable dans le réseau actuel</string>
@@ -159,6 +162,8 @@
     <string name="error_empty_user">(vide)</string>
     <string name="error_not_confirmed_title">Non confirmé</string>
     <string name="error_not_confirmed">La FRITZ!Box n’a pas reçu la confirmation à temps. Touchez Réessayer et confirmez sur la box (appuyez sur sa touche ou composez le code affiché sur un téléphone raccordé).</string>
+    <string name="error_other_box_title">Autre FritzBox</string>
+    <string name="error_other_box">La FritzBox à l’adresse %1$s n’est pas « %2$s » : son numéro de série diffère de celui enregistré. Si la box a été remplacée, supprimez cette connexion et ajoutez-la à nouveau.</string>
     <string name="error_confirmation_blocked_title">Confirmation bloquée</string>
     <string name="error_confirmation_blocked">La FRITZ!Box bloque actuellement les confirmations (trop de tentatives). Attendez quelques minutes et réessayez.</string>
     <string name="error_confirmation_busy_title">Confirmation déjà en cours</string>
@@ -219,6 +224,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s dans ce réseau n’est pas configurée</string>
     <string name="notice_unknown_box_generic">Une FritzBox de ce réseau n’est pas configurée</string>
+    <string name="notice_no_known_box">Aucune de vos FritzBox ici – essai avec %1$s</string>
     <string name="call_log_denied">Android n’a pas autorisé FritzDial à lire le journal d’appels.</string>
     <string name="call_log_failed">Impossible de lire le journal d’appels du téléphone (%1$s). Cela ne fonctionne que si FritzDial n’a pas été installé depuis Google Play.</string>
     <string name="call_log_failed_plain">Impossible de lire le journal d’appels du téléphone. Cela ne fonctionne que si FritzDial n’a pas été installé depuis Google Play.</string>

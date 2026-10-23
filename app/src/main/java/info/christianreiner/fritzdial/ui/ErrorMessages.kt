@@ -34,6 +34,11 @@ fun describeError(e: Throwable, config: FritzConfig): BoxError {
             ),
             settingsRelated = true,
         )
+        is OtherBoxException -> BoxError(
+            uiText(R.string.error_other_box_title),
+            uiText(R.string.error_other_box, e.host, e.boxName),
+            settingsRelated = true,
+        )
         is SecondFactorNotConfirmedException -> BoxError(
             uiText(R.string.error_not_confirmed_title),
             uiText(R.string.error_not_confirmed),

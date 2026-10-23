@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import android.net.ConnectivityManager
 import android.net.LinkProperties
 import android.net.Network
+import android.os.SystemClock
 import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
@@ -79,6 +80,8 @@ data class UiState(
      */
     val activeBoxSeen: Boolean? = null,
     val activeBoxWorking: Boolean? = null,
+    /** The configured boxes (ids) that answered the last detection by their device id; null before the first one. */
+    val boxesSeen: Set<String>? = null,
     /** Note about the current network, e.g. an unknown FritzBox was found there. */
     val networkNotice: UiText? = null,
     val showSettings: Boolean = false,
@@ -147,11 +150,31 @@ val UiState.activeBoxIssue: ActiveBoxIssue?
 
 enum class ActiveBoxIssue { NOT_FOUND, NOT_WORKING }
 
+/**
+ * The last detection found none of the configured boxes (e.g. on mobile data, or via VPN): the box
+ * in use is only tried, and only now can one be chosen by hand.
+ */
+val UiState.noKnownBoxFound: Boolean
+    get() = boxesSeen?.isEmpty() == true
+
+/** The box answering at the configured address is not the stored one: its serial number differs. */
+class OtherBoxException(val host: String, val boxName: String) :
+    IOException("The FRITZ!Box at $host is not $boxName")
+
 /** How long to wait for the user to confirm on the box before giving up. */
 private const val SECOND_FACTOR_TIMEOUT_MILLIS = 120_000L
 
 /** The user did not confirm on the box in time. */
 class SecondFactorNotConfirmedException : IOException("The action was not confirmed on the FRITZ!Box")
+
+/** The name every FritzBox answers to in its own network. */
+private const val LOCAL_BOX_NAME = "fritz.box"
+
+/** Second detection after one that found none of the configured boxes. */
+private const val DETECT_RETRY_MILLIS = 4_000L
+
+/** Coming to the foreground detects again only if the last detection is at least this old. */
+private const val DETECT_MIN_INTERVAL_MILLIS = 10_000L
 
 /** How long a started dial-help call counts as "cancellable" (the handset rings about this long). */
 private const val DIAL_ACTIVE_MILLIS = 30_000L
@@ -355,6 +378,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                     activeProfileId = profile.id,
                     // It just answered its device description (if not: it is not a FritzBox we can recognise).
                     activeBoxSeen = identity != null,
+                    boxesSeen = if (identity != null) it.boxesSeen.orEmpty() + profile.id else it.boxesSeen,
                     editingProfileId = null,
                     networkNotice = null,
                     phonebooks = emptyList(),
@@ -402,6 +426,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             it.copy(
                 profiles = remaining,
                 activeProfileId = settings.activeProfileId,
+                boxesSeen = it.boxesSeen?.minus(id),
                 settingsSaved = remaining.isNotEmpty(),
                 showConnectionSettings = if (it.editingProfileId == id) false else it.showConnectionSettings,
                 editingProfileId = if (it.editingProfileId == id) null else it.editingProfileId,
@@ -422,29 +447,38 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
 
     private var detectJob: Job? = null
 
+    /** When the last detection started ([SystemClock.elapsedRealtime]), to skip needless repeats. */
+    private var lastDetection = 0L
+
+    /** What a detection found: the configured box of this network, if any, and whether it switched to it. */
+    private data class Detection(val match: BoxProfile?, val switched: Boolean)
+
     /**
-     * Asks the gateway of the current network (and the configured hosts) for their device id and
-     * switches to the matching connection. Returns true if it switched to another box.
+     * Asks the gateway of the current network, "fritz.box" and the configured hosts for their
+     * device id and switches to the matching connection. The box of this very network wins; one
+     * that only answers at its configured host (through a VPN, or at its MyFRITZ address) is used
+     * only when this network has none of the configured boxes.
      */
-    private suspend fun detectBox(): Boolean {
+    private suspend fun detectBox(): Detection {
+        lastDetection = SystemClock.elapsedRealtime()
         val profiles = settings.profiles()
-        if (profiles.isEmpty()) return false
+        if (profiles.isEmpty()) return Detection(null, false)
         val gateway = BoxDiscovery.currentGateway(getApplication<Application>())
-        val hosts = listOfNotNull(gateway, "fritz.box") + profiles.map { it.config.host }
-        val found = BoxDiscovery.identifyAll(hosts)
+        val local = listOfNotNull(gateway, LOCAL_BOX_NAME)
+        val found = BoxDiscovery.identifyAll(local + profiles.map { it.config.host })
         lastFound = found
-        // Boxes saved before this feature have no device id yet: learn it from their host.
-        profiles.filter { it.deviceId == null }.forEach { p ->
-            found.firstOrNull { it.host.equals(p.config.host, ignoreCase = true) }
-                ?.let { settings.updateDeviceId(p.id, it.udn, it.modelName) }
-        }
-        val known = settings.profiles()
-        val match = found.firstNotNullOfOrNull { identity -> known.firstOrNull { it.deviceId == identity.udn } }
+        // A connection without device id learns it only once logged in (see verifyAndLearn): here,
+        // any box answering at its host – even one in a foreign network – would be taken for it.
+        fun matchIn(boxes: List<BoxIdentity>) =
+            boxes.firstNotNullOfOrNull { identity -> profiles.firstOrNull { it.deviceId == identity.udn } }
+        val match = matchIn(found.filter { it.host in local }) ?: matchIn(found)
         val unknown = if (match == null) found.firstOrNull { it.host == gateway } else null
         _state.update {
             it.copy(
-                profiles = known,
-                activeBoxSeen = known.firstOrNull { p -> p.id == settings.activeProfileId }?.let(::seenInNetwork),
+                profiles = profiles,
+                activeBoxSeen = profiles.firstOrNull { p -> p.id == settings.activeProfileId }?.let(::seenInNetwork),
+                // By device id only: a connection without one is not known to be the box at its host.
+                boxesSeen = profiles.filter { p -> found.any { box -> box.udn == p.deviceId } }.map { p -> p.id }.toSet(),
                 // A request that failed in the previous network says nothing about this one.
                 activeBoxWorking = null,
                 networkNotice = unknown?.let { box ->
@@ -455,9 +489,27 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         }
         if (match != null && match.id != settings.activeProfileId) {
             activateProfile(match.id)
-            return true
+            return Detection(match, true)
         }
-        return false
+        return Detection(match, false)
+    }
+
+    /** Right after a network change the box often does not answer yet: one more try a little later. */
+    private suspend fun detectAgainIfNotFound(detection: Detection) {
+        if (detection.match != null) return
+        delay(DETECT_RETRY_MILLIS)
+        detectBox()
+    }
+
+    /**
+     * The app came to the foreground: the network may have changed meanwhile without the callback
+     * being delivered, so detect again – unless that just happened.
+     */
+    fun onForeground() {
+        if (!settings.isConfigured()) return
+        if (SystemClock.elapsedRealtime() - lastDetection < DETECT_MIN_INTERVAL_MILLIS) return
+        if (detectJob?.isActive == true) return
+        detectJob = viewModelScope.launch { detectAgainIfNotFound(detectBox()) }
     }
 
     /** The boxes that answered the last detection; null before the first one. */
@@ -491,7 +543,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         detectJob?.cancel()
         detectJob = viewModelScope.launch {
             delay(1_500) // let the network settle (DHCP, routes)
-            detectBox()
+            detectAgainIfNotFound(detectBox())
         }
     }
 
@@ -760,20 +812,35 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     fun refreshPhones() {
         // Another request is running (e.g. for the previous box): reload once it is done.
         if (_state.value.busy) return runWhenIdle("phones", ::refreshPhones)
-        val profileId = settings.activeProfileId
+        // While a connection is being edited, the request goes to the edited address instead.
+        val profile = settings.activeProfile()?.takeIf { !_state.value.showConnectionSettings }
         runOnBox(uiText(R.string.status_loading_phones)) { dialer ->
-            loadPhones(dialer).also {
-                // Kept up to date, e.g. after a FRITZ!OS update.
-                if (profileId != null) readBoxInfo(dialer)?.let { info ->
-                    settings.updateBoxInfo(profileId, info)
-                    _state.update { it.copy(profiles = settings.profiles()) }
-                }
-            }
+            profile?.let { verifyAndLearn(dialer, it) }
+            loadPhones(dialer)
         }
         preloadBoxSpeedDials()
     }
 
-    /** Model, FRITZ!OS version and serial number: only for display, so a failure (e.g. missing rights) is ignored. */
+    /**
+     * Makes sure the box answering is [profile]'s – its serial number must be the stored one, so a
+     * box merely posing as it (its device id is public) is noticed – and fills in what is missing
+     * or outdated: the device id (of a connection saved while away), model, FRITZ!OS version and
+     * serial number.
+     */
+    private fun verifyAndLearn(dialer: FritzDialer, profile: BoxProfile) {
+        val info = readBoxInfo(dialer)
+        val serial = info?.serialNumber
+        if (serial != null && profile.serialNumber != null && !serial.equals(profile.serialNumber, ignoreCase = true)) {
+            throw OtherBoxException(profile.config.host, profile.name)
+        }
+        info?.let { settings.updateBoxInfo(profile.id, it) }
+        if (profile.deviceId == null) {
+            BoxDiscovery.identify(profile.config.host)?.let { settings.updateDeviceId(profile.id, it.udn, it.modelName) }
+        }
+        _state.update { it.copy(profiles = settings.profiles()) }
+    }
+
+    /** Model, FRITZ!OS version and serial number: optional, so a failure (e.g. missing rights) is ignored. */
     private fun readBoxInfo(dialer: FritzDialer): BoxInfo? = runCatching { dialer.deviceInfo() }.getOrNull()
 
     /**
@@ -980,7 +1047,9 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         if (settings.isConfigured()) {
             // Pick the box of the current network first; if that did not switch (and load), load now.
             viewModelScope.launch {
-                if (!detectBox()) refreshPhones()
+                val detection = detectBox()
+                if (!detection.switched) refreshPhones()
+                detectAgainIfNotFound(detection)
             }
         }
         watchNetwork()

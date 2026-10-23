@@ -72,7 +72,10 @@
 
     <!-- settings overview -->
     <string name="settings_connections">Połączenia z FritzBox</string>
-    <string name="settings_connections_hint">FritzBox sieci, w której jest telefon, jest wybierany automatycznie.</string>
+    <string name="settings_connections_hint">FritzBox sieci, w której jest telefon, jest używany automatycznie. Tylko gdy nie znaleziono tam żadnego z nich, możesz wybrać go samodzielnie.</string>
+    <string name="settings_box_here">Osiągalny</string>
+    <string name="settings_box_not_here">Nieosiągalny</string>
+    <string name="settings_box_never_recognised">Jeszcze nie rozpoznany – dopiero po połączeniu z nim</string>
     <string name="settings_add_box">Dodaj FritzBox</string>
     <string name="settings_in_use">W użyciu</string>
     <string name="settings_in_use_not_found">W użyciu, ale nie znaleziono go w bieżącej sieci</string>
@@ -159,6 +162,8 @@
     <string name="error_empty_user">(pusta)</string>
     <string name="error_not_confirmed_title">Nie potwierdzono</string>
     <string name="error_not_confirmed">FRITZ!Box nie otrzymał potwierdzenia na czas. Dotknij Ponów i potwierdź na urządzeniu (naciśnij jego przycisk lub wybierz pokazany kod na podłączonym telefonie).</string>
+    <string name="error_other_box_title">Inny FritzBox</string>
+    <string name="error_other_box">FritzBox pod adresem %1$s to nie „%2$s”: jego numer seryjny różni się od zapisanego. Jeśli router został wymieniony, usuń to połączenie i dodaj je ponownie.</string>
     <string name="error_confirmation_blocked_title">Potwierdzanie zablokowane</string>
     <string name="error_confirmation_blocked">FRITZ!Box obecnie blokuje potwierdzenia (zbyt wiele prób). Odczekaj kilka minut i spróbuj ponownie.</string>
     <string name="error_confirmation_busy_title">Potwierdzanie w toku</string>
@@ -222,6 +227,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s w tej sieci nie jest skonfigurowany</string>
     <string name="notice_unknown_box_generic">FritzBox w tej sieci nie jest skonfigurowany</string>
+    <string name="notice_no_known_box">Żadnego z twoich FritzBoxów tutaj – próba z %1$s</string>
     <string name="call_log_denied">Android nie pozwolił FritzDial odczytać rejestru połączeń.</string>
     <string name="call_log_failed">Nie udało się odczytać rejestru połączeń telefonu (%1$s). Działa to tylko wtedy, gdy FritzDial nie został zainstalowany z Google Play.</string>
     <string name="call_log_failed_plain">Nie udało się odczytać rejestru połączeń telefonu. Działa to tylko wtedy, gdy FritzDial nie został zainstalowany z Google Play.</string>

@@ -70,9 +70,10 @@ import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 
 /**
- * Settings overview: the configured FritzBoxes (the active one marked; tap to edit, tap the circle
- * of another one to switch to it), "Add FritzBox", the phone book and the recent numbers options. The flag in the top
- * bar opens the language screen.
+ * Settings overview: the configured FritzBoxes (the one in use marked, each with whether it is in
+ * this network; tap to edit), "Add FritzBox", the phone book and the recent numbers options. The
+ * box in use follows the network; only when none of them is found here can one be chosen by hand
+ * (tap its circle). The flag in the top bar opens the language screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +82,8 @@ fun SettingsScreen(
     activeProfileId: String?,
     /** Shown on the box in use: it was not found in this network, or the last request failed. */
     activeIssue: ActiveBoxIssue?,
+    /** The boxes (ids) that answered the last detection; null before the first one. */
+    boxesSeen: Set<String>?,
     networkNotice: UiText?,
     onEditProfile: (String) -> Unit,
     onActivateProfile: (String) -> Unit,
@@ -146,10 +149,14 @@ fun SettingsScreen(
                 )
             }
 
+            // Chosen automatically; by hand only when none of the boxes is in this network.
+            val canChoose = boxesSeen?.isEmpty() == true
             profiles.forEach { profile ->
                 ProfileRow(
                     profile = profile,
                     active = profile.id == activeProfileId,
+                    seen = boxesSeen?.contains(profile.id),
+                    canChoose = canChoose,
                     issue = activeIssue,
                     onEdit = { onEditProfile(profile.id) },
                     onActivate = { onActivateProfile(profile.id) },
@@ -211,20 +218,31 @@ private fun MarkSlot(content: @Composable () -> Unit) {
 }
 
 /**
- * One configured box on a single line: check mark when in use, else a circle to tap to switch to
- * it; then its name. Tapping the line opens its connection page (also to delete it).
+ * One configured box: check mark when in use, else – only when [canChoose] – a circle to tap to
+ * switch to it; then its name and whether it is in this network ([seen]; null = not detected yet).
+ * Tapping the line opens its connection page (also to delete it).
  */
 @Composable
 private fun ProfileRow(
     profile: BoxProfile,
     active: Boolean,
+    seen: Boolean?,
+    canChoose: Boolean,
     issue: ActiveBoxIssue?,
     onEdit: () -> Unit,
     onActivate: () -> Unit,
 ) {
+    val presence = when {
+        // Recognised only by its device id, learned once logged in to it.
+        profile.deviceId == null -> R.string.settings_box_never_recognised
+        seen == true -> R.string.settings_box_here
+        seen == false -> R.string.settings_box_not_here
+        else -> null
+    }
     ListItem(
-        // Just the name, on one line; the details are on the connection page.
+        // The name and where the box is; the details are on the connection page.
         headlineContent = { Text(profile.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        supportingContent = presence?.let { { Text(stringResource(it), maxLines = 1, overflow = TextOverflow.Ellipsis) } },
         leadingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 MarkSlot {
@@ -246,7 +264,7 @@ private fun ProfileRow(
                             contentDescription = stringResource(R.string.settings_in_use),
                             tint = MaterialTheme.colorScheme.primary,
                         )
-                    } else {
+                    } else if (canChoose) {
                         IconButton(onClick = onActivate) {
                             Icon(
                                 CircleOutlineIcon,

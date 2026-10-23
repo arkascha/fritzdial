@@ -74,7 +74,10 @@
 
     <!-- settings overview -->
     <string name="settings_connections">FritzBox connections</string>
-    <string name="settings_connections_hint">The FritzBox of the network the phone is in is selected automatically.</string>
+    <string name="settings_connections_hint">The FritzBox of the network the phone is in is used automatically. Only if none of them is found there can you choose one by hand.</string>
+    <string name="settings_box_here">Reachable</string>
+    <string name="settings_box_not_here">Not reachable</string>
+    <string name="settings_box_never_recognised">Not recognised yet – once connected to it</string>
     <string name="settings_add_box">Add FritzBox</string>
     <string name="settings_in_use">In use</string>
     <string name="settings_in_use_not_found">In use, but not found in the current network</string>
@@ -161,6 +164,8 @@
     <string name="error_empty_user">(empty)</string>
     <string name="error_not_confirmed_title">Not confirmed</string>
     <string name="error_not_confirmed">The FRITZ!Box did not receive the confirmation in time. Tap Retry and confirm on the box (press its button, or dial the shown code on a connected phone).</string>
+    <string name="error_other_box_title">Different FritzBox</string>
+    <string name="error_other_box">The FritzBox at %1$s is not “%2$s”: its serial number differs from the stored one. If the box was replaced, delete this connection and add it again.</string>
     <string name="error_confirmation_blocked_title">Confirmation blocked</string>
     <string name="error_confirmation_blocked">The FRITZ!Box currently blocks confirmations (too many attempts). Wait a few minutes and try again.</string>
     <string name="error_confirmation_busy_title">Confirmation busy</string>
@@ -218,6 +223,7 @@
     <!-- notes -->
     <string name="notice_unknown_box">%1$s in this network is not configured</string>
     <string name="notice_unknown_box_generic">A FritzBox in this network is not configured</string>
+    <string name="notice_no_known_box">None of your FritzBoxes here – trying %1$s</string>
     <string name="call_log_denied">Android did not allow FritzDial to read the call log.</string>
     <string name="call_log_failed">The phone’s call log could not be read (%1$s). This only works when FritzDial was not installed from Google Play.</string>
     <string name="call_log_failed_plain">The phone’s call log could not be read. This only works when FritzDial was not installed from Google Play.</string>
