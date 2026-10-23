@@ -2,6 +2,7 @@ package info.christianreiner.fritzdial.data
 
 import android.content.Context
 import androidx.core.content.edit
+import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import org.json.JSONArray
 import org.json.JSONObject
@@ -14,6 +15,7 @@ import java.util.UUID
  * the connection is saved and used to recognise the box of the current network automatically.
  * [phonebooksEnabled], [callListEnabled] and [speedDialsEnabled] switch, for this box, whether its
  * phone books, its call list and the speed dials set up in its phone books are used (on by default).
+ * [model], [softwareVersion] and [serialNumber] are what the box last said about itself (see [BoxInfo]).
  */
 data class BoxProfile(
     val id: String = UUID.randomUUID().toString(),
@@ -21,10 +23,14 @@ data class BoxProfile(
     val config: FritzConfig,
     val deviceId: String? = null,
     val model: String? = null,
+    val softwareVersion: String? = null,
+    val serialNumber: String? = null,
     val phonebooksEnabled: Boolean = true,
     val callListEnabled: Boolean = true,
     val speedDialsEnabled: Boolean = true,
-)
+) {
+    val info: BoxInfo get() = BoxInfo(model, softwareVersion, serialNumber)
+}
 
 /** Persists the FritzBox connections (passwords encrypted) and the app options. */
 class SettingsRepository(context: Context) {
@@ -69,6 +75,17 @@ class SettingsRepository(context: Context) {
     fun updateDeviceId(id: String, deviceId: String, model: String?) {
         val profile = profiles().firstOrNull { it.id == id } ?: return
         saveProfile(profile.copy(deviceId = deviceId, model = model ?: profile.model))
+    }
+
+    /** Stores what the box of a connection reported about itself; unknown values are kept. */
+    fun updateBoxInfo(id: String, info: BoxInfo) {
+        val profile = profiles().firstOrNull { it.id == id } ?: return
+        val updated = profile.copy(
+            model = info.model ?: profile.model,
+            softwareVersion = info.softwareVersion ?: profile.softwareVersion,
+            serialNumber = info.serialNumber ?: profile.serialNumber,
+        )
+        if (updated != profile) saveProfile(updated)
     }
 
     var activeProfileId: String?
@@ -140,6 +157,8 @@ class SettingsRepository(context: Context) {
         p.config.trustedCertDer?.let { put("cert", it) }
         p.deviceId?.let { put("deviceId", it) }
         p.model?.let { put("model", it) }
+        p.softwareVersion?.let { put("softwareVersion", it) }
+        p.serialNumber?.let { put("serialNumber", it) }
         put("phonebooks", p.phonebooksEnabled)
         put("callList", p.callListEnabled)
         put("speedDials", p.speedDialsEnabled)
@@ -159,6 +178,8 @@ class SettingsRepository(context: Context) {
         ),
         deviceId = o.optString("deviceId").takeIf { it.isNotEmpty() },
         model = o.optString("model").takeIf { it.isNotEmpty() },
+        softwareVersion = o.optString("softwareVersion").takeIf { it.isNotEmpty() },
+        serialNumber = o.optString("serialNumber").takeIf { it.isNotEmpty() },
         // Connections saved before these options existed keep using both.
         phonebooksEnabled = o.optBoolean("phonebooks", true),
         callListEnabled = o.optBoolean("callList", true),

@@ -108,6 +108,11 @@
     <string name="connection_help">Sulla box, attiva «Consenti l’accesso alle applicazioni» (Rete domestica › Rete › Impostazioni di rete) e l’«Aiuto alla selezione» (Telefonia › Chiamate › Aiuto alla selezione). L’utente ha bisogno dell’autorizzazione per la telefonia. Se accedi solo con la password, usa il nome utente generato automaticamente indicato in Sistema › Utenti FRITZ!Box.</string>
     <string name="connection_connecting">Connessione…</string>
     <string name="connection_save">Salva e connetti</string>
+    <string name="connection_box_info">Dati del dispositivo</string>
+    <string name="connection_box_model">Modello: %1$s</string>
+    <string name="connection_box_fritzos">FRITZ!OS: %1$s</string>
+    <string name="connection_box_serial">Numero di serie: %1$s</string>
+    <string name="connection_box_info_unknown">Non ancora noto. Viene letto dal box alla prossima connessione, se il suo utente ne ha i diritti.</string>
     <string name="connection_trusted_cert">Certificato attendibile</string>
     <string name="connection_no_cert">Nessuno. Con una connessione HTTPS ti verrà chiesto di confermare il certificato del router.</string>
     <string name="connection_cert_fingerprint">SHA-256 %1$s</string>

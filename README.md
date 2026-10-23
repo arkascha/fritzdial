@@ -46,6 +46,12 @@ the app name on the dialer. The mark turns into a red warning triangle when that
 the last detection (see below), or when the last request to it failed; a network change clears the
 latter until the next request.
 
+The connection page also shows the box' **device details** – model, FRITZ!OS version and serial number
+(TR-064 `DeviceInfo` `GetInfo`) – to tell boxes apart. They are read when the connection is saved and
+again whenever the phones are loaded, so they stay current after a FRITZ!OS update. Reading them is
+optional: if the box' user lacks the rights for it, they are simply missing. What AVM calls the serial
+number is in fact the box' MAC address, not the number on its label.
+
 The box of the current network is selected automatically – at start and whenever the phone's network
 changes. Every FritzBox publishes a public device description (`http://<box>:49000/tr64desc.xml`) with a
 unique device id; FritzDial records it when a connection is saved and asks the network's gateway (and
@@ -162,7 +168,7 @@ Contacts or a web page; the number is pre-filled.
 | `tr064/DigestAuthenticator.kt` | HTTP Digest (MD5, qop=auth) for OkHttp |
 | `tr064/Tr064Client.kt` | Generic SOAP call over HTTP/HTTPS + response / UPnP fault parsing |
 | `tr064/CertificateTrust.kt` | Pinning trust manager, certificate details, "untrusted certificate" exception |
-| `tr064/FritzDialer.kt` | `X_VoIP` actions: `X_AVM-DE_GetPhonePort`, `X_AVM-DE_DialGetConfig`, `X_AVM-DE_DialSetConfig`, `X_AVM-DE_DialNumber`, `X_AVM-DE_DialHangup` |
+| `tr064/FritzDialer.kt` | `X_VoIP` actions: `X_AVM-DE_GetPhonePort`, `X_AVM-DE_DialGetConfig`, `X_AVM-DE_DialSetConfig`, `X_AVM-DE_DialNumber`, `X_AVM-DE_DialHangup`; device details (`DeviceInfo` `GetInfo`) |
 | `tr064/BoxDiscovery.kt` | Recognises the FritzBox of the current network (gateway, `tr64desc.xml` device id) |
 | `tr064/Phonebooks.kt` | Phone book list / download / XML parsing (`X_AVM-DE_OnTel`) |
 | `data/DeviceContacts.kt` | The phone's own contacts as an extra phone book (`READ_CONTACTS`) |
@@ -174,7 +180,7 @@ Contacts or a web page; the number is pre-filled.
 | `res/values*/strings.xml` | All UI texts: English (`values/`) and the translations (`values-de/`, …) |
 
 Unit tests (`./gradlew test`) cover digest computation, envelope building, number sanitising,
-the call list's date format, merging of the recent numbers and certificate pinning.
+the call list's date format, the device details, merging of the recent numbers and certificate pinning.
 
 ## Notes / ideas
 

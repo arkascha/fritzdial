@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.clickable
@@ -65,6 +66,7 @@ import info.christianreiner.fritzdial.data.AppLanguage
 import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
+import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 
 /**
@@ -282,7 +284,7 @@ private fun ConfirmDeleteDialog(name: String, onConfirm: () -> Unit, onDismiss: 
 
 /**
  * Router connection: host, port, HTTPS, user, password, whether the box' phone books, call list and
- * speed dials are used, and the trusted certificate.
+ * speed dials are used, what the box said about itself, and the trusted certificate.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -301,6 +303,8 @@ fun ConnectionSettingsScreen(
     initialPhonebooksEnabled: Boolean,
     initialCallListEnabled: Boolean,
     initialSpeedDialsEnabled: Boolean,
+    /** Model, FRITZ!OS version and serial number as last read from the box; null for a new one. */
+    boxInfo: BoxInfo?,
     onSave: (
         config: FritzConfig,
         name: String,
@@ -451,6 +455,11 @@ fun ConnectionSettingsScreen(
                 Text(status.asString(), style = MaterialTheme.typography.bodySmall)
             }
 
+            if (boxInfo != null) {
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                BoxInfoSection(boxInfo)
+            }
+
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Text(stringResource(R.string.connection_trusted_cert), style = MaterialTheme.typography.titleSmall)
             if (trustedFingerprint == null) {
@@ -492,6 +501,30 @@ fun ConnectionSettingsScreen(
             },
             onDismiss = { confirmDelete = false },
         )
+    }
+}
+
+/** What the box reported about itself, to tell it apart from others; selectable for copying. */
+@Composable
+private fun BoxInfoSection(info: BoxInfo) {
+    Text(stringResource(R.string.connection_box_info), style = MaterialTheme.typography.titleSmall)
+    val lines = listOfNotNull(
+        info.model?.let { stringResource(R.string.connection_box_model, it) },
+        info.fritzOsVersion?.let { stringResource(R.string.connection_box_fritzos, it) },
+        info.serialNumber?.let { stringResource(R.string.connection_box_serial, it) },
+    )
+    if (lines.isEmpty()) {
+        Text(
+            stringResource(R.string.connection_box_info_unknown),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    } else {
+        SelectionContainer {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                lines.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
+            }
+        }
     }
 }
 

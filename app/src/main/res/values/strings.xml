@@ -110,6 +110,11 @@
     <string name="connection_help">On the box, enable “Allow access for applications” (Home Network › Network › Network Settings) and “Dial help” (Telephony › Calls › Dial Help). The user needs telephony permission. If you log in with password only, use the auto-generated user name shown under System › FRITZ!Box Users.</string>
     <string name="connection_connecting">Connecting…</string>
     <string name="connection_save">Save &amp; connect</string>
+    <string name="connection_box_info">Device details</string>
+    <string name="connection_box_model">Model: %1$s</string>
+    <string name="connection_box_fritzos">FRITZ!OS: %1$s</string>
+    <string name="connection_box_serial">Serial number: %1$s</string>
+    <string name="connection_box_info_unknown">Not known yet. Read from the box on the next connection – unless its user lacks the rights for it.</string>
     <string name="connection_trusted_cert">Trusted certificate</string>
     <string name="connection_no_cert">None. When connecting via HTTPS you will be asked to confirm the router’s certificate.</string>
     <string name="connection_cert_fingerprint">SHA-256 %1$s</string>

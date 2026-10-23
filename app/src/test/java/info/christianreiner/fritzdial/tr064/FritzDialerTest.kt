@@ -40,4 +40,27 @@ class FritzDialerTest {
         )
         assertTrue(xml.contains("<s:Header><avm:token xmlns:avm=\"avm.de\" mustUnderstand=\"1\">abc-123</avm:token></s:Header><s:Body>"))
     }
+
+    @Test
+    fun `reads the box' details from GetInfo`() {
+        val info = BoxInfo.from(
+            mapOf(
+                "NewModelName" to "FRITZ!Box 7590",
+                "NewSoftwareVersion" to "154.07.57",
+                "NewSerialNumber" to "E0286D123456",
+                "NewHardwareVersion" to "FRITZ!Box 7590",
+            )
+        )
+        assertEquals(BoxInfo("FRITZ!Box 7590", "154.07.57", "E0286D123456"), info)
+        assertEquals(BoxInfo(null, null, null), BoxInfo.from(mapOf("NewModelName" to " ")))
+    }
+
+    @Test
+    fun `shows the FRITZ!OS version without the product number`() {
+        assertEquals("7.57", BoxInfo(null, "154.07.57", null).fritzOsVersion)
+        assertEquals("8.00-120123", BoxInfo(null, "164.08.00-120123", null).fritzOsVersion)
+        // An unexpected format is shown as it is.
+        assertEquals("7.57", BoxInfo(null, "7.57", null).fritzOsVersion)
+        assertEquals(null, BoxInfo(null, null, null).fritzOsVersion)
+    }
 }

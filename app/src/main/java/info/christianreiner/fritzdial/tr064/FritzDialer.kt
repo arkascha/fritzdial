@@ -76,6 +76,11 @@ class FritzDialer(
         if (getDialPhone() != phoneName) setDialPhone(phoneName)
     }
 
+    /** Model, FRITZ!OS version and serial number of the box (TR-064 `DeviceInfo` `GetInfo`). */
+    @Throws(IOException::class)
+    fun deviceInfo(): BoxInfo =
+        BoxInfo.from(client.call(DEVICE_INFO_SERVICE_TYPE, DEVICE_INFO_CONTROL_URL, "GetInfo"))
+
     /** All phone books of the box with their contacts (see [FritzPhonebooks]). */
     @Throws(IOException::class)
     fun loadPhonebooks(): List<Phonebook> = FritzPhonebooks(config, authToken).loadAll()
@@ -120,6 +125,8 @@ class FritzDialer(
         const val CONTROL_URL = "/upnp/control/x_voip"
         const val AUTH_SERVICE_TYPE = "urn:dslforum-org:service:X_AVM-DE_Auth:1"
         const val AUTH_CONTROL_URL = "/upnp/control/x_auth"
+        const val DEVICE_INFO_SERVICE_TYPE = "urn:dslforum-org:service:DeviceInfo:1"
+        const val DEVICE_INFO_CONTROL_URL = "/upnp/control/deviceinfo"
         const val STATE_WAITING = "waitingforauth"
         private const val MAX_PHONE_PORTS = 40
 
@@ -140,6 +147,34 @@ class FritzDialer(
         /** Keeps digits and the characters the box understands (+ * #); drops spaces, dashes, brackets. */
         fun sanitizeNumber(raw: String): String =
             raw.filter { it.isDigit() || it == '+' || it == '*' || it == '#' }
+    }
+}
+
+/**
+ * What the box reports about itself, to tell boxes apart: e.g. "FRITZ!Box 7590", "164.07.57" and
+ * "E0286D123456" (AVM's "serial number", in fact the box' MAC address without separators).
+ */
+data class BoxInfo(
+    val model: String?,
+    /** Raw version: the box' product number, then the FRITZ!OS version (see [fritzOsVersion]). */
+    val softwareVersion: String?,
+    val serialNumber: String?,
+) {
+    /** FRITZ!OS version for display: "164.07.57" → "7.57", "164.08.00-120123" → "8.00-120123". */
+    val fritzOsVersion: String?
+        get() = softwareVersion?.let { raw ->
+            VERSION.matchEntire(raw)?.let { m -> "${m.groupValues[1].toInt()}.${m.groupValues[2]}${m.groupValues[3]}" }
+                ?: raw
+        }
+
+    companion object {
+        private val VERSION = Regex("""\d+\.(\d+)\.(\d+)(.*)""")
+
+        fun from(arguments: Map<String, String>) = BoxInfo(
+            model = arguments["NewModelName"]?.takeIf { it.isNotBlank() },
+            softwareVersion = arguments["NewSoftwareVersion"]?.takeIf { it.isNotBlank() },
+            serialNumber = arguments["NewSerialNumber"]?.takeIf { it.isNotBlank() },
+        )
     }
 }
 

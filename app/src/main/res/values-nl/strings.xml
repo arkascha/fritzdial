@@ -108,6 +108,11 @@
     <string name="connection_help">Schakel op de box “Toegang voor toepassingen toestaan” in (Thuisnetwerk › Netwerk › Netwerkinstellingen) en de “Kieshulp” (Telefonie › Gesprekken › Kieshulp). De gebruiker heeft het recht voor telefonie nodig. Als je alleen met een wachtwoord inlogt, gebruik dan de automatisch aangemaakte gebruikersnaam onder Systeem › FRITZ!Box-gebruikers.</string>
     <string name="connection_connecting">Verbinden…</string>
     <string name="connection_save">Opslaan &amp; verbinden</string>
+    <string name="connection_box_info">Apparaatgegevens</string>
+    <string name="connection_box_model">Model: %1$s</string>
+    <string name="connection_box_fritzos">FRITZ!OS: %1$s</string>
+    <string name="connection_box_serial">Serienummer: %1$s</string>
+    <string name="connection_box_info_unknown">Nog niet bekend. Wordt bij de volgende verbinding van de box gelezen – als de gebruiker daarvoor de rechten heeft.</string>
     <string name="connection_trusted_cert">Vertrouwd certificaat</string>
     <string name="connection_no_cert">Geen. Bij een verbinding via HTTPS word je gevraagd het certificaat van de router te bevestigen.</string>
     <string name="connection_cert_fingerprint">SHA-256 %1$s</string>

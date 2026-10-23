@@ -15,6 +15,7 @@ import info.christianreiner.fritzdial.data.SpeedDial
 import info.christianreiner.fritzdial.data.SpeedDials
 import info.christianreiner.fritzdial.tr064.BoxDiscovery
 import info.christianreiner.fritzdial.tr064.BoxIdentity
+import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.CertificateInfo
 import info.christianreiner.fritzdial.tr064.FritzConfig
 import info.christianreiner.fritzdial.tr064.FritzDialer
@@ -330,13 +331,16 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             val message = loadPhones(dialer)
             // Learn the box' device id, so it can be recognised automatically later.
             val identity = BoxDiscovery.identify(config.host)
+            val info = readBoxInfo(dialer)
             val previous = settings.profiles().firstOrNull { it.id == editingId }
             val profile = BoxProfile(
                 id = editingId ?: java.util.UUID.randomUUID().toString(),
                 name = name.trim().ifEmpty { identity?.friendlyName ?: previous?.name ?: config.host },
                 config = _state.value.config,
                 deviceId = identity?.udn ?: previous?.deviceId,
-                model = identity?.modelName ?: previous?.model,
+                model = info?.model ?: identity?.modelName ?: previous?.model,
+                softwareVersion = info?.softwareVersion ?: previous?.softwareVersion,
+                serialNumber = info?.serialNumber ?: previous?.serialNumber,
                 phonebooksEnabled = phonebooksEnabled,
                 callListEnabled = callListEnabled,
                 speedDialsEnabled = speedDialsEnabled,
@@ -756,9 +760,21 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     fun refreshPhones() {
         // Another request is running (e.g. for the previous box): reload once it is done.
         if (_state.value.busy) return runWhenIdle("phones", ::refreshPhones)
-        runOnBox(uiText(R.string.status_loading_phones)) { dialer -> loadPhones(dialer) }
+        val profileId = settings.activeProfileId
+        runOnBox(uiText(R.string.status_loading_phones)) { dialer ->
+            loadPhones(dialer).also {
+                // Kept up to date, e.g. after a FRITZ!OS update.
+                if (profileId != null) readBoxInfo(dialer)?.let { info ->
+                    settings.updateBoxInfo(profileId, info)
+                    _state.update { it.copy(profiles = settings.profiles()) }
+                }
+            }
+        }
         preloadBoxSpeedDials()
     }
+
+    /** Model, FRITZ!OS version and serial number: only for display, so a failure (e.g. missing rights) is ignored. */
+    private fun readBoxInfo(dialer: FritzDialer): BoxInfo? = runCatching { dialer.deviceInfo() }.getOrNull()
 
     /**
      * Box requests that came in while another one was running (one per [runWhenIdle] key, so

@@ -134,6 +134,7 @@ class MainActivity : ComponentActivity() {
                             initialPhonebooksEnabled = edited?.phonebooksEnabled ?: true,
                             initialCallListEnabled = edited?.callListEnabled ?: true,
                             initialSpeedDialsEnabled = edited?.speedDialsEnabled ?: true,
+                            boxInfo = edited?.info,
                             onSave = viewModel::saveSettings,
                             onBack = viewModel::closeConnectionSettings,
                             onDelete = state.editingProfileId?.let { id -> { viewModel.deleteProfile(id) } },
