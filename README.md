@@ -24,7 +24,9 @@ dependencies on first sync. If it offers an AGP / dependency upgrade, accepting 
 ## Using the app
 
 1. On first start, enter host (`fritz.box` or `192.168.178.1`), user and password. Optionally switch on
-   **Use HTTPS** (port changes from `49000` to `49443` automatically).
+   **Use HTTPS**: the port changes from `49000` to the box' HTTPS port – the one the box reports
+   (TR-064 `DeviceInfo` `GetSecurityPort`, asked over plain HTTP without login), else the usual `49443`.
+   A port entered by hand is kept.
    The **user name** field offers the users of the box once host, port and HTTPS are entered
    (TR-064 `LANConfigSecurity` `X_AVM-DE_GetUserList`), the one who logged in last marked – handy for the
    auto-generated name. The box is asked without credentials, so no failed login is counted; with HTTPS

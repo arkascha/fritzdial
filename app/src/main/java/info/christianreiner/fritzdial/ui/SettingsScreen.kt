@@ -353,6 +353,10 @@ fun ConnectionSettingsScreen(
     boxUsers: List<BoxUser>,
     /** Asks the box at the entered host, port and HTTPS setting for its users. */
     onLookUpUsers: (FritzConfig) -> Unit,
+    /** The HTTPS port the box at the entered host reported, if it did. */
+    securityPort: SecurityPort?,
+    /** Asks the box at the entered host for its HTTPS port. */
+    onLookUpSecurityPort: (String) -> Unit,
     onSave: (
         config: FritzConfig,
         name: String,
@@ -385,6 +389,24 @@ fun ConnectionSettingsScreen(
         if (!valid) return@LaunchedEffect
         delay(USER_LOOKUP_DELAY_MILLIS)
         onLookUpUsers(initial.copy(host = host.trim(), port = portValue ?: FritzConfig.HTTP_PORT, useHttps = useHttps))
+    }
+
+    // With HTTPS, ask the box on which port it talks it, rather than assume the usual one.
+    LaunchedEffect(host, useHttps) {
+        if (!useHttps || host.isBlank()) return@LaunchedEffect
+        delay(USER_LOOKUP_DELAY_MILLIS)
+        onLookUpSecurityPort(host.trim())
+    }
+    // The port the box reported for the entered host, if any.
+    val boxHttpsPort = securityPort?.takeIf { it.host == host.trim() }?.port
+    // Taken over unless the user chose a port of their own (anything but the usual ones).
+    var suggestedPort by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(boxHttpsPort, useHttps) {
+        val reported = boxHttpsPort?.toString() ?: return@LaunchedEffect
+        if (useHttps && port in setOf(FritzConfig.HTTP_PORT.toString(), FritzConfig.HTTPS_PORT.toString(), suggestedPort)) {
+            port = reported
+            suggestedPort = reported
+        }
     }
 
     Scaffold(
@@ -425,7 +447,7 @@ fun ConnectionSettingsScreen(
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.connection_https), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        stringResource(R.string.connection_https_hint, FritzConfig.HTTPS_PORT),
+                        stringResource(R.string.connection_https_hint, boxHttpsPort ?: FritzConfig.HTTPS_PORT),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -436,8 +458,8 @@ fun ConnectionSettingsScreen(
                         useHttps = checked
                         // Swap the port along with the protocol unless the user chose a custom one.
                         if (checked && port == FritzConfig.HTTP_PORT.toString()) {
-                            port = FritzConfig.HTTPS_PORT.toString()
-                        } else if (!checked && port == FritzConfig.HTTPS_PORT.toString()) {
+                            port = (boxHttpsPort ?: FritzConfig.HTTPS_PORT).toString()
+                        } else if (!checked && port in setOf(FritzConfig.HTTPS_PORT.toString(), suggestedPort)) {
                             port = FritzConfig.HTTP_PORT.toString()
                         }
                     },
@@ -446,6 +468,9 @@ fun ConnectionSettingsScreen(
             OutlinedTextField(
                 value = port, onValueChange = { port = it.filter(Char::isDigit) },
                 label = { Text(stringResource(R.string.connection_port)) },
+                supportingText = if (useHttps && boxHttpsPort != null && port == boxHttpsPort.toString()) {
+                    { Text(stringResource(R.string.connection_port_from_box)) }
+                } else null,
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )

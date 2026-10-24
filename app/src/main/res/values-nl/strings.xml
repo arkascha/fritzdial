@@ -102,6 +102,7 @@
     <string name="connection_https">HTTPS gebruiken</string>
     <string name="connection_https_hint">Versleutelde verbinding (poort %1$d). Het zelfondertekende certificaat van de box moet één keer worden bevestigd.</string>
     <string name="connection_port">TR-064-poort</string>
+    <string name="connection_port_from_box">De HTTPS-poort die deze FritzBox heeft gemeld</string>
     <string name="connection_user">FRITZ!Box-gebruikersnaam</string>
     <string name="connection_user_last">Laatst aangemeld</string>
     <string name="connection_password">Wachtwoord</string>

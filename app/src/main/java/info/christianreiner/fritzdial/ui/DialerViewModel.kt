@@ -79,6 +79,8 @@ data class UiState(
     val editingName: String = "",
     /** Connection page: the users of the box at the entered address, to choose from (empty = none known). */
     val boxUsers: List<BoxUser> = emptyList(),
+    /** Connection page: the HTTPS port the box at the entered host reported (null = not known). */
+    val securityPort: SecurityPort? = null,
     /**
      * Whether the box in use answered the last detection in the current network (null = not
      * detected yet), and whether the last request to it worked (null = none since it became active).
@@ -154,6 +156,9 @@ val UiState.activeBoxIssue: ActiveBoxIssue?
     }
 
 enum class ActiveBoxIssue { NOT_FOUND, NOT_WORKING }
+
+/** The HTTPS port the box at [host] reported. */
+data class SecurityPort(val host: String, val port: Int)
 
 /**
  * The last detection found none of the configured boxes (e.g. on mobile data, or via VPN): the box
@@ -302,6 +307,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             editingName = "",
             config = FritzConfig(),
             boxUsers = emptyList(),
+            securityPort = null,
         )
     }
 
@@ -315,6 +321,7 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
                 editingName = profile.name,
                 config = profile.config,
                 boxUsers = emptyList(),
+                securityPort = null,
             )
         }
     }
@@ -333,6 +340,17 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
         usersJob = viewModelScope.launch {
             val users = withContext(Dispatchers.IO) { runCatching { BoxUsers.list(config) }.getOrNull() }
             if (users != null && _state.value.showConnectionSettings) _state.update { it.copy(boxUsers = users) }
+        }
+    }
+
+    private var securityPortJob: Job? = null
+
+    /** Asks the box at [host] (entered on the connection page) on which port it talks HTTPS. */
+    fun lookUpSecurityPort(host: String) {
+        securityPortJob?.cancel()
+        securityPortJob = viewModelScope.launch {
+            val port = withContext(Dispatchers.IO) { BoxDiscovery.securityPort(host) } ?: return@launch
+            if (_state.value.showConnectionSettings) _state.update { it.copy(securityPort = SecurityPort(host, port)) }
         }
     }
 

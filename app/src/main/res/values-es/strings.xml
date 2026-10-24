@@ -102,6 +102,7 @@
     <string name="connection_https">Usar HTTPS</string>
     <string name="connection_https_hint">Conexión cifrada (puerto %1$d). El certificado autofirmado de la box debe confirmarse una vez.</string>
     <string name="connection_port">Puerto TR-064</string>
+    <string name="connection_port_from_box">El puerto HTTPS que indicó esta FritzBox</string>
     <string name="connection_user">Nombre de usuario de la FRITZ!Box</string>
     <string name="connection_user_last">Último inicio de sesión</string>
     <string name="connection_password">Contraseña</string>

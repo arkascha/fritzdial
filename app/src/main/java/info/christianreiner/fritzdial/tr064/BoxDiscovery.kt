@@ -58,6 +58,16 @@ object BoxDiscovery {
         }
     }.getOrNull()
 
+    /**
+     * The port on which the box at [host] talks HTTPS (TR-064 `DeviceInfo` `GetSecurityPort`, usually
+     * 49443). Asked over plain HTTP without login, as the box allows; null if no box answers.
+     */
+    fun securityPort(host: String): Int? = runCatching {
+        Tr064Client(FritzConfig(host = host, port = FritzConfig.HTTP_PORT))
+            .call(FritzDialer.DEVICE_INFO_SERVICE_TYPE, FritzDialer.DEVICE_INFO_CONTROL_URL, "GetSecurityPort")["NewSecurityPort"]
+            ?.trim()?.toIntOrNull()?.takeIf { it in 1..65535 }
+    }.getOrNull()
+
     /** IPv4 gateway of the current network – normally the FritzBox itself. */
     suspend fun currentGateway(context: Context): String? = withContext(Dispatchers.IO) {
         val cm = context.getSystemService(ConnectivityManager::class.java) ?: return@withContext null

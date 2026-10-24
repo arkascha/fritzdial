@@ -145,6 +145,8 @@ class MainActivity : ComponentActivity() {
                             boxInfo = edited?.info,
                             dialingCodes = edited?.dialingCodes,
                             boxUsers = state.boxUsers,
+                            securityPort = state.securityPort,
+                            onLookUpSecurityPort = viewModel::lookUpSecurityPort,
                             onLookUpUsers = viewModel::lookUpBoxUsers,
                             onSave = viewModel::saveSettings,
                             onBack = viewModel::closeConnectionSettings,
