@@ -255,13 +255,14 @@
     <string name="connection_speed_dials_hint">The speed dials set up in this FritzBox’s phone books (00 to 99, as dialled on its handsets with **7). To use one, tap the first digit in the dialer and long-press the second. Also works with the phone books switched off.</string>
 
     <!-- quick settings tiles -->
-    <string name="tile_redial">Redial</string>
+    <string name="tile_redial">FritzDial redial</string>
     <string name="tile_redial_none">Nothing dialled yet</string>
+    <string name="tile_no_box">No FritzBox reachable</string>
     <string name="settings_tiles">Quick settings tiles</string>
     <string name="settings_tile_add">Add “%1$s”</string>
     <string name="settings_tile_added">“%1$s” was added to the quick settings.</string>
     <string name="settings_tile_already_added">“%1$s” is already in the quick settings.</string>
     <string name="settings_tile_not_added">“%1$s” was not added.</string>
     <string name="settings_tile_failed">Android could not add “%1$s”.</string>
-    <string name="settings_tiles_by_hand">To add the tiles “FritzDial” and “Redial” by hand: pull down the notification shade twice, tap the pencil (Edit) and drag them into your tiles.</string>
+    <string name="settings_tiles_by_hand">To add the tiles “FritzDial” and “FritzDial redial” by hand: pull down the notification shade twice, tap the pencil (Edit) and drag them into your tiles.</string>
 </resources>

@@ -9,6 +9,7 @@ import android.net.Network
 import android.os.SystemClock
 import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.data.BoxProfile
+import info.christianreiner.fritzdial.data.BoxRecognition
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.data.SettingsRepository
@@ -179,9 +180,6 @@ private const val SECOND_FACTOR_TIMEOUT_MILLIS = 120_000L
 
 /** The user did not confirm on the box in time. */
 class SecondFactorNotConfirmedException : IOException("The action was not confirmed on the FRITZ!Box")
-
-/** The name every FritzBox answers to in its own network. */
-private const val LOCAL_BOX_NAME = "fritz.box"
 
 /** Second detection after one that found none of the configured boxes. */
 private const val DETECT_RETRY_MILLIS = 4_000L
@@ -488,24 +486,19 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
     private data class Detection(val match: BoxProfile?, val switched: Boolean)
 
     /**
-     * Asks the gateway of the current network, "fritz.box" and the configured hosts for their
-     * device id and switches to the matching connection. The box of this very network wins; one
-     * that only answers at its configured host (through a VPN, or at its MyFRITZ address) is used
-     * only when this network has none of the configured boxes.
+     * Looks for the configured boxes in the current network (see [BoxRecognition.recognise]) and
+     * switches to the one found. A connection without device id learns it only once logged in (see
+     * verifyAndLearn).
      */
     private suspend fun detectBox(): Detection {
         lastDetection = SystemClock.elapsedRealtime()
         val profiles = settings.profiles()
         if (profiles.isEmpty()) return Detection(null, false)
-        val gateway = BoxDiscovery.currentGateway(getApplication<Application>())
-        val local = listOfNotNull(gateway, LOCAL_BOX_NAME)
-        val found = BoxDiscovery.identifyAll(local + profiles.map { it.config.host })
+        val recognition = BoxRecognition.recognise(getApplication(), profiles)
+        val found = recognition.found
+        val gateway = recognition.gateway
+        val match = recognition.match
         lastFound = found
-        // A connection without device id learns it only once logged in (see verifyAndLearn): here,
-        // any box answering at its host – even one in a foreign network – would be taken for it.
-        fun matchIn(boxes: List<BoxIdentity>) =
-            boxes.firstNotNullOfOrNull { identity -> profiles.firstOrNull { it.deviceId == identity.udn } }
-        val match = matchIn(found.filter { it.host in local }) ?: matchIn(found)
         val unknown = if (match == null) found.firstOrNull { it.host == gateway } else null
         _state.update {
             it.copy(

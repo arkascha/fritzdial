@@ -197,8 +197,10 @@ has a button for each, and Android asks whether to add it. A tile already there 
 instead – Android cannot be asked, so each tile notes when it is added or removed (and when it is shown); otherwise (or if that fails) pull down the
 shade twice, tap the pencil and drag them into your tiles – apps' tiles are usually at the very end:
 
-- **FritzDial** opens the dialer; from Android 10 on its subtitle names the FritzBox in use.
-- **Redial** opens the dialer with the number dialled last already entered, shown as its subtitle.
+- **FritzDial** opens the dialer; from Android 10 on its subtitle names the FritzBox reachable from
+  the current network – looked for each time the shade is pulled down, as the app does – or says
+  *No FritzBox reachable*.
+- **FritzDial redial** opens the dialer with the number dialled last already entered, shown as its subtitle.
   It does not dial by itself – a tap in the shade is easily made by accident – so the green button
   still has to be pressed. The tile is greyed out until something was dialled.
 
@@ -218,11 +220,12 @@ Contacts or a web page; the number is pre-filled.
 | `tr064/BoxUsers.kt` | The box' users, offered for the user name (`LANConfigSecurity` `X_AVM-DE_GetUserList`) |
 | `tr064/BoxDiscovery.kt` | Recognises the FritzBox of the current network (gateway, `tr64desc.xml` device id) |
 | `tr064/Phonebooks.kt` | Phone book list / download / XML parsing (`X_AVM-DE_OnTel`) |
-| `tile/Tiles.kt` | Quick settings tiles "FritzDial" and "Redial" |
+| `tile/Tiles.kt` | Quick settings tiles "FritzDial" and "FritzDial redial" |
 | `data/DeviceContacts.kt` | The phone's own contacts as an extra phone book (`READ_CONTACTS`) |
 | `tr064/CallList.kt` | Dialled, received and missed calls from the box' call list (`X_AVM-DE_OnTel` `GetCallList`, XML export) |
 | `data/DeviceCallLog.kt` | The phone's own dialled, received and missed calls from the Android call log (`READ_CALL_LOG`) |
 | `data/AppLanguage.kt` | UI language: system or chosen (per-app language on Android 13+, own handling before) |
+| `data/BoxRecognition.kt` | Which configured FritzBox is reachable from the current network (app and tile) |
 | `data/SettingsRepository.kt` | FritzBox connections (passwords encrypted via Android Keystore) and options |
 | `ui/` | ViewModel and Compose screens (dialer, settings, certificate dialogs); `UiText` carries ViewModel texts as resources |
 | `res/values*/strings.xml` | All UI texts: English (`values/`) and the translations (`values-de/`, …) |

@@ -15,13 +15,23 @@ import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
 import info.christianreiner.fritzdial.MainActivity
 import info.christianreiner.fritzdial.R
+import info.christianreiner.fritzdial.data.BoxRecognition
 import info.christianreiner.fritzdial.data.SettingsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
- * Quick settings tile "FritzDial": opens the dialer. Its subtitle names the FritzBox in use
- * (Android 10 and later).
+ * Quick settings tile "FritzDial": opens the dialer. Its subtitle (Android 10 and later) names the
+ * FritzBox reachable from the current network – looked for each time the shade is pulled down, like
+ * the app does – or says that none is.
  */
 class DialerTileService : TileService() {
+
+    /** Runs the look for the box while the tile is shown. */
+    private var scope: CoroutineScope? = null
 
     override fun onTileAdded() = rememberAdded(FritzDialTile.DIALER, true)
 
@@ -33,10 +43,31 @@ class DialerTileService : TileService() {
         rememberAdded(FritzDialTile.DIALER, true)
         val tile = qsTile ?: return
         tile.state = Tile.STATE_INACTIVE
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            tile.subtitle = SettingsRepository(this).activeProfile()?.name
-        }
         tile.updateTile()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        val settings = SettingsRepository(this)
+        val profiles = settings.profiles()
+        if (profiles.isEmpty()) return
+        scope?.cancel()
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.Main).also {
+            it.launch {
+                val recognition = BoxRecognition.recognise(this@DialerTileService, profiles)
+                // As in the app: a connection without device id still counts when its host answered.
+                val box = recognition.match ?: settings.activeProfile()?.takeIf { p ->
+                    p.deviceId == null && recognition.found.any { box -> box.host.equals(p.config.host, ignoreCase = true) }
+                }
+                qsTile?.apply {
+                    subtitle = box?.name ?: getString(R.string.tile_no_box)
+                    updateTile()
+                }
+            }
+        }
+    }
+
+    override fun onStopListening() {
+        scope?.cancel()
+        scope = null
+        super.onStopListening()
     }
 
     override fun onClick() {

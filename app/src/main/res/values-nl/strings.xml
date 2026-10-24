@@ -253,13 +253,14 @@
     <string name="connection_speed_dials_hint">De snelkeuzes die in de telefoonboeken van deze FritzBox zijn ingesteld (00 tot 99, zoals ze op de handsets met **7 worden gekozen). Tik om er een te gebruiken op het eerste cijfer in het kiesscherm en houd het tweede ingedrukt. Werkt ook als de telefoonboeken zijn uitgeschakeld.</string>
 
     <!-- quick settings tiles -->
-    <string name="tile_redial">Opnieuw kiezen</string>
+    <string name="tile_redial">FritzDial opnieuw kiezen</string>
     <string name="tile_redial_none">Nog niets gekozen</string>
+    <string name="tile_no_box">Geen FritzBox bereikbaar</string>
     <string name="settings_tiles">Tegels in de snelle instellingen</string>
     <string name="settings_tile_add">‘%1$s’ toevoegen</string>
     <string name="settings_tile_added">‘%1$s’ is aan de snelle instellingen toegevoegd.</string>
     <string name="settings_tile_already_added">‘%1$s’ staat al in de snelle instellingen.</string>
     <string name="settings_tile_not_added">‘%1$s’ is niet toegevoegd.</string>
     <string name="settings_tile_failed">Android kon ‘%1$s’ niet toevoegen.</string>
-    <string name="settings_tiles_by_hand">Zo voeg je de tegels ‘FritzDial’ en ‘Opnieuw kiezen’ zelf toe: trek de meldingsbalk twee keer omlaag, tik op het potlood (Bewerken) en sleep ze naar je tegels.</string>
+    <string name="settings_tiles_by_hand">Zo voeg je de tegels ‘FritzDial’ en ‘FritzDial opnieuw kiezen’ zelf toe: trek de meldingsbalk twee keer omlaag, tik op het potlood (Bewerken) en sleep ze naar je tegels.</string>
 </resources>

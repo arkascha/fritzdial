@@ -257,13 +257,14 @@
     <string name="connection_speed_dials_hint">Las marcaciones rápidas configuradas en las agendas de esta FritzBox (00 a 99, como se marcan en sus terminales con **7). Para usar una, toca la primera cifra en el teclado y mantén pulsada la segunda. Funciona también con las agendas desactivadas.</string>
 
     <!-- quick settings tiles -->
-    <string name="tile_redial">Rellamada</string>
+    <string name="tile_redial">FritzDial: rellamada</string>
     <string name="tile_redial_none">Aún no se ha marcado nada</string>
+    <string name="tile_no_box">Ninguna FritzBox accesible</string>
     <string name="settings_tiles">Iconos de los ajustes rápidos</string>
     <string name="settings_tile_add">Añadir «%1$s»</string>
     <string name="settings_tile_added">«%1$s» se ha añadido a los ajustes rápidos.</string>
     <string name="settings_tile_already_added">«%1$s» ya está en los ajustes rápidos.</string>
     <string name="settings_tile_not_added">«%1$s» no se ha añadido.</string>
     <string name="settings_tile_failed">Android no ha podido añadir «%1$s».</string>
-    <string name="settings_tiles_by_hand">Para añadir tú mismo los iconos «FritzDial» y «Rellamada»: desliza dos veces hacia abajo la barra de notificaciones, toca el lápiz (Editar) y arrástralos a tus iconos.</string>
+    <string name="settings_tiles_by_hand">Para añadir tú mismo los iconos «FritzDial» y «FritzDial: rellamada»: desliza dos veces hacia abajo la barra de notificaciones, toca el lápiz (Editar) y arrástralos a tus iconos.</string>
 </resources>

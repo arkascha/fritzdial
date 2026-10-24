@@ -261,13 +261,14 @@
     <string name="connection_speed_dials_hint">Szybkie wybieranie ustawione w książkach telefonicznych tego FritzBox (00–99, wybierane na jego słuchawkach przez **7). Aby go użyć, dotknij pierwszej cyfry na klawiaturze i przytrzymaj drugą. Działa także przy wyłączonych książkach telefonicznych.</string>
 
     <!-- quick settings tiles -->
-    <string name="tile_redial">Ponowne wybieranie</string>
+    <string name="tile_redial">FritzDial: ponowne wybieranie</string>
     <string name="tile_redial_none">Jeszcze nic nie wybrano</string>
+    <string name="tile_no_box">Żaden FritzBox nie jest osiągalny</string>
     <string name="settings_tiles">Kafelki szybkich ustawień</string>
     <string name="settings_tile_add">Dodaj „%1$s”</string>
     <string name="settings_tile_added">„%1$s” dodano do szybkich ustawień.</string>
     <string name="settings_tile_already_added">„%1$s” jest już w szybkich ustawieniach.</string>
     <string name="settings_tile_not_added">Nie dodano „%1$s”.</string>
     <string name="settings_tile_failed">Android nie mógł dodać „%1$s”.</string>
-    <string name="settings_tiles_by_hand">Aby samodzielnie dodać kafelki „FritzDial” i „Ponowne wybieranie”: przeciągnij dwa razy w dół pasek powiadomień, dotknij ołówka (Edytuj) i przeciągnij je do swoich kafelków.</string>
+    <string name="settings_tiles_by_hand">Aby samodzielnie dodać kafelki „FritzDial” i „FritzDial: ponowne wybieranie”: przeciągnij dwa razy w dół pasek powiadomień, dotknij ołówka (Edytuj) i przeciągnij je do swoich kafelków.</string>
 </resources>

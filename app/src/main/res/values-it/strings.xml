@@ -257,13 +257,14 @@
     <string name="connection_speed_dials_hint">Le selezioni rapide impostate nelle rubriche di questa FritzBox (da 00 a 99, come si compongono sui suoi portatili con **7). Per usarne una, tocca la prima cifra nel tastierino e tieni premuta la seconda. Funziona anche con le rubriche disattivate.</string>
 
     <!-- quick settings tiles -->
-    <string name="tile_redial">Ripeti chiamata</string>
+    <string name="tile_redial">FritzDial: ripeti chiamata</string>
     <string name="tile_redial_none">Nessun numero chiamato</string>
+    <string name="tile_no_box">Nessuna FritzBox raggiungibile</string>
     <string name="settings_tiles">Riquadri delle impostazioni rapide</string>
     <string name="settings_tile_add">Aggiungi «%1$s»</string>
     <string name="settings_tile_added">«%1$s» è stato aggiunto alle impostazioni rapide.</string>
     <string name="settings_tile_already_added">«%1$s» è già nelle impostazioni rapide.</string>
     <string name="settings_tile_not_added">«%1$s» non è stato aggiunto.</string>
     <string name="settings_tile_failed">Android non è riuscito ad aggiungere «%1$s».</string>
-    <string name="settings_tiles_by_hand">Per aggiungere tu stesso i riquadri «FritzDial» e «Ripeti chiamata»: trascina due volte verso il basso la barra delle notifiche, tocca la matita (Modifica) e trascinali tra i tuoi riquadri.</string>
+    <string name="settings_tiles_by_hand">Per aggiungere tu stesso i riquadri «FritzDial» e «FritzDial: ripeti chiamata»: trascina due volte verso il basso la barra delle notifiche, tocca la matita (Modifica) e trascinali tra i tuoi riquadri.</string>
 </resources>
