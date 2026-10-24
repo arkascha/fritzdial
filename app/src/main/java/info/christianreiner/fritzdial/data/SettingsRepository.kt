@@ -146,6 +146,11 @@ class SettingsRepository(context: Context) {
             prefs.edit { putString(KEY_PHONE_SPEED_DIALS, array.toString()) }
         }
 
+    /** The number dialled last (with any box), for the "Redial" tile; null before the first call. */
+    var lastDialledNumber: String?
+        get() = prefs.getString(KEY_LAST_DIALLED, null)
+        set(value) = prefs.edit { if (value != null) putString(KEY_LAST_DIALLED, value) else remove(KEY_LAST_DIALLED) }
+
     // --- storage ----------------------------------------------------------------------
 
     private fun writeProfiles(list: List<BoxProfile>) {
@@ -238,6 +243,7 @@ class SettingsRepository(context: Context) {
         const val KEY_CALL_LOG = "call_log_enabled"
         const val KEY_PHONE_SPEED_DIALS_ENABLED = "phone_speed_dials_enabled"
         const val KEY_PHONE_SPEED_DIALS = "phone_speed_dials"
+        const val KEY_LAST_DIALLED = "last_dialled_number"
 
         // single-connection keys of earlier versions (migrated)
         const val LEGACY_HOST = "host"

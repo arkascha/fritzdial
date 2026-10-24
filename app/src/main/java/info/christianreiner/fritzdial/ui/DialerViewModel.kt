@@ -14,6 +14,7 @@ import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.data.SettingsRepository
 import info.christianreiner.fritzdial.data.SpeedDial
 import info.christianreiner.fritzdial.data.SpeedDials
+import info.christianreiner.fritzdial.tile.RedialTileService
 import info.christianreiner.fritzdial.tr064.BoxDiscovery
 import info.christianreiner.fritzdial.tr064.BoxIdentity
 import info.christianreiner.fritzdial.tr064.BoxInfo
@@ -942,6 +943,8 @@ class DialerViewModel(application: Application) : AndroidViewModel(application) 
             // Only changes the box setting if needed: a change may require confirmation on the box.
             if (phone != null) dialer.ensureDialPhone(phone)
             dialer.dial(number)
+            settings.lastDialledNumber = number
+            RedialTileService.refresh(getApplication())
             markDialActive()
             phone?.let { uiText(R.string.status_pick_up, FritzDialer.displayName(it), number) }
                 ?: uiText(R.string.status_pick_up_any, number)

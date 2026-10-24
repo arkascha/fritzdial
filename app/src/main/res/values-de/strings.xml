@@ -251,4 +251,8 @@
     <string name="settings_phone_speed_dials_hint">Die Kurzwahlen 1 bis 9 werden aus den Telefonbüchern gewählt und auf diesem Telefon gespeichert, sie gelten also mit jeder FritzBox. Zum Verwenden im Wählfeld die Ziffer lange drücken.</string>
     <string name="connection_speed_dials">Kurzwahlen</string>
     <string name="connection_speed_dials_hint">Die in den Telefonbüchern dieser FritzBox eingerichteten Kurzwahlen (00 bis 99, wie an ihren Mobilteilen mit **7 gewählt). Zum Verwenden im Wählfeld die erste Ziffer antippen und die zweite lange drücken. Funktioniert auch, wenn die Telefonbücher ausgeschaltet sind.</string>
+
+    <!-- quick settings tiles -->
+    <string name="tile_redial">Wahlwiederholung</string>
+    <string name="tile_redial_none">Noch nichts gewählt</string>
 </resources>

@@ -259,4 +259,8 @@
     <string name="settings_phone_speed_dials_hint">Szybkie wybieranie 1–9, wybierane z książek telefonicznych i zapisane na tym telefonie, dlatego działa z każdym FritzBox. Aby go użyć, przytrzymaj cyfrę na klawiaturze.</string>
     <string name="connection_speed_dials">Szybkie wybieranie</string>
     <string name="connection_speed_dials_hint">Szybkie wybieranie ustawione w książkach telefonicznych tego FritzBox (00–99, wybierane na jego słuchawkach przez **7). Aby go użyć, dotknij pierwszej cyfry na klawiaturze i przytrzymaj drugą. Działa także przy wyłączonych książkach telefonicznych.</string>
+
+    <!-- quick settings tiles -->
+    <string name="tile_redial">Ponowne wybieranie</string>
+    <string name="tile_redial_none">Jeszcze nic nie wybrano</string>
 </resources>

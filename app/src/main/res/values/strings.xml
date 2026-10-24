@@ -253,4 +253,8 @@
     <string name="settings_phone_speed_dials_hint">Speed dials 1 to 9, chosen from the phone books and stored on this phone, so they work with every FritzBox. To use one, long-press its digit in the dialer.</string>
     <string name="connection_speed_dials">Speed dials</string>
     <string name="connection_speed_dials_hint">The speed dials set up in this FritzBox’s phone books (00 to 99, as dialled on its handsets with **7). To use one, tap the first digit in the dialer and long-press the second. Also works with the phone books switched off.</string>
+
+    <!-- quick settings tiles -->
+    <string name="tile_redial">Redial</string>
+    <string name="tile_redial_none">Nothing dialled yet</string>
 </resources>

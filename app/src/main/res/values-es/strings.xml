@@ -255,4 +255,8 @@
     <string name="settings_phone_speed_dials_hint">Marcaciones rápidas 1 a 9, elegidas de las agendas y guardadas en este teléfono, por lo que funcionan con cualquier FritzBox. Para usar una, mantén pulsada su cifra en el teclado.</string>
     <string name="connection_speed_dials">Marcaciones rápidas</string>
     <string name="connection_speed_dials_hint">Las marcaciones rápidas configuradas en las agendas de esta FritzBox (00 a 99, como se marcan en sus terminales con **7). Para usar una, toca la primera cifra en el teclado y mantén pulsada la segunda. Funciona también con las agendas desactivadas.</string>
+
+    <!-- quick settings tiles -->
+    <string name="tile_redial">Rellamada</string>
+    <string name="tile_redial_none">Aún no se ha marcado nada</string>
 </resources>

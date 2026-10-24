@@ -190,6 +190,17 @@ uses *trust on first use* with certificate pinning:
 - **Settings › Trusted certificate** shows the pinned certificate's fingerprint, with **Show** (full details)
   and **Forget**.
 
+### Quick settings tiles
+
+Two tiles can be added to the quick settings (pull down the shade twice, then the pencil):
+
+- **FritzDial** opens the dialer; from Android 10 on its subtitle names the FritzBox in use.
+- **Redial** opens the dialer with the number dialled last already entered, shown as its subtitle.
+  It does not dial by itself – a tap in the shade is easily made by accident – so the green button
+  still has to be pressed. The tile is greyed out until something was dialled.
+
+On a locked phone, both open FritzDial once the phone is unlocked.
+
 FritzDial also registers for `tel:` links, so you can pick it when tapping a number in
 Contacts or a web page; the number is pre-filled.
 
@@ -204,6 +215,7 @@ Contacts or a web page; the number is pre-filled.
 | `tr064/BoxUsers.kt` | The box' users, offered for the user name (`LANConfigSecurity` `X_AVM-DE_GetUserList`) |
 | `tr064/BoxDiscovery.kt` | Recognises the FritzBox of the current network (gateway, `tr64desc.xml` device id) |
 | `tr064/Phonebooks.kt` | Phone book list / download / XML parsing (`X_AVM-DE_OnTel`) |
+| `tile/Tiles.kt` | Quick settings tiles "FritzDial" and "Redial" |
 | `data/DeviceContacts.kt` | The phone's own contacts as an extra phone book (`READ_CONTACTS`) |
 | `tr064/CallList.kt` | Dialled, received and missed calls from the box' call list (`X_AVM-DE_OnTel` `GetCallList`, XML export) |
 | `data/DeviceCallLog.kt` | The phone's own dialled, received and missed calls from the Android call log (`READ_CALL_LOG`) |
@@ -220,4 +232,3 @@ the call list's date format, the device details, the user list, the comparison o
 - Plain HTTP (port 49000) remains the default; even there the password never travels in clear text
   (digest auth). HTTPS additionally encrypts the numbers you dial and protects against spoofed routers.
 - Works only while the phone is in the home network (or via VPN to it).
-- Possible next steps: a quick-settings tile.
