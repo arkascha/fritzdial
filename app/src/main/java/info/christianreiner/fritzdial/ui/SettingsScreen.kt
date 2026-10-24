@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -73,6 +74,10 @@ import info.christianreiner.fritzdial.data.AppLanguage
 import info.christianreiner.fritzdial.data.BoxProfile
 import info.christianreiner.fritzdial.data.DeviceCallLog
 import info.christianreiner.fritzdial.data.DeviceContacts
+import info.christianreiner.fritzdial.tile.FritzDialTile
+import info.christianreiner.fritzdial.tile.TileAddResult
+import info.christianreiner.fritzdial.tile.canRequestAddTile
+import info.christianreiner.fritzdial.tile.requestAddTile
 import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.DialingCodes
 import info.christianreiner.fritzdial.tr064.BoxUser
@@ -221,7 +226,61 @@ fun SettingsScreen(
                     onChange = onPhoneSpeedDialsChange,
                 )
             }
+
+            HorizontalDivider()
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(stringResource(R.string.settings_tiles), style = MaterialTheme.typography.titleSmall)
+                TilesSetting()
+            }
         }
+    }
+}
+
+/**
+ * The quick settings tiles: from Android 13 on a button per tile, which lets Android ask whether to
+ * add it; before that (and if adding fails) how to add them by hand.
+ */
+@Composable
+private fun TilesSetting() {
+    val context = LocalContext.current
+    // The outcome of the last request, shown under the buttons.
+    var result by remember { mutableStateOf<Pair<FritzDialTile, TileAddResult>?>(null) }
+    if (canRequestAddTile) {
+        FritzDialTile.entries.forEach { tile ->
+            OutlinedButton(
+                onClick = {
+                    result = null
+                    requestAddTile(context, tile) { result = tile to it }
+                },
+            ) {
+                Icon(painterResource(tile.icon), contentDescription = null, modifier = Modifier.size(18.dp))
+                Text("  " + stringResource(R.string.settings_tile_add, stringResource(tile.label)))
+            }
+        }
+    }
+    result?.let { (tile, outcome) ->
+        val name = stringResource(tile.label)
+        Text(
+            when (outcome) {
+                TileAddResult.ADDED -> stringResource(R.string.settings_tile_added, name)
+                TileAddResult.ALREADY_ADDED -> stringResource(R.string.settings_tile_already_added, name)
+                TileAddResult.NOT_ADDED -> stringResource(R.string.settings_tile_not_added, name)
+                TileAddResult.FAILED -> stringResource(R.string.settings_tile_failed, name)
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = if (outcome == TileAddResult.FAILED) MaterialTheme.colorScheme.error
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (!canRequestAddTile || result?.second == TileAddResult.FAILED) {
+        Text(
+            stringResource(R.string.settings_tiles_by_hand),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

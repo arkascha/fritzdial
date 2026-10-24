@@ -2,13 +2,17 @@ package info.christianreiner.fritzdial.tile
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.app.StatusBarManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.annotation.RequiresApi
 import info.christianreiner.fritzdial.MainActivity
 import info.christianreiner.fritzdial.R
 import info.christianreiner.fritzdial.data.SettingsRepository
@@ -68,6 +72,46 @@ class RedialTileService : TileService() {
             }
         }
     }
+}
+
+/** The tiles FritzDial offers, for adding them from the settings. */
+enum class FritzDialTile(val service: Class<out TileService>, val label: Int, val icon: Int) {
+    DIALER(DialerTileService::class.java, R.string.app_name, R.drawable.ic_tile_dialer),
+    REDIAL(RedialTileService::class.java, R.string.tile_redial, R.drawable.ic_tile_redial),
+}
+
+/** How a request to add a tile ended. */
+enum class TileAddResult { ADDED, ALREADY_ADDED, NOT_ADDED, FAILED }
+
+/** Whether this Android lets an app offer to add its tile (Android 13 and later). */
+@get:ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+val canRequestAddTile: Boolean get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
+/**
+ * Asks Android to add [tile] to the quick settings: Android shows its own dialog, and [onResult]
+ * gets the outcome. Only on Android 13 and later (see [canRequestAddTile]).
+ */
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+fun requestAddTile(context: Context, tile: FritzDialTile, onResult: (TileAddResult) -> Unit) {
+    val statusBar = context.getSystemService(StatusBarManager::class.java) ?: return onResult(TileAddResult.FAILED)
+    runCatching {
+        statusBar.requestAddTileService(
+            ComponentName(context, tile.service),
+            context.getString(tile.label),
+            Icon.createWithResource(context, tile.icon),
+            context.mainExecutor,
+        ) { code ->
+            onResult(
+                when (code) {
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED -> TileAddResult.ADDED
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED -> TileAddResult.ALREADY_ADDED
+                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_NOT_ADDED -> TileAddResult.NOT_ADDED
+                    // Errors (e.g. a request already showing, or no status bar to add to).
+                    else -> TileAddResult.FAILED
+                }
+            )
+        }
+    }.onFailure { onResult(TileAddResult.FAILED) }
 }
 
 /** Opens FritzDial from a tile, collapsing the shade; on a locked phone only once it is unlocked. */

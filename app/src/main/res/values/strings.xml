@@ -257,4 +257,11 @@
     <!-- quick settings tiles -->
     <string name="tile_redial">Redial</string>
     <string name="tile_redial_none">Nothing dialled yet</string>
+    <string name="settings_tiles">Quick settings tiles</string>
+    <string name="settings_tile_add">Add “%1$s”</string>
+    <string name="settings_tile_added">“%1$s” was added to the quick settings.</string>
+    <string name="settings_tile_already_added">“%1$s” is already in the quick settings.</string>
+    <string name="settings_tile_not_added">“%1$s” was not added.</string>
+    <string name="settings_tile_failed">Android could not add “%1$s”.</string>
+    <string name="settings_tiles_by_hand">To add the tiles “FritzDial” and “Redial” by hand: pull down the notification shade twice, tap the pencil (Edit) and drag them into your tiles.</string>
 </resources>

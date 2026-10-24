@@ -255,4 +255,11 @@
     <!-- quick settings tiles -->
     <string name="tile_redial">Wahlwiederholung</string>
     <string name="tile_redial_none">Noch nichts gewählt</string>
+    <string name="settings_tiles">Kacheln in den Schnelleinstellungen</string>
+    <string name="settings_tile_add">„%1$s“ hinzufügen</string>
+    <string name="settings_tile_added">„%1$s“ wurde zu den Schnelleinstellungen hinzugefügt.</string>
+    <string name="settings_tile_already_added">„%1$s“ ist schon in den Schnelleinstellungen.</string>
+    <string name="settings_tile_not_added">„%1$s“ wurde nicht hinzugefügt.</string>
+    <string name="settings_tile_failed">Android konnte „%1$s“ nicht hinzufügen.</string>
+    <string name="settings_tiles_by_hand">So fügst du die Kacheln „FritzDial“ und „Wahlwiederholung“ selbst hinzu: Benachrichtigungsleiste zweimal herunterziehen, auf den Stift (Bearbeiten) tippen und sie zu deinen Kacheln ziehen.</string>
 </resources>

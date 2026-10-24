@@ -259,4 +259,11 @@
     <!-- quick settings tiles -->
     <string name="tile_redial">Rellamada</string>
     <string name="tile_redial_none">Aún no se ha marcado nada</string>
+    <string name="settings_tiles">Iconos de los ajustes rápidos</string>
+    <string name="settings_tile_add">Añadir «%1$s»</string>
+    <string name="settings_tile_added">«%1$s» se ha añadido a los ajustes rápidos.</string>
+    <string name="settings_tile_already_added">«%1$s» ya está en los ajustes rápidos.</string>
+    <string name="settings_tile_not_added">«%1$s» no se ha añadido.</string>
+    <string name="settings_tile_failed">Android no ha podido añadir «%1$s».</string>
+    <string name="settings_tiles_by_hand">Para añadir tú mismo los iconos «FritzDial» y «Rellamada»: desliza dos veces hacia abajo la barra de notificaciones, toca el lápiz (Editar) y arrástralos a tus iconos.</string>
 </resources>

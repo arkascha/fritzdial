@@ -263,4 +263,11 @@
     <!-- quick settings tiles -->
     <string name="tile_redial">Ponowne wybieranie</string>
     <string name="tile_redial_none">Jeszcze nic nie wybrano</string>
+    <string name="settings_tiles">Kafelki szybkich ustawień</string>
+    <string name="settings_tile_add">Dodaj „%1$s”</string>
+    <string name="settings_tile_added">„%1$s” dodano do szybkich ustawień.</string>
+    <string name="settings_tile_already_added">„%1$s” jest już w szybkich ustawieniach.</string>
+    <string name="settings_tile_not_added">Nie dodano „%1$s”.</string>
+    <string name="settings_tile_failed">Android nie mógł dodać „%1$s”.</string>
+    <string name="settings_tiles_by_hand">Aby samodzielnie dodać kafelki „FritzDial” i „Ponowne wybieranie”: przeciągnij dwa razy w dół pasek powiadomień, dotknij ołówka (Edytuj) i przeciągnij je do swoich kafelków.</string>
 </resources>
