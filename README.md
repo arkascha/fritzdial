@@ -193,7 +193,8 @@ uses *trust on first use* with certificate pinning:
 ### Quick settings tiles
 
 Two tiles can be added to the quick settings. From Android 13 on, **Settings › Quick settings tiles**
-has a button for each, and Android asks whether to add it; otherwise (or if that fails) pull down the
+has a button for each, and Android asks whether to add it. A tile already there is listed as such
+instead – Android cannot be asked, so each tile notes when it is added or removed (and when it is shown); otherwise (or if that fails) pull down the
 shade twice, tap the pencil and drag them into your tiles – apps' tiles are usually at the very end:
 
 - **FritzDial** opens the dialer; from Android 10 on its subtitle names the FritzBox in use.

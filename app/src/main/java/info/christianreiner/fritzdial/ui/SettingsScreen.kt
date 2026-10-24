@@ -77,6 +77,7 @@ import info.christianreiner.fritzdial.data.DeviceContacts
 import info.christianreiner.fritzdial.tile.FritzDialTile
 import info.christianreiner.fritzdial.tile.TileAddResult
 import info.christianreiner.fritzdial.tile.canRequestAddTile
+import info.christianreiner.fritzdial.tile.isTileAdded
 import info.christianreiner.fritzdial.tile.requestAddTile
 import info.christianreiner.fritzdial.tr064.BoxInfo
 import info.christianreiner.fritzdial.tr064.DialingCodes
@@ -240,20 +241,43 @@ fun SettingsScreen(
 }
 
 /**
- * The quick settings tiles: from Android 13 on a button per tile, which lets Android ask whether to
- * add it; before that (and if adding fails) how to add them by hand.
+ * The quick settings tiles: each one already there is shown as such; for the others, from Android 13
+ * on, a button which lets Android ask whether to add it; before that (and if adding fails) how to add
+ * them by hand.
  */
 @Composable
 private fun TilesSetting() {
     val context = LocalContext.current
     // The outcome of the last request, shown under the buttons.
     var result by remember { mutableStateOf<Pair<FritzDialTile, TileAddResult>?>(null) }
+    // The tiles in the quick settings; checked again on returning (one may have been removed meanwhile).
+    var added by remember { mutableStateOf(FritzDialTile.entries.filter { isTileAdded(context, it) }.toSet()) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        added = FritzDialTile.entries.filter { isTileAdded(context, it) }.toSet()
+    }
+    FritzDialTile.entries.filter { it in added }.forEach { tile ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                "  " + stringResource(R.string.settings_tile_already_added, stringResource(tile.label)),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
     if (canRequestAddTile) {
-        FritzDialTile.entries.forEach { tile ->
+        FritzDialTile.entries.filter { it !in added }.forEach { tile ->
             OutlinedButton(
                 onClick = {
                     result = null
-                    requestAddTile(context, tile) { result = tile to it }
+                    requestAddTile(context, tile) { outcome ->
+                        result = tile to outcome
+                        added = FritzDialTile.entries.filter { isTileAdded(context, it) }.toSet()
+                    }
                 },
             ) {
                 Icon(painterResource(tile.icon), contentDescription = null, modifier = Modifier.size(18.dp))
@@ -261,7 +285,8 @@ private fun TilesSetting() {
             }
         }
     }
-    result?.let { (tile, outcome) ->
+    // An "already there" is shown by the list above.
+    result?.takeIf { it.first !in added }?.let { (tile, outcome) ->
         val name = stringResource(tile.label)
         Text(
             when (outcome) {
@@ -275,7 +300,7 @@ private fun TilesSetting() {
             else MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
-    if (!canRequestAddTile || result?.second == TileAddResult.FAILED) {
+    if (added.size < FritzDialTile.entries.size && (!canRequestAddTile || result?.second == TileAddResult.FAILED)) {
         Text(
             stringResource(R.string.settings_tiles_by_hand),
             style = MaterialTheme.typography.bodySmall,

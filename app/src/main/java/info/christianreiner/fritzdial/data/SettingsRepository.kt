@@ -151,6 +151,14 @@ class SettingsRepository(context: Context) {
         get() = prefs.getString(KEY_LAST_DIALLED, null)
         set(value) = prefs.edit { if (value != null) putString(KEY_LAST_DIALLED, value) else remove(KEY_LAST_DIALLED) }
 
+    /**
+     * Whether a quick settings tile (by its key) is in the quick settings, as its service last
+     * learned; Android offers no way to ask.
+     */
+    fun isTileAdded(tile: String): Boolean = prefs.getBoolean(KEY_TILE_ADDED + tile, false)
+
+    fun setTileAdded(tile: String, added: Boolean) = prefs.edit { putBoolean(KEY_TILE_ADDED + tile, added) }
+
     // --- storage ----------------------------------------------------------------------
 
     private fun writeProfiles(list: List<BoxProfile>) {
@@ -244,6 +252,7 @@ class SettingsRepository(context: Context) {
         const val KEY_PHONE_SPEED_DIALS_ENABLED = "phone_speed_dials_enabled"
         const val KEY_PHONE_SPEED_DIALS = "phone_speed_dials"
         const val KEY_LAST_DIALLED = "last_dialled_number"
+        const val KEY_TILE_ADDED = "tile_added_"
 
         // single-connection keys of earlier versions (migrated)
         const val LEGACY_HOST = "host"

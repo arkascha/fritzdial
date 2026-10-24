@@ -23,8 +23,14 @@ import info.christianreiner.fritzdial.data.SettingsRepository
  */
 class DialerTileService : TileService() {
 
+    override fun onTileAdded() = rememberAdded(FritzDialTile.DIALER, true)
+
+    override fun onTileRemoved() = rememberAdded(FritzDialTile.DIALER, false)
+
     override fun onStartListening() {
         super.onStartListening()
+        // Shown, so it is there – also when it was added before FritzDial kept track.
+        rememberAdded(FritzDialTile.DIALER, true)
         val tile = qsTile ?: return
         tile.state = Tile.STATE_INACTIVE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -46,8 +52,14 @@ class DialerTileService : TileService() {
  */
 class RedialTileService : TileService() {
 
+    override fun onTileAdded() = rememberAdded(FritzDialTile.REDIAL, true)
+
+    override fun onTileRemoved() = rememberAdded(FritzDialTile.REDIAL, false)
+
     override fun onStartListening() {
         super.onStartListening()
+        // Shown, so it is there – also when it was added before FritzDial kept track.
+        rememberAdded(FritzDialTile.REDIAL, true)
         val tile = qsTile ?: return
         val number = SettingsRepository(this).lastDialledNumber
         tile.state = if (number == null) Tile.STATE_UNAVAILABLE else Tile.STATE_INACTIVE
@@ -80,6 +92,12 @@ enum class FritzDialTile(val service: Class<out TileService>, val label: Int, va
     REDIAL(RedialTileService::class.java, R.string.tile_redial, R.drawable.ic_tile_redial),
 }
 
+/** Whether [tile] is in the quick settings, as far as its service learned it (Android cannot be asked). */
+fun isTileAdded(context: Context, tile: FritzDialTile): Boolean = SettingsRepository(context).isTileAdded(tile.name)
+
+private fun TileService.rememberAdded(tile: FritzDialTile, added: Boolean) =
+    SettingsRepository(this).setTileAdded(tile.name, added)
+
 /** How a request to add a tile ended. */
 enum class TileAddResult { ADDED, ALREADY_ADDED, NOT_ADDED, FAILED }
 
@@ -101,6 +119,11 @@ fun requestAddTile(context: Context, tile: FritzDialTile, onResult: (TileAddResu
             Icon.createWithResource(context, tile.icon),
             context.mainExecutor,
         ) { code ->
+            if (code == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED ||
+                code == StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED
+            ) {
+                SettingsRepository(context).setTileAdded(tile.name, true)
+            }
             onResult(
                 when (code) {
                     StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED -> TileAddResult.ADDED
