@@ -42,6 +42,7 @@ class DialerTileService : TileService() {
         // Shown, so it is there – also when it was added before FritzDial kept track.
         rememberAdded(FritzDialTile.DIALER, true)
         val tile = qsTile ?: return
+        tile.label = getString(FritzDialTile.DIALER.label)
         tile.state = Tile.STATE_INACTIVE
         tile.updateTile()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
@@ -93,6 +94,7 @@ class RedialTileService : TileService() {
         rememberAdded(FritzDialTile.REDIAL, true)
         val tile = qsTile ?: return
         val number = SettingsRepository(this).lastDialledNumber
+        tile.label = getString(FritzDialTile.REDIAL.label)
         tile.state = if (number == null) Tile.STATE_UNAVAILABLE else Tile.STATE_INACTIVE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             tile.subtitle = number ?: getString(R.string.tile_redial_none)
@@ -122,6 +124,11 @@ enum class FritzDialTile(val service: Class<out TileService>, val label: Int, va
     DIALER(DialerTileService::class.java, R.string.app_name, R.drawable.ic_tile_dialer),
     REDIAL(RedialTileService::class.java, R.string.tile_redial, R.drawable.ic_tile_redial),
 }
+
+/*
+ * Each tile sets its label itself whenever shown: Android's system UI keeps the label it read from
+ * the manifest, and does not always read it again after an update (or a language change).
+ */
 
 /** Whether [tile] is in the quick settings, as far as its service learned it (Android cannot be asked). */
 fun isTileAdded(context: Context, tile: FritzDialTile): Boolean = SettingsRepository(context).isTileAdded(tile.name)
